@@ -279,11 +279,11 @@ const Header = () => {
                 {link.hasDropdown && (
                   <div
                     className={`overflow-hidden transition-all duration-300 ${
-                      isServicesOpen ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
+                      isServicesOpen ? 'max-h-[350px] opacity-100' : 'max-h-0 opacity-0'
                     }`}
                   >
-                    <div className="pl-4 py-2 space-y-1 border-l-2 border-brand-blue/20 ml-2 max-h-[280px] overflow-y-auto">
-                      {services.map((service) => (
+                    <div className="pl-4 py-2 space-y-1 border-l-2 border-brand-blue/20 ml-2 max-h-[320px] overflow-y-auto">
+                      {services.slice(0, 8).map((service) => (
                         <a
                           key={service.name}
                           href={service.href}
@@ -293,6 +293,15 @@ const Header = () => {
                           {service.name}
                         </a>
                       ))}
+                      {/* View All Services Link */}
+                      <Link
+                        to="/services"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center gap-1.5 py-3 mt-2 text-sm font-semibold text-brand-blue hover:text-brand-blue-dark transition-colors border-t border-gray-100 pt-3"
+                      >
+                        View All Services
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
                     </div>
                   </div>
                 )}

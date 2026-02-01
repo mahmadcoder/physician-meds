@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from 'react';import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Header from './sections/Header';
@@ -8,40 +8,50 @@ import About from './sections/About';
 import Process from './sections/Process';
 import Stats from './sections/Stats';
 import Testimonials from './sections/Testimonials';
-import Pricing from './sections/Pricing';
 import Blog from './sections/Blog';
 import CTA from './sections/CTA';
 import Footer from './sections/Footer';
+import ServicesPage from './pages/ServicesPage';
 
 gsap.registerPlugin(ScrollTrigger);
 
-function App() {
+// Home Page Component
+const HomePage = () => {
   useEffect(() => {
-    // Initialize scroll-triggered animations
     const ctx = gsap.context(() => {
-      // Refresh ScrollTrigger after all components mount
       ScrollTrigger.refresh();
     });
-
     return () => ctx.revert();
   }, []);
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
-      <Header />
-      <main>
-        <Hero />
-        <Services />
-        <About />
-        <Process />
-        <Stats />
-        <Testimonials />
-        <Pricing />
-        <Blog />
-        <CTA />
-      </main>
-      <Footer />
-    </div>
+    <>
+      <Hero />
+      <Services />
+      <About />
+      <Process />
+      <Stats />
+      <Testimonials />
+      <Blog />
+      <CTA />
+    </>
+  );
+};
+
+function App() {
+  return (
+    <BrowserRouter>
+      <div className="min-h-screen bg-white overflow-x-hidden">
+        <Header />
+        <main>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/services" element={<ServicesPage />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </BrowserRouter>
   );
 }
 

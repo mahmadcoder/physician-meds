@@ -1,30 +1,84 @@
 import { useState, useEffect } from 'react';
-import { Phone, ChevronDown } from 'lucide-react';
+import { Phone, ChevronDown, Mail, MapPin, Clock, ArrowRight } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { navLinks, services } from '@/constants';
+import { navLinks, services, contactInfo } from '@/constants';
+
+// Top Bar Component - Hidden on mobile, visible on md and above
+const TopBar = ({ isScrolled, isLoaded }: { isScrolled: boolean; isLoaded: boolean }) => {
+  return (
+    <div
+      className={`hidden md:block w-full bg-gray-50 border-b border-gray-200 transition-all duration-500 ${
+        isScrolled ? 'h-0 opacity-0 overflow-hidden border-b-0' : 'h-auto opacity-100'
+      } ${isLoaded ? 'translate-y-0' : '-translate-y-full'}`}
+    >
+      <div className="container-custom">
+        <div className="flex items-center justify-between py-2.5">
+          {/* Left Side - Contact Info (aligns with logo) */}
+          <div className="flex items-center gap-x-5 text-sm">
+            {/* Email */}
+            <a
+              href={`mailto:${contactInfo.email}`}
+              className="flex items-center gap-2 text-gray-600 hover:text-brand-blue transition-colors duration-300 group pl-2.5"
+            >
+              <Mail className="w-4 h-4 text-brand-blue group-hover:scale-110 transition-transform duration-300" />
+              <span>{contactInfo.email}</span>
+            </a>
+
+            {/* Phone */}
+            <a
+              href={`tel:${contactInfo.phone}`}
+              className="flex items-center gap-2 text-gray-600 hover:text-brand-blue transition-colors duration-300 group"
+            >
+              <Phone className="w-4 h-4 text-brand-blue group-hover:scale-110 transition-transform duration-300" />
+              <span>{contactInfo.phoneDisplay}</span>
+            </a>
+
+            {/* Address */}
+            <a
+              href={contactInfo.addressUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden xl:flex items-center gap-2 text-gray-500 hover:text-brand-blue transition-colors duration-300 group"
+            >
+              <MapPin className="w-4 h-4 text-brand-blue flex-shrink-0 group-hover:scale-110 transition-transform duration-300" />
+              <span className="truncate max-w-[280px]">{contactInfo.address}</span>
+            </a>
+          </div>
+
+          {/* Right Side - Working Hours (aligns with Get Started button) */}
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Clock className="w-4 h-4 text-brand-blue" />
+            <span>{contactInfo.workingHours}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Check if on home page
+  const isOnHomePage = location.pathname === '/';
+  // Check if on services page
+  const isOnServicesPage = location.pathname === '/services';
+
+  // Entrance animation on mount
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoaded(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
-
-      // Update active section based on scroll position
-      const sections = ['home', 'services', 'about', 'process', 'pricing', 'blog', 'cta'];
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 100 && rect.bottom >= 100) {
-            setActiveSection(section);
-            break;
-          }
-        }
-      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -32,28 +86,49 @@ const Header = () => {
   }, []);
 
   const scrollToSection = (href: string) => {
+    setIsMobileMenuOpen(false);
+    setIsServicesOpen(false);
+
+    // If not on home page, navigate to home first then scroll
+    if (!isOnHomePage) {
+      navigate('/' + href);
+      return;
+    }
+
+    // On home page, just scroll to section
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
-    setIsMobileMenuOpen(false);
-    setIsServicesOpen(false);
   };
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled
-          ? 'bg-white/90 backdrop-blur-xl shadow-lg shadow-black/5'
-          : 'bg-transparent'
-      }`}
-    >
+    <header className="fixed top-0 left-0 right-0 z-50">
+      {/* Top Bar */}
+      <TopBar isScrolled={isScrolled} isLoaded={isLoaded} />
+
+      {/* Main Header */}
+      <div
+        className={`transition-all duration-700 ${
+          isScrolled
+            ? 'bg-white/90 backdrop-blur-xl shadow-lg shadow-black/5'
+            : 'bg-white/80 backdrop-blur-sm'
+        } ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
+      >
       <div className="container-custom">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <a 
-            href="#home" 
-            onClick={(e) => { e.preventDefault(); scrollToSection('#home'); }}
+          <Link 
+            to="/#home" 
+            onClick={(e) => { 
+              e.preventDefault(); 
+              if (!isOnHomePage) {
+                navigate('/');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
             className="flex items-center gap-2 group"
           >
             <img 
@@ -64,7 +139,7 @@ const Header = () => {
             <span className="font-display font-bold text-2xl text-brand-dark tracking-tight">
               Physician<span className="text-brand-blue">Meds</span>
             </span>
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-10">
@@ -79,7 +154,7 @@ const Header = () => {
                   href={link.href}
                   onClick={(e) => { e.preventDefault(); scrollToSection(link.href); }}
                   className={`relative text-[15px] font-semibold transition-colors duration-300 flex items-center gap-1.5 ${
-                    activeSection === link.href.slice(1)
+                    isOnServicesPage && link.name === 'Services'
                       ? 'text-brand-blue'
                       : 'text-gray-700 hover:text-brand-blue'
                   }`}
@@ -98,16 +173,26 @@ const Header = () => {
                     }`}
                   >
                     <div className="bg-white rounded-xl shadow-2xl shadow-black/10 border border-gray-100 p-6 min-w-[600px]">
+                      {/* Header with View All Services */}
+                      <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                        <h3 className="text-sm font-semibold text-gray-900">Our Services</h3>
+                        <Link 
+                          to="/services"
+                          className="flex items-center gap-1.5 text-sm font-semibold text-brand-blue hover:text-brand-blue-dark transition-colors group"
+                        >
+                          View All Services
+                          <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                        </Link>
+                      </div>
                       <div className="grid grid-cols-2 gap-x-8 gap-y-1">
-                        {services.map((service) => (
+                        {services.slice(0, 10).map((service) => (
                           <a
                             key={service.name}
                             href={service.href}
                             onClick={(e) => { e.preventDefault(); scrollToSection(service.href); }}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:text-brand-blue hover:bg-brand-blue/5 transition-all duration-200 group"
+                            className="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-brand-blue hover:bg-brand-blue/5 transition-all duration-200"
                           >
-                            <div className="w-2 h-2 rounded-full bg-brand-blue/30 group-hover:bg-brand-blue transition-colors duration-200" />
-                            <span className="text-sm font-medium">{service.name}</span>
+                            {service.name}
                           </a>
                         ))}
                       </div>
@@ -118,15 +203,8 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* CTA Buttons */}
-          <div className="hidden lg:flex items-center gap-5">
-            <a 
-              href="tel:+15551234567" 
-              className="flex items-center gap-2 text-[15px] font-semibold text-gray-700 hover:text-brand-blue transition-colors"
-            >
-              <Phone className="w-[18px] h-[18px]" />
-              <span>(555) 123-4567</span>
-            </a>
+          {/* CTA Button */}
+          <div className="hidden lg:flex items-center">
             <Button 
               className="btn-primary text-[15px] px-6 py-2.5"
               onClick={() => scrollToSection('#cta')}
@@ -166,67 +244,68 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      <div
-        className={`lg:hidden absolute top-full left-0 right-0 bg-white shadow-lg transition-all duration-300 max-h-[calc(100vh-80px)] overflow-y-auto ${
-          isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-        }`}
-      >
-        <nav className="container-custom py-6 flex flex-col gap-2">
-          {navLinks.map((link) => (
-            <div key={link.name}>
-              <a
-                href={link.href}
-                onClick={(e) => { 
-                  e.preventDefault(); 
-                  if (link.hasDropdown) {
-                    setIsServicesOpen(!isServicesOpen);
-                  } else {
-                    scrollToSection(link.href);
-                  }
-                }}
-                className={`flex items-center justify-between text-base font-medium transition-colors py-2 ${
-                  activeSection === link.href.slice(1)
-                    ? 'text-brand-blue'
-                    : 'text-gray-600 hover:text-brand-blue'
-                }`}
-              >
-                {link.name}
-                {link.hasDropdown && (
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isServicesOpen ? 'rotate-180' : ''}`} />
-                )}
-              </a>
-              
-              {/* Mobile Services Dropdown */}
-              {link.hasDropdown && (
-                <div
-                  className={`overflow-hidden transition-all duration-300 ${
-                    isServicesOpen ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
+        {/* Mobile Menu */}
+        <div
+          className={`lg:hidden bg-white shadow-lg transition-all duration-300 max-h-[calc(100vh-80px)] overflow-y-auto ${
+            isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible h-0'
+          }`}
+        >
+          <nav className="container-custom py-6 flex flex-col gap-2">
+            {navLinks.map((link) => (
+              <div key={link.name}>
+                <a
+                  href={link.href}
+                  onClick={(e) => { 
+                    e.preventDefault(); 
+                    if (link.hasDropdown) {
+                      setIsServicesOpen(!isServicesOpen);
+                    } else {
+                      scrollToSection(link.href);
+                    }
+                  }}
+                  className={`flex items-center justify-between text-base font-medium transition-colors py-2 ${
+                    isOnServicesPage && link.name === 'Services'
+                      ? 'text-brand-blue'
+                      : 'text-gray-600 hover:text-brand-blue'
                   }`}
                 >
-                  <div className="pl-4 py-2 space-y-1 border-l-2 border-brand-blue/20 ml-2 max-h-[280px] overflow-y-auto">
-                    {services.map((service) => (
-                      <a
-                        key={service.name}
-                        href={service.href}
-                        onClick={(e) => { e.preventDefault(); scrollToSection(service.href); }}
-                        className="block py-2 text-sm text-gray-600 hover:text-brand-blue transition-colors"
-                      >
-                        {service.name}
-                      </a>
-                    ))}
+                  {link.name}
+                  {link.hasDropdown && (
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isServicesOpen ? 'rotate-180' : ''}`} />
+                  )}
+                </a>
+                
+                {/* Mobile Services Dropdown */}
+                {link.hasDropdown && (
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${
+                      isServicesOpen ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
+                    }`}
+                  >
+                    <div className="pl-4 py-2 space-y-1 border-l-2 border-brand-blue/20 ml-2 max-h-[280px] overflow-y-auto">
+                      {services.map((service) => (
+                        <a
+                          key={service.name}
+                          href={service.href}
+                          onClick={(e) => { e.preventDefault(); scrollToSection(service.href); }}
+                          className="block py-2 text-sm text-gray-600 hover:text-brand-blue transition-colors"
+                        >
+                          {service.name}
+                        </a>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          ))}
-          <Button 
-            className="btn-primary w-full mt-4"
-            onClick={() => scrollToSection('#cta')}
-          >
-            Get Started
-          </Button>
-        </nav>
+                )}
+              </div>
+            ))}
+            <Button 
+              className="btn-primary w-full mt-4"
+              onClick={() => scrollToSection('#cta')}
+            >
+              Get Started
+            </Button>
+          </nav>
+        </div>
       </div>
     </header>
   );

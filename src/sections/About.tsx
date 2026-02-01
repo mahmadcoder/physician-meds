@@ -7,12 +7,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 const stats = [
   { icon: Award, value: '98%', label: 'Clean Claim Rate' },
-  { icon: Users, value: '500+', label: 'Healthcare Providers' },
+  { icon: Users, value: '100+', label: 'Healthcare Providers' },
   { icon: TrendingUp, value: '30%', label: 'Faster Reimbursements' },
 ];
 
 const features = [
-  'HIPAA compliant processes',
+  'Revenue cycle optimization',
   '24/7 dedicated support',
   'Certified billing specialists',
   'Advanced technology platform',
@@ -170,9 +170,9 @@ const About = () => {
               <div className="absolute -bottom-4 -right-4 w-full h-full border-2 border-brand-accent/30 rounded-2xl -z-10" />
 
               {/* Experience Badge */}
-              <div className="experience-badge absolute -bottom-8 -right-8 bg-brand-blue text-white rounded-2xl p-6 shadow-xl">
-                <p className="text-5xl font-bold">20+</p>
-                <p className="text-sm opacity-90">Years of Experience</p>
+              <div className="experience-badge absolute bottom-4 right-4 md:bottom-6 md:right-6 bg-brand-blue text-white rounded-2xl p-5 md:p-6 shadow-xl">
+                <p className="text-4xl md:text-5xl font-bold">5+</p>
+                <p className="text-xs md:text-sm opacity-90">Years of Experience</p>
               </div>
             </div>
           </div>
@@ -189,7 +189,7 @@ const About = () => {
             </h2>
 
             <p className="about-text text-lg text-gray-600 mb-8 leading-relaxed">
-              With over 20 years of experience, we've helped thousands of healthcare 
+              With over 5 years of experience, we've helped thousands of healthcare 
               providers streamline their revenue cycles and maximize reimbursements. 
               Our team of certified billing specialists combines industry expertise 
               with cutting-edge technology to deliver results.

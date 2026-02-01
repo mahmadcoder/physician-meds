@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ArrowRight, CheckCircle, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+
 const Hero = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -87,7 +88,7 @@ const Hero = () => {
     <section
       id="home"
       ref={heroRef}
-      className="relative min-h-screen flex items-center pt-28 lg:pt-32 overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-white"
+      className="relative min-h-screen flex items-center pt-32 md:pt-40 lg:pt-44 overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-white"
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-30">
@@ -108,36 +109,39 @@ const Hero = () => {
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/10 rounded-full mb-6">
               <span className="w-2 h-2 bg-brand-blue rounded-full animate-pulse" />
               <span className="text-sm font-medium text-brand-blue">
-                Trusted by 500+ Healthcare Providers
+                Trusted by 100+ Healthcare Providers
               </span>
             </div>
 
-            <h1 className="hero-headline font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-brand-dark leading-tight mb-6">
-              <span className="inline-block">Medical</span>{' '}
-              <span className="inline-block">Billing</span>{' '}
-              <span className="inline-block text-brand-blue">Solutions</span>{' '}
-              <span className="inline-block">for</span>{' '}
-              <span className="inline-block">Healthcare</span>{' '}
-              <span className="inline-block">Practices</span>
+            <h1 className="hero-headline font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-brand-dark leading-[1.15] mb-6">
+              <span className="inline-block pb-1">Medical</span>{" "}
+              <span className="inline-block pb-1">Billing</span>{" "}
+              <span className="inline-block pb-1 text-brand-blue">
+                Solutions
+              </span>{" "}
+              <span className="inline-block pb-1">for</span>{" "}
+              <span className="inline-block pb-1">Healthcare</span>{" "}
+              <span className="inline-block pb-1">Practices</span>
             </h1>
 
             <p className="hero-subheadline text-lg text-gray-600 mb-8 leading-relaxed">
-              Streamline your revenue cycle with our expert medical billing services. 
-              We help healthcare providers maximize reimbursements and reduce administrative burden.
+              Streamline your revenue cycle with our expert medical billing
+              services. We help healthcare providers maximize reimbursements and
+              reduce administrative burden.
             </p>
 
             <div className="flex flex-wrap gap-4 mb-10">
-              <Button 
+              <Button
                 className="hero-cta-primary btn-primary group text-base px-8 py-4"
-                onClick={() => scrollToSection('#cta')}
+                onClick={() => scrollToSection("#cta")}
               >
                 Get Started
                 <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
               </Button>
-              <Button 
+              <Button
                 variant="outline"
                 className="hero-cta-secondary btn-secondary group text-base px-8 py-4"
-                onClick={() => scrollToSection('#services')}
+                onClick={() => scrollToSection("#services")}
               >
                 <Play className="mr-2 w-5 h-5" />
                 Learn More
@@ -148,24 +152,27 @@ const Hero = () => {
             <div ref={statsRef} className="flex flex-wrap gap-6">
               <div className="hero-stat flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-brand-success" />
-                <span className="text-sm font-medium text-gray-600">HIPAA Compliant</span>
+                <span className="text-sm font-medium text-gray-600">
+                  Faster Reimbursements
+                </span>
               </div>
               <div className="hero-stat flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-brand-success" />
-                <span className="text-sm font-medium text-gray-600">98% Clean Claim Rate</span>
+                <span className="text-sm font-medium text-gray-600">
+                  98% Clean Claim Rate
+                </span>
               </div>
               <div className="hero-stat flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-brand-success" />
-                <span className="text-sm font-medium text-gray-600">24/7 Support</span>
+                <span className="text-sm font-medium text-gray-600">
+                  24/7 Support
+                </span>
               </div>
             </div>
           </div>
 
           {/* Hero Image */}
-          <div 
-            ref={imageRef}
-            className="relative lg:pl-8 perspective-1000"
-          >
+          <div ref={imageRef} className="relative lg:pl-8 perspective-1000">
             <div className="relative preserve-3d">
               {/* Main Image */}
               <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-brand-blue/20">
@@ -182,22 +189,39 @@ const Hero = () => {
               <div className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-xl p-4 animate-float">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-6 h-6 text-green-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-brand-dark">$1B+</p>
+                    <p className="text-2xl font-bold text-brand-dark">$100k+</p>
                     <p className="text-sm text-gray-500">Revenue Processed</p>
                   </div>
                 </div>
               </div>
 
               {/* Satisfaction Card */}
-              <div className="absolute -top-4 -right-4 bg-white rounded-xl shadow-xl p-4 animate-float" style={{ animationDelay: '1s' }}>
+              <div
+                className="absolute -top-4 -right-4 bg-white rounded-xl shadow-xl p-4 animate-float"
+                style={{ animationDelay: "1s" }}
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-brand-blue/10 rounded-lg flex items-center justify-center">
-                    <svg className="w-6 h-6 text-brand-blue" fill="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-6 h-6 text-brand-blue"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
                   </div>
@@ -214,7 +238,12 @@ const Hero = () => {
 
       {/* Bottom Wave */}
       <div className="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
+        <svg
+          viewBox="0 0 1440 120"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full"
+        >
           <path
             d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
             fill="white"

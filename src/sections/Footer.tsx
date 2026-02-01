@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { 
   Linkedin, 
   Facebook, 
-  Twitter, 
   Instagram, 
   ArrowRight,
   MapPin,
@@ -12,22 +12,35 @@ import {
   Mail,
   CheckCircle
 } from 'lucide-react';
+
+// X (Twitter) Icon Component
+const XIcon = ({ className }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    className={className}
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { contactInfo } from '@/constants';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const footerLinks = {
   services: [
     { name: 'Medical Billing', href: '#services' },
-    { name: 'Revenue Cycle Management', href: '#services' },
-    { name: 'Provider Credentialing', href: '#services' },
-    { name: 'Billing Audit', href: '#services' },
+    { name: 'Medical Coding', href: '#services' },
+    { name: 'Practice Management', href: '#services' },
+    { name: 'Denial Management', href: '#services' },
+    { name: 'RCM Software', href: '#services' },
   ],
   company: [
     { name: 'About Us', href: '#about' },
     { name: 'Our Process', href: '#process' },
-    { name: 'Pricing', href: '#pricing' },
     { name: 'Blog', href: '#blog' },
   ],
   support: [
@@ -41,7 +54,7 @@ const footerLinks = {
 const socialLinks = [
   { icon: Linkedin, href: '#', label: 'LinkedIn' },
   { icon: Facebook, href: '#', label: 'Facebook' },
-  { icon: Twitter, href: '#', label: 'Twitter' },
+  { icon: XIcon, href: '#', label: 'X' },
   { icon: Instagram, href: '#', label: 'Instagram' },
 ];
 
@@ -49,27 +62,46 @@ const Footer = () => {
   const footerRef = useRef<HTMLDivElement>(null);
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isOnHomePage = location.pathname === '/';
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        '.footer-content',
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: 'expo.out',
-          scrollTrigger: {
-            trigger: footerRef.current,
-            start: 'top 90%',
-          },
-        }
-      );
-    }, footerRef);
+    // Small delay to ensure DOM is ready after route change
+    const timer = setTimeout(() => {
+      const ctx = gsap.context(() => {
+        // Kill any existing ScrollTriggers for this element
+        ScrollTrigger.getAll().forEach(trigger => {
+          if (trigger.vars.trigger === footerRef.current) {
+            trigger.kill();
+          }
+        });
 
-    return () => ctx.revert();
-  }, []);
+        gsap.fromTo(
+          '.footer-content',
+          { y: 40, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'expo.out',
+            scrollTrigger: {
+              trigger: footerRef.current,
+              start: 'top 90%',
+            },
+          }
+        );
+
+        // Refresh ScrollTrigger
+        ScrollTrigger.refresh();
+      }, footerRef);
+
+      return () => ctx.revert();
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,6 +115,13 @@ const Footer = () => {
   };
 
   const scrollToSection = (href: string) => {
+    // If not on home page, navigate to home first then scroll
+    if (!isOnHomePage && href.startsWith('#')) {
+      navigate('/' + href);
+      return;
+    }
+
+    // On home page, just scroll to section
     if (href.startsWith('#')) {
       const element = document.querySelector(href);
       if (element) {
@@ -112,7 +151,15 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="lg:col-span-4">
             {/* Logo */}
-            <a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection('#home'); }} className="flex items-center gap-2 mb-6">
+            <Link 
+              to="/" 
+              onClick={() => { 
+                if (isOnHomePage) {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }} 
+              className="flex items-center gap-2 mb-6"
+            >
               <img 
                 src="/logo.png" 
                 alt="PhysicianMeds Logo" 
@@ -121,27 +168,32 @@ const Footer = () => {
               <span className="font-display font-bold text-2xl tracking-tight">
                 Physician<span className="text-brand-blue">Meds</span>
               </span>
-            </a>
+            </Link>
 
             <p className="text-gray-400 mb-6 leading-relaxed">
               Transforming healthcare revenue management with expert medical billing services. 
-              Trusted by 500+ healthcare providers nationwide.
+              Trusted by 100+ healthcare providers nationwide.
             </p>
 
             {/* Contact Info */}
             <div className="space-y-3 mb-6">
-              <div className="flex items-center gap-3 text-gray-400">
-                <MapPin className="w-5 h-5 text-brand-blue" />
-                <span>3250 Lacey Road, Downers Grove, IL 60515</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <Phone className="w-5 h-5 text-brand-blue" />
-                <span>(555) 123-4567</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <Mail className="w-5 h-5 text-brand-blue" />
-                <span>info@medibillpro.com</span>
-              </div>
+              <a 
+                href={contactInfo.addressUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-3 text-gray-400 hover:text-brand-blue transition-colors group"
+              >
+                <MapPin className="w-5 h-5 text-brand-blue flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <span className="text-sm leading-relaxed">{contactInfo.address}</span>
+              </a>
+              <a href={`tel:${contactInfo.phone}`} className="flex items-center gap-3 text-gray-400 hover:text-brand-blue transition-colors group">
+                <Phone className="w-5 h-5 text-brand-blue group-hover:scale-110 transition-transform" />
+                <span>{contactInfo.phoneDisplay}</span>
+              </a>
+              <a href={`mailto:${contactInfo.email}`} className="flex items-center gap-3 text-gray-400 hover:text-brand-blue transition-colors group">
+                <Mail className="w-5 h-5 text-brand-blue group-hover:scale-110 transition-transform" />
+                <span>{contactInfo.email}</span>
+              </a>
             </div>
 
             {/* Social Links */}
@@ -168,12 +220,21 @@ const Footer = () => {
                   <a
                     href={link.href}
                     onClick={(e) => { e.preventDefault(); scrollToSection(link.href); }}
-                    className="text-gray-400 hover:text-brand-blue transition-colors duration-300 hover:translate-x-1 inline-block"
+                    className="text-gray-400 hover:text-brand-blue transition-colors duration-300 hover:translate-x-1 inline-block text-sm"
                   >
                     {link.name}
                   </a>
                 </li>
               ))}
+              <li className="pt-2">
+                <Link
+                  to="/services"
+                  className="inline-flex items-center gap-1.5 text-brand-blue hover:text-brand-blue-light font-medium text-sm transition-colors group"
+                >
+                  View All Services
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </li>
             </ul>
           </div>
 

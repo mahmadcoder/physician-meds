@@ -1,4 +1,5 @@
-import { useEffect } from 'react';import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Header from './sections/Header';
@@ -12,6 +13,7 @@ import Blog from './sections/Blog';
 import CTA from './sections/CTA';
 import Footer from './sections/Footer';
 import ServicesPage from './pages/ServicesPage';
+import CookieConsent from './components/CookieConsent';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -50,6 +52,9 @@ function App() {
           </Routes>
         </main>
         <Footer />
+        
+        {/* Cookie Consent Banner */}
+        <CookieConsent />
       </div>
     </BrowserRouter>
   );

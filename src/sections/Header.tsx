@@ -150,20 +150,27 @@ const Header = () => {
                 onMouseEnter={() => link.hasDropdown && setIsServicesOpen(true)}
                 onMouseLeave={() => link.hasDropdown && setIsServicesOpen(false)}
               >
-                <a
-                  href={link.href}
-                  onClick={(e) => { e.preventDefault(); scrollToSection(link.href); }}
-                  className={`relative text-[15px] font-semibold transition-colors duration-300 flex items-center gap-1.5 ${
-                    isOnServicesPage && link.name === 'Services'
-                      ? 'text-brand-blue'
-                      : 'text-gray-700 hover:text-brand-blue'
-                  }`}
-                >
-                  {link.name}
-                  {link.hasDropdown && (
+                {link.hasDropdown ? (
+                  <Link
+                    to="/services"
+                    className={`relative text-[15px] font-semibold transition-colors duration-300 flex items-center gap-1.5 ${
+                      isOnServicesPage
+                        ? 'text-brand-blue'
+                        : 'text-gray-700 hover:text-brand-blue'
+                    }`}
+                  >
+                    {link.name}
                     <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isServicesOpen ? 'rotate-180' : ''}`} />
-                  )}
-                </a>
+                  </Link>
+                ) : (
+                  <a
+                    href={link.href}
+                    onClick={(e) => { e.preventDefault(); scrollToSection(link.href); }}
+                    className="relative text-[15px] font-semibold transition-colors duration-300 flex items-center gap-1.5 text-gray-700 hover:text-brand-blue"
+                  >
+                    {link.name}
+                  </a>
+                )}
 
                 {/* Services Dropdown */}
                 {link.hasDropdown && (
@@ -178,6 +185,7 @@ const Header = () => {
                         <h3 className="text-sm font-semibold text-gray-900">Our Services</h3>
                         <Link 
                           to="/services"
+                          onClick={() => window.scrollTo(0, 0)}
                           className="flex items-center gap-1.5 text-sm font-semibold text-brand-blue hover:text-brand-blue-dark transition-colors group"
                         >
                           View All Services
@@ -253,27 +261,39 @@ const Header = () => {
           <nav className="container-custom py-6 flex flex-col gap-2">
             {navLinks.map((link) => (
               <div key={link.name}>
-                <a
-                  href={link.href}
-                  onClick={(e) => { 
-                    e.preventDefault(); 
-                    if (link.hasDropdown) {
-                      setIsServicesOpen(!isServicesOpen);
-                    } else {
-                      scrollToSection(link.href);
-                    }
-                  }}
-                  className={`flex items-center justify-between text-base font-medium transition-colors py-2 ${
-                    isOnServicesPage && link.name === 'Services'
-                      ? 'text-brand-blue'
-                      : 'text-gray-600 hover:text-brand-blue'
-                  }`}
-                >
-                  {link.name}
-                  {link.hasDropdown && (
+                {link.hasDropdown ? (
+                  <div
+                    onClick={() => setIsServicesOpen(!isServicesOpen)}
+                    className={`flex items-center justify-between text-base font-medium transition-colors py-2 cursor-pointer ${
+                      isOnServicesPage
+                        ? 'text-brand-blue'
+                        : 'text-gray-600 hover:text-brand-blue'
+                    }`}
+                  >
+                    <Link 
+                      to="/services"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="hover:text-brand-blue"
+                    >
+                      {link.name}
+                    </Link>
                     <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isServicesOpen ? 'rotate-180' : ''}`} />
-                  )}
-                </a>
+                  </div>
+                ) : (
+                  <a
+                    href={link.href}
+                    onClick={(e) => { 
+                      e.preventDefault(); 
+                      scrollToSection(link.href);
+                    }}
+                    className="flex items-center justify-between text-base font-medium transition-colors py-2 text-gray-600 hover:text-brand-blue"
+                  >
+                    {link.name}
+                  </a>
+                )}
                 
                 {/* Mobile Services Dropdown */}
                 {link.hasDropdown && (
@@ -296,7 +316,10 @@ const Header = () => {
                       {/* View All Services Link */}
                       <Link
                         to="/services"
-                        onClick={() => setIsMobileMenuOpen(false)}
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          window.scrollTo(0, 0);
+                        }}
                         className="flex items-center gap-1.5 py-3 mt-2 text-sm font-semibold text-brand-blue hover:text-brand-blue-dark transition-colors border-t border-gray-100 pt-3"
                       >
                         View All Services

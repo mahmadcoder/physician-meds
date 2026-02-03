@@ -184,7 +184,7 @@ const About = () => {
             </span>
             
             <h2 className="about-title font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-brand-dark mb-6 leading-tight">
-              Two Decades of Excellence in{' '}
+              5 Years of Excellence in{' '}
               <span className="text-gradient">Medical Billing</span>
             </h2>
 

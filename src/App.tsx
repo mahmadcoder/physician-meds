@@ -13,6 +13,7 @@ import Blog from './sections/Blog';
 import CTA from './sections/CTA';
 import Footer from './sections/Footer';
 import ServicesPage from './pages/ServicesPage';
+import ConsultPage from './pages/ConsultPage';
 import CookieConsent from './components/CookieConsent';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -49,6 +50,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/services" element={<ServicesPage />} />
+            <Route path="/consult" element={<ConsultPage />} />
           </Routes>
         </main>
         <Footer />

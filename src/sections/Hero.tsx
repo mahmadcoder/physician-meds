@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ArrowRight, CheckCircle, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -131,13 +132,14 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-wrap gap-4 mb-10">
-              <Button
-                className="hero-cta-primary btn-primary group text-base px-8 py-4"
-                onClick={() => scrollToSection("#cta")}
-              >
-                Get Started
-                <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
-              </Button>
+              <Link to="/consult">
+                <Button
+                  className="hero-cta-primary btn-primary group text-base px-8 py-4"
+                >
+                  Consult Now
+                  <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </Link>
               <Button
                 variant="outline"
                 className="hero-cta-secondary btn-secondary group text-base px-8 py-4"

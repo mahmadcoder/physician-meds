@@ -213,12 +213,11 @@ const Header = () => {
 
           {/* CTA Button */}
           <div className="hidden lg:flex items-center">
-            <Button 
-              className="btn-primary text-[15px] px-6 py-2.5"
-              onClick={() => scrollToSection('#cta')}
-            >
-              Get Started
-            </Button>
+              <Link to="/consult">
+              <Button className="btn-primary text-[15px] px-6 py-2.5">
+                Consult Now
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -330,12 +329,11 @@ const Header = () => {
                 )}
               </div>
             ))}
-            <Button 
-              className="btn-primary w-full mt-4"
-              onClick={() => scrollToSection('#cta')}
-            >
-              Get Started
-            </Button>
+            <Link to="/inquire" onClick={() => setIsMobileMenuOpen(false)}>
+              <Button className="btn-primary w-full mt-4">
+                Consult Now
+              </Button>
+            </Link>
           </nav>
         </div>
       </div>

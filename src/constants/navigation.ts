@@ -21,7 +21,7 @@ import type { LucideIcon } from 'lucide-react';
 // Navigation Links
 export const navLinks = [
   { name: 'Services', href: '#services', hasDropdown: true },
-  { name: 'About', href: '#about' },
+  { name: 'About', href: '/about-us', isPage: true },
   { name: 'Process', href: '#process' },
   { name: 'Blog', href: '#blog' },
 ];

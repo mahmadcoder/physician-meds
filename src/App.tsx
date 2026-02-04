@@ -14,6 +14,7 @@ import CTA from './sections/CTA';
 import Footer from './sections/Footer';
 import ServicesPage from './pages/ServicesPage';
 import ConsultPage from './pages/ConsultPage';
+import AboutUsPage from './pages/AboutUsPage';
 import CookieConsent from './components/CookieConsent';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -50,6 +51,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/services" element={<ServicesPage />} />
+            <Route path="/about-us" element={<AboutUsPage />} />
             <Route path="/consult-now" element={<ConsultPage />} />
           </Routes>
         </main>

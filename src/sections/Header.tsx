@@ -162,6 +162,18 @@ const Header = () => {
                     {link.name}
                     <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isServicesOpen ? 'rotate-180' : ''}`} />
                   </Link>
+                ) : link.isPage ? (
+                  <Link
+                    to={link.href}
+                    onClick={() => window.scrollTo(0, 0)}
+                    className={`relative text-[15px] font-semibold transition-colors duration-300 flex items-center gap-1.5 ${
+                      location.pathname === link.href
+                        ? 'text-brand-blue'
+                        : 'text-gray-700 hover:text-brand-blue'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
                 ) : (
                   <a
                     href={link.href}
@@ -281,6 +293,21 @@ const Header = () => {
                     </Link>
                     <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isServicesOpen ? 'rotate-180' : ''}`} />
                   </div>
+                ) : link.isPage ? (
+                  <Link
+                    to={link.href}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      window.scrollTo(0, 0);
+                    }}
+                    className={`flex items-center justify-between text-base font-medium transition-colors py-2 ${
+                      location.pathname === link.href
+                        ? 'text-brand-blue'
+                        : 'text-gray-600 hover:text-brand-blue'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
                 ) : (
                   <a
                     href={link.href}

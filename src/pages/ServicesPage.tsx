@@ -15,7 +15,9 @@ const ServicesPage = () => {
   const ctaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Scroll to top immediately and after a small delay to ensure it works
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    setTimeout(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }), 0);
 
     const ctx = gsap.context(() => {
       // Hero section entrance animation

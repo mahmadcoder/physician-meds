@@ -15,6 +15,8 @@ import Footer from './sections/Footer';
 import ServicesPage from './pages/ServicesPage';
 import ConsultPage from './pages/ConsultPage';
 import AboutUsPage from './pages/AboutUsPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsConditionsPage from './pages/TermsConditionsPage';
 import CookieConsent from './components/CookieConsent';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -53,6 +55,8 @@ function App() {
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/about-us" element={<AboutUsPage />} />
             <Route path="/consult-now" element={<ConsultPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/terms-conditions" element={<TermsConditionsPage />} />
           </Routes>
         </main>
         <Footer />

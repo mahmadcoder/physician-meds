@@ -20,10 +20,18 @@ import type { LucideIcon } from 'lucide-react';
 
 // Navigation Links
 export const navLinks = [
-  { name: 'Services', href: '#services', hasDropdown: true },
-  { name: 'About', href: '/about-us', isPage: true },
-  { name: 'Process', href: '#process' },
-  { name: 'Blog', href: '#blog' },
+  { name: 'Why PhysicianMeds', href: '/about-us', hasDropdown: true, dropdownType: 'company', isPage: false },
+  { name: 'Services', href: '#services', hasDropdown: true, dropdownType: 'services', isPage: false },
+  { name: 'Process', href: '#process', hasDropdown: false, dropdownType: '', isPage: false },
+  { name: 'Blog', href: '#blog', hasDropdown: false, dropdownType: '', isPage: false },
+];
+
+// Company Links - Used in Why PhysicianMeds dropdown
+export const companyLinks = [
+  { name: 'About Us', href: '/about-us', description: 'Learn about our story and mission' },
+  { name: 'Contact Us', href: '/consult-now', description: 'Get in touch with our team' },
+  { name: 'Privacy Policy', href: '/privacy-policy', description: 'How we protect your data' },
+  { name: 'Terms & Conditions', href: '/terms-conditions', description: 'Our terms of service' },
 ];
 
 // Services List - Used in Header dropdown and can be used elsewhere

@@ -78,13 +78,6 @@ const Hero = () => {
     return () => ctx.revert();
   }, []);
 
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <section
       id="home"
@@ -140,14 +133,15 @@ const Hero = () => {
                   <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
-              <Button
-                variant="outline"
-                className="hero-cta-secondary btn-secondary group text-base px-8 py-4"
-                onClick={() => scrollToSection("#services")}
-              >
-                <Play className="mr-2 w-5 h-5" />
-                Learn More
-              </Button>
+              <Link to="/about-us" onClick={() => window.scrollTo(0, 0)}>
+                <Button
+                  variant="outline"
+                  className="hero-cta-secondary btn-secondary group text-base px-8 py-4"
+                >
+                  <Play className="mr-2 w-5 h-5" />
+                  Learn More
+                </Button>
+              </Link>
             </div>
 
             {/* Trust Indicators */}

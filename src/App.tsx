@@ -50,7 +50,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/services" element={<ServicesPage />} />
-            <Route path="/consult" element={<ConsultPage />} />
+            <Route path="/consult-now" element={<ConsultPage />} />
           </Routes>
         </main>
         <Footer />

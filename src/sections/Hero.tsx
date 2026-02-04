@@ -132,7 +132,7 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-wrap gap-4 mb-10">
-              <Link to="/consult">
+              <Link to="/consult-now">
                 <Button
                   className="hero-cta-primary btn-primary group text-base px-8 py-4"
                 >

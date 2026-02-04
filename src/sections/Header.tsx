@@ -213,7 +213,7 @@ const Header = () => {
 
           {/* CTA Button */}
           <div className="hidden lg:flex items-center">
-              <Link to="/consult">
+              <Link to="/consult-now">
               <Button className="btn-primary text-[15px] px-6 py-2.5">
                 Consult Now
               </Button>
@@ -329,7 +329,7 @@ const Header = () => {
                 )}
               </div>
             ))}
-            <Link to="/inquire" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link to="/consult-now" onClick={() => setIsMobileMenuOpen(false)}>
               <Button className="btn-primary w-full mt-4">
                 Consult Now
               </Button>

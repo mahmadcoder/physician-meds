@@ -43,22 +43,22 @@ gsap.registerPlugin(ScrollTrigger);
 
 const footerLinks = {
   services: [
-    { name: 'Medical Billing', href: '#services' },
-    { name: 'Medical Coding', href: '#services' },
-    { name: 'Practice Management', href: '#services' },
-    { name: 'Denial Management', href: '#services' },
-    { name: 'RCM Software', href: '#services' },
+    { name: 'Medical Billing', href: '#services', isPage: false },
+    { name: 'Medical Coding', href: '#services', isPage: false },
+    { name: 'Practice Management', href: '#services', isPage: false },
+    { name: 'Denial Management', href: '#services', isPage: false },
+    { name: 'RCM Software', href: '#services', isPage: false },
   ],
   company: [
-    { name: 'About Us', href: '#about' },
-    { name: 'Our Process', href: '#process' },
-    { name: 'Blog', href: '#blog' },
+    { name: 'About Us', href: '/about-us', isPage: true },
+    { name: 'Our Process', href: '#process', isPage: false },
+    { name: 'Blog', href: '#blog', isPage: false },
   ],
   support: [
-    { name: 'Contact Us', href: '#cta' },
-    { name: 'FAQs', href: '#' },
-    { name: 'Privacy Policy', href: '#' },
-    { name: 'Terms of Service', href: '#' },
+    { name: 'Contact Us', href: '/consult-now', isPage: true },
+    { name: 'FAQs', href: '#', isPage: false },
+    { name: 'Privacy Policy', href: '/privacy-policy', isPage: true },
+    { name: 'Terms of Service', href: '/terms-conditions', isPage: true },
   ],
 };
 
@@ -256,13 +256,23 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.company.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href={link.href}
-                    onClick={(e) => { e.preventDefault(); scrollToSection(link.href); }}
-                    className="text-gray-400 hover:text-brand-blue transition-colors duration-300 hover:translate-x-1 inline-block"
-                  >
-                    {link.name}
-                  </a>
+                  {link.isPage ? (
+                    <Link
+                      to={link.href}
+                      onClick={() => window.scrollTo(0, 0)}
+                      className="text-gray-400 hover:text-brand-blue transition-colors duration-300 hover:translate-x-1 inline-block"
+                    >
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      onClick={(e) => { e.preventDefault(); scrollToSection(link.href); }}
+                      className="text-gray-400 hover:text-brand-blue transition-colors duration-300 hover:translate-x-1 inline-block"
+                    >
+                      {link.name}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -274,18 +284,28 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.support.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href={link.href}
-                    onClick={(e) => { 
-                      e.preventDefault(); 
-                      if (link.href.startsWith('#')) {
-                        scrollToSection(link.href);
-                      }
-                    }}
-                    className="text-gray-400 hover:text-brand-blue transition-colors duration-300 hover:translate-x-1 inline-block"
-                  >
-                    {link.name}
-                  </a>
+                  {link.isPage ? (
+                    <Link
+                      to={link.href}
+                      onClick={() => window.scrollTo(0, 0)}
+                      className="text-gray-400 hover:text-brand-blue transition-colors duration-300 hover:translate-x-1 inline-block"
+                    >
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      onClick={(e) => { 
+                        e.preventDefault(); 
+                        if (link.href.startsWith('#')) {
+                          scrollToSection(link.href);
+                        }
+                      }}
+                      className="text-gray-400 hover:text-brand-blue transition-colors duration-300 hover:translate-x-1 inline-block"
+                    >
+                      {link.name}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -334,12 +354,20 @@ const Footer = () => {
               © {new Date().getFullYear()} PhysicianMeds. All rights reserved.
             </p>
             <div className="flex gap-6 text-sm">
-              <a href="#" className="text-gray-500 hover:text-brand-blue transition-colors">
+              <Link 
+                to="/privacy-policy" 
+                onClick={() => window.scrollTo(0, 0)}
+                className="text-gray-500 hover:text-brand-blue transition-colors"
+              >
                 Privacy Policy
-              </a>
-              <a href="#" className="text-gray-500 hover:text-brand-blue transition-colors">
+              </Link>
+              <Link 
+                to="/terms-conditions" 
+                onClick={() => window.scrollTo(0, 0)}
+                className="text-gray-500 hover:text-brand-blue transition-colors"
+              >
                 Terms of Service
-              </a>
+              </Link>
               <a href="#" className="text-gray-500 hover:text-brand-blue transition-colors">
                 Sitemap
               </a>

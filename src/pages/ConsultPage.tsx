@@ -47,6 +47,7 @@ const ConsultPage = () => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -178,6 +179,9 @@ const ConsultPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreedToTerms) {
+      return;
+    }
     setIsSubmitted(true);
   };
 
@@ -372,20 +376,57 @@ const ConsultPage = () => {
                       />
                     </div>
 
+                    {/* Terms Agreement Checkbox */}
+                    <div className="form-field">
+                      <label className="flex items-start gap-3 cursor-pointer group">
+                        <div className="relative flex-shrink-0 mt-0.5">
+                          <input
+                            type="checkbox"
+                            checked={agreedToTerms}
+                            onChange={(e) => setAgreedToTerms(e.target.checked)}
+                            className="peer sr-only"
+                          />
+                          <div className={`w-5 h-5 border-2 rounded transition-all duration-200 flex items-center justify-center ${
+                            agreedToTerms 
+                              ? 'bg-brand-blue border-brand-blue' 
+                              : 'border-gray-300 group-hover:border-brand-blue/50'
+                          }`}>
+                            {agreedToTerms && (
+                              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-sm text-gray-600 leading-relaxed">
+                          By selecting 'Submit,' you agree to receive text messages from PhysicianMeds if you become a contracted client. 
+                          You acknowledge and accept our{' '}
+                          <Link to="/privacy-policy" className="text-brand-blue hover:underline font-medium">
+                            Privacy Policy
+                          </Link>{' '}
+                          and{' '}
+                          <Link to="/terms-conditions" className="text-brand-blue hover:underline font-medium">
+                            Terms & Conditions
+                          </Link>. 
+                          Your consent is not a condition of purchase. Message frequency may vary, and standard messaging/data rates could apply.
+                        </span>
+                      </label>
+                    </div>
+
                     <div className="form-field">
                       <Button
                         type="submit"
-                        className="w-full btn-primary py-4 text-base group"
+                        disabled={!agreedToTerms}
+                        className={`w-full py-4 text-base group transition-all duration-300 ${
+                          agreedToTerms 
+                            ? 'btn-primary' 
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed hover:bg-gray-300'
+                        }`}
                       >
                         Request Consultation
                         <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </div>
-
-                    <p className="form-field text-center text-sm text-gray-500">
-                      By submitting, you agree to our{' '}
-                      <a href="#" className="text-brand-blue hover:underline">Privacy Policy</a>
-                    </p>
                   </form>
                 )}
               </div>

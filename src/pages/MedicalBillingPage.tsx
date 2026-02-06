@@ -32,265 +32,288 @@ const MedicalBillingPage = () => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    setTimeout(
-      () => window.scrollTo({ top: 0, left: 0, behavior: "instant" }),
-      0
-    );
 
-    const rafId = requestAnimationFrame(() => {
-      const ctx = gsap.context(() => {
-        // Hero timeline
-        const heroTl = gsap.timeline({ defaults: { ease: "expo.out" } });
-        heroTl
-          .fromTo(
-            ".billing-back",
-            { x: -30, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.5 }
-          )
-          .fromTo(
-            ".billing-badge",
-            { scale: 0.8, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.5 },
-            "-=0.2"
-          )
-          .fromTo(
-            ".billing-title",
-            { y: 40, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8 },
-            "-=0.3"
-          )
-          .fromTo(
-            ".billing-desc",
-            { y: 30, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.7 },
-            "-=0.4"
-          )
-          .fromTo(
-            ".billing-cta-buttons",
-            { y: 20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.6 },
-            "-=0.3"
-          )
-          .fromTo(
-            ".billing-hero-stat",
-            { y: 15, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.5, stagger: 0.08 },
-            "-=0.3"
-          );
-
-        // Hero image
-        gsap.fromTo(
-          ".billing-hero-img",
-          { x: 50, opacity: 0, scale: 0.95 },
-          {
-            x: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 1,
-            ease: "expo.out",
-            delay: 0.3,
-          }
-        );
-
-        // Highlights
-        gsap.fromTo(
-          ".billing-highlight",
-          { y: 40, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            stagger: 0.12,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".billing-highlights", start: "top 80%" },
-          }
-        );
-
-        // Pain points title
-        gsap.fromTo(
-          ".pain-title",
-          { y: 30, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".pain-title", start: "top 85%" },
-          }
-        );
-
-        // Pain point cards
-        gsap.fromTo(
-          ".pain-card",
-          { y: 40, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".pain-grid", start: "top 80%" },
-          }
-        );
-
-        // Services section
-        gsap.fromTo(
-          ".services-title-section",
-          { y: 30, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: ".services-title-section",
-              start: "top 85%",
-            },
-          }
-        );
-
-        gsap.fromTo(
-          ".service-card",
-          { y: 40, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".services-grid", start: "top 80%" },
-          }
-        );
-
-        // Process section
-        gsap.fromTo(
-          ".process-title-section",
-          { y: 30, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: ".process-title-section",
-              start: "top 85%",
-            },
-          }
-        );
-
-        gsap.fromTo(
-          ".process-step",
+    const ctx = gsap.context(() => {
+      // Hero timeline
+      const heroTl = gsap.timeline({ defaults: { ease: "expo.out" } });
+      heroTl
+        .fromTo(
+          ".billing-back",
           { x: -30, opacity: 0 },
-          {
-            x: 0,
-            opacity: 1,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".process-steps", start: "top 78%" },
-          }
-        );
-
-        gsap.fromTo(
-          ".process-img",
-          { x: 40, opacity: 0, scale: 0.96 },
-          {
-            x: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.9,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".process-img", start: "top 80%" },
-          }
-        );
-
-        // Stats
-        gsap.fromTo(
-          ".stats-section-title",
+          { x: 0, opacity: 1, duration: 0.5 }
+        )
+        .fromTo(
+          ".billing-badge",
+          { scale: 0.8, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.5 },
+          "-=0.2"
+        )
+        .fromTo(
+          ".billing-title",
+          { y: 40, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.8 },
+          "-=0.3"
+        )
+        .fromTo(
+          ".billing-desc",
           { y: 30, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: ".stats-section-title",
-              start: "top 85%",
-            },
-          }
-        );
-
-        gsap.fromTo(
-          ".stat-card",
-          { y: 30, opacity: 0, scale: 0.95 },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".stats-grid", start: "top 80%" },
-          }
-        );
-
-        // Specialties
-        gsap.fromTo(
-          ".specialty-pill",
-          { y: 15, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.4,
-            stagger: 0.04,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: ".specialties-section",
-              start: "top 82%",
-            },
-          }
-        );
-
-        // FAQ
-        gsap.fromTo(
-          ".faq-item",
+          { y: 0, opacity: 1, duration: 0.7 },
+          "-=0.4"
+        )
+        .fromTo(
+          ".billing-cta-buttons",
           { y: 20, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.5,
-            stagger: 0.08,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".faq-grid", start: "top 82%" },
-          }
+          { y: 0, opacity: 1, duration: 0.6 },
+          "-=0.3"
+        )
+        .fromTo(
+          ".billing-hero-stat",
+          { y: 15, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.5, stagger: 0.08 },
+          "-=0.3"
         );
 
-        // Bottom CTA
-        gsap.fromTo(
-          ".billing-bottom-cta",
-          { y: 40, opacity: 0, scale: 0.97 },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.9,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".billing-bottom-cta", start: "top 85%" },
-          }
-        );
-      }, pageRef);
+      // Hero image
+      gsap.fromTo(
+        ".billing-hero-img",
+        { x: 50, opacity: 0, scale: 0.95 },
+        {
+          x: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 1,
+          ease: "expo.out",
+          delay: 0.3,
+        }
+      );
 
-      setTimeout(() => ScrollTrigger.refresh(true), 300);
-      ctxRef.current = ctx;
-    });
+      // Highlights
+      gsap.fromTo(
+        ".billing-highlight",
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          stagger: 0.12,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".billing-highlights", start: "top 80%" },
+        }
+      );
+
+      // Pain points title
+      gsap.fromTo(
+        ".pain-title",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".pain-title", start: "top 85%" },
+        }
+      );
+
+      // Pain point cards
+      gsap.fromTo(
+        ".pain-card",
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".pain-grid", start: "top 80%" },
+        }
+      );
+
+      // Services section
+      gsap.fromTo(
+        ".services-title-section",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: ".services-title-section",
+            start: "top 85%",
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".service-card",
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".services-grid", start: "top 80%" },
+        }
+      );
+
+      // Process section
+      gsap.fromTo(
+        ".process-title-section",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: ".process-title-section",
+            start: "top 85%",
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".process-step",
+        { x: -30, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".process-steps", start: "top 78%" },
+        }
+      );
+
+      gsap.fromTo(
+        ".process-img",
+        { x: 40, opacity: 0, scale: 0.96 },
+        {
+          x: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.9,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".process-img", start: "top 80%" },
+        }
+      );
+
+      // Stats
+      gsap.fromTo(
+        ".stats-section-title",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: ".stats-section-title",
+            start: "top 85%",
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".stat-card",
+        { y: 30, opacity: 0, scale: 0.95 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".stats-grid", start: "top 80%" },
+        }
+      );
+
+      // Specialties
+      gsap.fromTo(
+        ".specialty-pill",
+        { y: 15, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.4,
+          stagger: 0.04,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: ".specialties-section",
+            start: "top 82%",
+          },
+        }
+      );
+
+      // FAQ
+      gsap.fromTo(
+        ".faq-item",
+        { y: 20, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.08,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".faq-grid", start: "top 82%" },
+        }
+      );
+
+      // Bottom CTA
+      gsap.fromTo(
+        ".billing-bottom-cta",
+        { y: 40, opacity: 0, scale: 0.97 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.9,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".billing-bottom-cta", start: "top 85%" },
+        }
+      );
+    }, pageRef);
+
+    ctxRef.current = ctx;
+
+    // Refresh ScrollTrigger after layout settles
+    const t1 = setTimeout(() => ScrollTrigger.refresh(true), 100);
+    const t2 = setTimeout(() => ScrollTrigger.refresh(true), 500);
+
+    // Safety fallback: if any elements are stuck invisible, force them visible
+    const safetyTimer = setTimeout(() => {
+      if (!pageRef.current) return;
+      pageRef.current
+        .querySelectorAll<HTMLElement>('[style*="opacity"]')
+        .forEach((el) => {
+          if (getComputedStyle(el).opacity === "0") {
+            el.style.opacity = "1";
+            el.style.transform = "none";
+          }
+        });
+    }, 2500);
 
     const handlePageShow = (e: PageTransitionEvent) => {
-      if (e.persisted) ScrollTrigger.refresh(true);
+      if (e.persisted) {
+        ctxRef.current?.revert();
+        ScrollTrigger.getAll().forEach((st) => st.kill());
+        ScrollTrigger.refresh(true);
+        // Re-show all elements on bfcache restore
+        pageRef.current
+          ?.querySelectorAll<HTMLElement>('[style*="opacity"]')
+          .forEach((el) => {
+            el.style.opacity = "1";
+            el.style.transform = "none";
+          });
+      }
     };
     window.addEventListener("pageshow", handlePageShow);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(safetyTimer);
       window.removeEventListener("pageshow", handlePageShow);
       ctxRef.current?.revert();
     };

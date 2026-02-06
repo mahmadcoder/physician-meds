@@ -74,122 +74,146 @@ const BlogPage = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 
-    const rafId = requestAnimationFrame(() => {
-      const ctx = gsap.context(() => {
-        // --- Hero timeline ---
-        const heroTl = gsap.timeline({ defaults: { ease: "expo.out" } });
+    const ctx = gsap.context(() => {
+      // --- Hero timeline ---
+      const heroTl = gsap.timeline({ defaults: { ease: "expo.out" } });
 
-        heroTl
-          .fromTo(
-            ".blog-back-link",
-            { x: -30, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.6 }
-          )
-          .fromTo(
-            ".blog-badge",
-            { scale: 0.8, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.5 },
-            "-=0.3"
-          )
-          .fromTo(
-            ".blog-hero-title",
-            { y: 40, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8 },
-            "-=0.3"
-          )
-          .fromTo(
-            ".blog-hero-desc",
-            { y: 30, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.7 },
-            "-=0.4"
-          )
-          .fromTo(
-            ".blog-search-bar",
-            { y: 20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.6 },
-            "-=0.3"
-          );
-
-        // --- Background blobs ---
-        gsap.fromTo(
-          ".blog-bg-blob",
-          { scale: 0.6, opacity: 0 },
-          {
-            scale: 1,
-            opacity: 1,
-            duration: 1.5,
-            stagger: 0.2,
-            ease: "power2.out",
-          }
-        );
-
-        // --- Featured article ---
-        gsap.fromTo(
-          ".blog-featured",
-          { y: 60, opacity: 0, scale: 0.97 },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 1,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".blog-featured", start: "top 85%" },
-          }
-        );
-
-        // --- Category pills stagger ---
-        gsap.fromTo(
-          ".blog-category-pill",
+      heroTl
+        .fromTo(
+          ".blog-back-link",
+          { x: -30, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.6 }
+        )
+        .fromTo(
+          ".blog-badge",
+          { scale: 0.8, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.5 },
+          "-=0.3"
+        )
+        .fromTo(
+          ".blog-hero-title",
+          { y: 40, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.8 },
+          "-=0.3"
+        )
+        .fromTo(
+          ".blog-hero-desc",
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.7 },
+          "-=0.4"
+        )
+        .fromTo(
+          ".blog-search-bar",
           { y: 20, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.5,
-            stagger: 0.05,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".blog-categories", start: "top 90%" },
-          }
+          { y: 0, opacity: 1, duration: 0.6 },
+          "-=0.3"
         );
 
-        // --- Blog card items stagger ---
-        gsap.fromTo(
-          ".blog-card-item",
-          { y: 60, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            stagger: 0.12,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".blog-grid-section", start: "top 80%" },
-          }
-        );
+      // --- Background blobs ---
+      gsap.fromTo(
+        ".blog-bg-blob",
+        { scale: 0.6, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 1.5,
+          stagger: 0.2,
+          ease: "power2.out",
+        }
+      );
 
-        // --- Pagination ---
-        gsap.fromTo(
-          ".blog-pagination",
-          { y: 20, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.6,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".blog-pagination", start: "top 95%" },
-          }
-        );
-      }, pageRef);
+      // --- Featured article ---
+      gsap.fromTo(
+        ".blog-featured",
+        { y: 60, opacity: 0, scale: 0.97 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 1,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".blog-featured", start: "top 85%" },
+        }
+      );
 
-      setTimeout(() => ScrollTrigger.refresh(true), 300);
-      ctxRef.current = ctx;
-    });
+      // --- Category pills stagger ---
+      gsap.fromTo(
+        ".blog-category-pill",
+        { y: 20, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.05,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".blog-categories", start: "top 90%" },
+        }
+      );
+
+      // --- Blog card items stagger ---
+      gsap.fromTo(
+        ".blog-card-item",
+        { y: 60, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.12,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".blog-grid-section", start: "top 80%" },
+        }
+      );
+
+      // --- Pagination ---
+      gsap.fromTo(
+        ".blog-pagination",
+        { y: 20, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".blog-pagination", start: "top 95%" },
+        }
+      );
+    }, pageRef);
+
+    ctxRef.current = ctx;
+
+    const t1 = setTimeout(() => ScrollTrigger.refresh(true), 100);
+    const t2 = setTimeout(() => ScrollTrigger.refresh(true), 500);
+
+    const safetyTimer = setTimeout(() => {
+      if (!pageRef.current) return;
+      pageRef.current
+        .querySelectorAll<HTMLElement>('[style*="opacity"]')
+        .forEach((el) => {
+          if (getComputedStyle(el).opacity === "0") {
+            el.style.opacity = "1";
+            el.style.transform = "none";
+          }
+        });
+    }, 2500);
 
     const handlePageShow = (e: PageTransitionEvent) => {
-      if (e.persisted) ScrollTrigger.refresh(true);
+      if (e.persisted) {
+        ctxRef.current?.revert();
+        ScrollTrigger.getAll().forEach((st) => st.kill());
+        ScrollTrigger.refresh(true);
+        pageRef.current
+          ?.querySelectorAll<HTMLElement>('[style*="opacity"]')
+          .forEach((el) => {
+            el.style.opacity = "1";
+            el.style.transform = "none";
+          });
+      }
     };
     window.addEventListener("pageshow", handlePageShow);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(safetyTimer);
       window.removeEventListener("pageshow", handlePageShow);
       ctxRef.current?.revert();
     };

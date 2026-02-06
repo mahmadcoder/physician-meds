@@ -43,302 +43,322 @@ const MedicalCodingPage = () => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    setTimeout(
-      () => window.scrollTo({ top: 0, left: 0, behavior: "instant" }),
-      0
-    );
 
-    const rafId = requestAnimationFrame(() => {
-      const ctx = gsap.context(() => {
-        // Hero timeline
-        const heroTl = gsap.timeline({ defaults: { ease: "expo.out" } });
-        heroTl
-          .fromTo(
-            ".mc-nav",
-            { y: -20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.5 }
-          )
-          .fromTo(
-            ".mc-badge",
-            { scale: 0.8, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.5 },
-            "-=0.2"
-          )
-          .fromTo(
-            ".mc-title",
-            { y: 50, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.9 },
-            "-=0.3"
-          )
-          .fromTo(
-            ".mc-desc",
-            { y: 30, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.7 },
-            "-=0.4"
-          )
-          .fromTo(
-            ".mc-hero-point",
-            { x: -20, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.4, stagger: 0.08 },
-            "-=0.3"
-          )
-          .fromTo(
-            ".mc-hero-cta",
-            { y: 20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.6 },
-            "-=0.2"
-          )
-          .fromTo(
-            ".mc-hero-visual",
-            { scale: 0.9, opacity: 0, y: 30 },
-            { scale: 1, opacity: 1, y: 0, duration: 1.1 },
-            "-=0.6"
-          );
-
-        // Counter stats
-        gsap.fromTo(
-          ".mc-counter",
-          { scale: 0.85, opacity: 0 },
-          {
-            scale: 1,
-            opacity: 1,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: "back.out(1.4)",
-            scrollTrigger: { trigger: ".mc-counters", start: "top 85%" },
-          }
-        );
-
-        // Why accurate coding section
-        gsap.fromTo(
-          ".mc-why-section",
-          { y: 40, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".mc-why-section", start: "top 82%" },
-          }
-        );
-
-        // Pain cards
-        gsap.fromTo(
-          ".mc-pain-card",
-          { y: 40, opacity: 0, rotateX: -5 },
-          {
-            y: 0,
-            opacity: 1,
-            rotateX: 0,
-            duration: 0.6,
-            stagger: 0.08,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".mc-pain-grid", start: "top 80%" },
-          }
-        );
-
-        // Services
-        gsap.fromTo(
-          ".mc-services-header",
-          { y: 30, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: ".mc-services-header",
-              start: "top 85%",
-            },
-          }
-        );
-
-        gsap.fromTo(
-          ".mc-service-item",
+    const ctx = gsap.context(() => {
+      // Hero timeline
+      const heroTl = gsap.timeline({ defaults: { ease: "expo.out" } });
+      heroTl
+        .fromTo(
+          ".mc-nav",
+          { y: -20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.5 }
+        )
+        .fromTo(
+          ".mc-badge",
+          { scale: 0.8, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.5 },
+          "-=0.2"
+        )
+        .fromTo(
+          ".mc-title",
           { y: 50, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            stagger: 0.06,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".mc-services-list", start: "top 78%" },
-          }
-        );
-
-        // Process
-        gsap.fromTo(
-          ".mc-process-header",
+          { y: 0, opacity: 1, duration: 0.9 },
+          "-=0.3"
+        )
+        .fromTo(
+          ".mc-desc",
           { y: 30, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: ".mc-process-header",
-              start: "top 85%",
-            },
-          }
-        );
-
-        gsap.fromTo(
-          ".mc-step",
-          { y: 30, opacity: 0, scale: 0.95 },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.5,
-            stagger: 0.1,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".mc-steps-row", start: "top 80%" },
-          }
-        );
-
-        // Challenges
-        gsap.fromTo(
-          ".mc-challenges-section",
-          { y: 40, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: ".mc-challenges-section",
-              start: "top 82%",
-            },
-          }
-        );
-
-        // Why Choose
-        gsap.fromTo(
-          ".mc-choose-section",
-          { y: 40, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: ".mc-choose-section",
-              start: "top 82%",
-            },
-          }
-        );
-
-        // Comparison
-        gsap.fromTo(
-          ".mc-comparison",
-          { y: 40, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".mc-comparison", start: "top 82%" },
-          }
-        );
-
-        // HIPAA
-        gsap.fromTo(
-          ".mc-hipaa",
-          { y: 40, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".mc-hipaa", start: "top 82%" },
-          }
-        );
-
-        // Benefits
-        gsap.fromTo(
-          ".mc-benefit",
-          { y: 30, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.5,
-            stagger: 0.06,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".mc-benefits-grid", start: "top 80%" },
-          }
-        );
-
-        // Specialties
-        gsap.fromTo(
-          ".mc-spec-pill",
-          { y: 12, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.3,
-            stagger: 0.03,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".mc-specs", start: "top 82%" },
-          }
-        );
-
-        // Testimonials
-        gsap.fromTo(
-          ".mc-testimonial",
-          { y: 35, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.6,
-            stagger: 0.12,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: ".mc-testimonials-grid",
-              start: "top 80%",
-            },
-          }
-        );
-
-        // FAQ
-        gsap.fromTo(
-          ".mc-faq-item",
+          { y: 0, opacity: 1, duration: 0.7 },
+          "-=0.4"
+        )
+        .fromTo(
+          ".mc-hero-point",
+          { x: -20, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.4, stagger: 0.08 },
+          "-=0.3"
+        )
+        .fromTo(
+          ".mc-hero-cta",
           { y: 20, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.5,
-            stagger: 0.06,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".mc-faq-grid", start: "top 82%" },
-          }
+          { y: 0, opacity: 1, duration: 0.6 },
+          "-=0.2"
+        )
+        .fromTo(
+          ".mc-hero-visual",
+          { scale: 0.9, opacity: 0, y: 30 },
+          { scale: 1, opacity: 1, y: 0, duration: 1.1 },
+          "-=0.6"
         );
 
-        // Bottom CTA
-        gsap.fromTo(
-          ".mc-bottom-cta",
-          { y: 40, opacity: 0, scale: 0.97 },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.9,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".mc-bottom-cta", start: "top 85%" },
-          }
-        );
-      }, pageRef);
+      // Counter stats
+      gsap.fromTo(
+        ".mc-counter",
+        { scale: 0.85, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "back.out(1.4)",
+          scrollTrigger: { trigger: ".mc-counters", start: "top 85%" },
+        }
+      );
 
-      setTimeout(() => ScrollTrigger.refresh(true), 300);
-      ctxRef.current = ctx;
-    });
+      // Why accurate coding section
+      gsap.fromTo(
+        ".mc-why-section",
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".mc-why-section", start: "top 82%" },
+        }
+      );
+
+      // Pain cards
+      gsap.fromTo(
+        ".mc-pain-card",
+        { y: 40, opacity: 0, rotateX: -5 },
+        {
+          y: 0,
+          opacity: 1,
+          rotateX: 0,
+          duration: 0.6,
+          stagger: 0.08,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".mc-pain-grid", start: "top 80%" },
+        }
+      );
+
+      // Services
+      gsap.fromTo(
+        ".mc-services-header",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: ".mc-services-header",
+            start: "top 85%",
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".mc-service-item",
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          stagger: 0.06,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".mc-services-list", start: "top 78%" },
+        }
+      );
+
+      // Process
+      gsap.fromTo(
+        ".mc-process-header",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: ".mc-process-header",
+            start: "top 85%",
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".mc-step",
+        { y: 30, opacity: 0, scale: 0.95 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".mc-steps-row", start: "top 80%" },
+        }
+      );
+
+      // Challenges
+      gsap.fromTo(
+        ".mc-challenges-section",
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: ".mc-challenges-section",
+            start: "top 82%",
+          },
+        }
+      );
+
+      // Why Choose
+      gsap.fromTo(
+        ".mc-choose-section",
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: ".mc-choose-section",
+            start: "top 82%",
+          },
+        }
+      );
+
+      // Comparison
+      gsap.fromTo(
+        ".mc-comparison",
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".mc-comparison", start: "top 82%" },
+        }
+      );
+
+      // HIPAA
+      gsap.fromTo(
+        ".mc-hipaa",
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".mc-hipaa", start: "top 82%" },
+        }
+      );
+
+      // Benefits
+      gsap.fromTo(
+        ".mc-benefit",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.06,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".mc-benefits-grid", start: "top 80%" },
+        }
+      );
+
+      // Specialties
+      gsap.fromTo(
+        ".mc-spec-pill",
+        { y: 12, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.3,
+          stagger: 0.03,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".mc-specs", start: "top 82%" },
+        }
+      );
+
+      // Testimonials
+      gsap.fromTo(
+        ".mc-testimonial",
+        { y: 35, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.12,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: ".mc-testimonials-grid",
+            start: "top 80%",
+          },
+        }
+      );
+
+      // FAQ
+      gsap.fromTo(
+        ".mc-faq-item",
+        { y: 20, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.06,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".mc-faq-grid", start: "top 82%" },
+        }
+      );
+
+      // Bottom CTA
+      gsap.fromTo(
+        ".mc-bottom-cta",
+        { y: 40, opacity: 0, scale: 0.97 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.9,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".mc-bottom-cta", start: "top 85%" },
+        }
+      );
+    }, pageRef);
+
+    ctxRef.current = ctx;
+
+    const t1 = setTimeout(() => ScrollTrigger.refresh(true), 100);
+    const t2 = setTimeout(() => ScrollTrigger.refresh(true), 500);
+
+    const safetyTimer = setTimeout(() => {
+      if (!pageRef.current) return;
+      pageRef.current
+        .querySelectorAll<HTMLElement>('[style*="opacity"]')
+        .forEach((el) => {
+          if (getComputedStyle(el).opacity === "0") {
+            el.style.opacity = "1";
+            el.style.transform = "none";
+          }
+        });
+    }, 2500);
 
     const handlePageShow = (e: PageTransitionEvent) => {
-      if (e.persisted) ScrollTrigger.refresh(true);
+      if (e.persisted) {
+        ctxRef.current?.revert();
+        ScrollTrigger.getAll().forEach((st) => st.kill());
+        ScrollTrigger.refresh(true);
+        pageRef.current
+          ?.querySelectorAll<HTMLElement>('[style*="opacity"]')
+          .forEach((el) => {
+            el.style.opacity = "1";
+            el.style.transform = "none";
+          });
+      }
     };
     window.addEventListener("pageshow", handlePageShow);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(safetyTimer);
       window.removeEventListener("pageshow", handlePageShow);
       ctxRef.current?.revert();
     };

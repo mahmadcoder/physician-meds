@@ -239,197 +239,211 @@ const BlogArticlePage = () => {
   // Scroll to top & animations
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    setTimeout(
-      () => window.scrollTo({ top: 0, left: 0, behavior: "instant" }),
-      0
-    );
 
-    // Small delay ensures DOM is painted before GSAP runs (fixes mobile reload)
-    const rafId = requestAnimationFrame(() => {
-      const ctx = gsap.context(() => {
-        // --- Hero image scale reveal ---
-        gsap.fromTo(
-          ".article-hero-image",
-          { scale: 1.15 },
-          { scale: 1, duration: 1.5, ease: "expo.out" }
+    const ctx = gsap.context(() => {
+      // --- Hero image scale reveal ---
+      gsap.fromTo(
+        ".article-hero-image",
+        { scale: 1.15 },
+        { scale: 1, duration: 1.5, ease: "expo.out" }
+      );
+
+      // --- Hero overlay content timeline ---
+      const heroTl = gsap.timeline({
+        defaults: { ease: "expo.out" },
+        delay: 0.2,
+      });
+
+      heroTl
+        .fromTo(
+          ".article-breadcrumbs",
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.6 }
+        )
+        .fromTo(
+          ".article-category-badge",
+          { scale: 0.8, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.5 },
+          "-=0.3"
+        )
+        .fromTo(
+          ".article-hero-title",
+          { y: 40, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.8 },
+          "-=0.3"
+        )
+        .fromTo(
+          ".article-hero-meta",
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.6 },
+          "-=0.4"
         );
 
-        // --- Hero overlay content timeline ---
-        const heroTl = gsap.timeline({
-          defaults: { ease: "expo.out" },
-          delay: 0.2,
+      // --- Article excerpt ---
+      gsap.fromTo(
+        ".article-excerpt",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".article-excerpt", start: "top 85%" },
+        }
+      );
+
+      // --- Sidebar entrance ---
+      gsap.fromTo(
+        ".article-sidebar",
+        { x: 40, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.9,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".article-sidebar", start: "top 80%" },
+        }
+      );
+
+      // --- Tags section ---
+      gsap.fromTo(
+        ".article-tags",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".article-tags", start: "top 85%" },
+        }
+      );
+
+      // --- Author card ---
+      gsap.fromTo(
+        ".article-author",
+        { y: 40, opacity: 0, scale: 0.97 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.8,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".article-author", start: "top 85%" },
+        }
+      );
+
+      // --- Reply section ---
+      gsap.fromTo(
+        ".article-reply-title",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: ".article-reply-title",
+            start: "top 85%",
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".reply-form-field",
+        { y: 25, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.08,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: ".article-reply-form",
+            start: "top 85%",
+          },
+        }
+      );
+
+      // --- Related articles ---
+      gsap.fromTo(
+        ".related-title",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".related-title", start: "top 85%" },
+        }
+      );
+
+      gsap.fromTo(
+        ".related-card",
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".related-grid", start: "top 80%" },
+        }
+      );
+
+      // --- Bottom CTA ---
+      gsap.fromTo(
+        ".article-bottom-cta",
+        { y: 40, opacity: 0, scale: 0.97 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.9,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: ".article-bottom-cta",
+            start: "top 85%",
+          },
+        }
+      );
+    }, pageRef);
+
+    ctxRef.current = ctx;
+
+    const t1 = setTimeout(() => ScrollTrigger.refresh(true), 100);
+    const t2 = setTimeout(() => ScrollTrigger.refresh(true), 500);
+
+    const safetyTimer = setTimeout(() => {
+      if (!pageRef.current) return;
+      pageRef.current
+        .querySelectorAll<HTMLElement>('[style*="opacity"]')
+        .forEach((el) => {
+          if (getComputedStyle(el).opacity === "0") {
+            el.style.opacity = "1";
+            el.style.transform = "none";
+          }
         });
+    }, 2500);
 
-        heroTl
-          .fromTo(
-            ".article-breadcrumbs",
-            { y: 20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.6 }
-          )
-          .fromTo(
-            ".article-category-badge",
-            { scale: 0.8, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.5 },
-            "-=0.3"
-          )
-          .fromTo(
-            ".article-hero-title",
-            { y: 40, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8 },
-            "-=0.3"
-          )
-          .fromTo(
-            ".article-hero-meta",
-            { y: 20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.6 },
-            "-=0.4"
-          );
-
-        // --- Article excerpt ---
-        gsap.fromTo(
-          ".article-excerpt",
-          { y: 30, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".article-excerpt", start: "top 85%" },
-          }
-        );
-
-        // --- Sidebar entrance ---
-        gsap.fromTo(
-          ".article-sidebar",
-          { x: 40, opacity: 0 },
-          {
-            x: 0,
-            opacity: 1,
-            duration: 0.9,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".article-sidebar", start: "top 80%" },
-          }
-        );
-
-        // --- Tags section ---
-        gsap.fromTo(
-          ".article-tags",
-          { y: 30, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".article-tags", start: "top 85%" },
-          }
-        );
-
-        // --- Author card ---
-        gsap.fromTo(
-          ".article-author",
-          { y: 40, opacity: 0, scale: 0.97 },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.8,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".article-author", start: "top 85%" },
-          }
-        );
-
-        // --- Reply section ---
-        gsap.fromTo(
-          ".article-reply-title",
-          { y: 30, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: ".article-reply-title",
-              start: "top 85%",
-            },
-          }
-        );
-
-        gsap.fromTo(
-          ".reply-form-field",
-          { y: 25, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.6,
-            stagger: 0.08,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: ".article-reply-form",
-              start: "top 85%",
-            },
-          }
-        );
-
-        // --- Related articles ---
-        gsap.fromTo(
-          ".related-title",
-          { y: 30, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".related-title", start: "top 85%" },
-          }
-        );
-
-        gsap.fromTo(
-          ".related-card",
-          { y: 50, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            stagger: 0.15,
-            ease: "expo.out",
-            scrollTrigger: { trigger: ".related-grid", start: "top 80%" },
-          }
-        );
-
-        // --- Bottom CTA ---
-        gsap.fromTo(
-          ".article-bottom-cta",
-          { y: 40, opacity: 0, scale: 0.97 },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.9,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: ".article-bottom-cta",
-              start: "top 85%",
-            },
-          }
-        );
-      }, pageRef);
-
-      // Delayed refresh to handle mobile scroll restoration
-      setTimeout(() => ScrollTrigger.refresh(true), 300);
-
-      ctxRef.current = ctx;
-    });
-
-    // Handle back-forward cache restoration (mobile)
     const handlePageShow = (e: PageTransitionEvent) => {
       if (e.persisted) {
+        ctxRef.current?.revert();
+        ScrollTrigger.getAll().forEach((st) => st.kill());
         ScrollTrigger.refresh(true);
+        pageRef.current
+          ?.querySelectorAll<HTMLElement>('[style*="opacity"]')
+          .forEach((el) => {
+            el.style.opacity = "1";
+            el.style.transform = "none";
+          });
       }
     };
     window.addEventListener("pageshow", handlePageShow);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(safetyTimer);
       window.removeEventListener("pageshow", handlePageShow);
       ctxRef.current?.revert();
     };

@@ -1,36 +1,14 @@
-import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, Calendar, User } from 'lucide-react';
+import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ArrowRight, Calendar, Clock, User } from "lucide-react";
+import { blogArticles } from "@/constants/blogData";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const articles = [
-  {
-    title: '10 Ways to Reduce Claim Denials in 2024',
-    excerpt: 'Learn proven strategies to minimize claim rejections and improve your practice\'s revenue cycle.',
-    category: 'Medical Billing',
-    date: 'Jan 15, 2024',
-    author: 'Sarah Johnson',
-    image: '/blog-1.jpg',
-  },
-  {
-    title: 'Understanding the No Surprises Act',
-    excerpt: 'A comprehensive guide to compliance with the new patient protection regulations.',
-    category: 'Healthcare Regulations',
-    date: 'Jan 10, 2024',
-    author: 'Michael Chen',
-    image: '/blog-2.jpg',
-  },
-  {
-    title: 'The Future of Revenue Cycle Management',
-    excerpt: 'How AI and automation are transforming medical billing processes.',
-    category: 'Industry Trends',
-    date: 'Jan 5, 2024',
-    author: 'Emily Rodriguez',
-    image: '/blog-3.jpg',
-  },
-];
+// Show first 3 articles on the homepage
+const homeArticles = blogArticles.slice(0, 3);
 
 const Blog = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -39,33 +17,33 @@ const Blog = () => {
     const ctx = gsap.context(() => {
       // Title animation
       gsap.fromTo(
-        '.blog-title',
+        ".blog-title",
         { y: 40, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: 0.8,
-          ease: 'expo.out',
+          ease: "expo.out",
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: 'top 80%',
+            start: "top 80%",
           },
         }
       );
 
       // Cards stagger animation
       gsap.fromTo(
-        '.blog-card',
+        ".blog-card",
         { y: 60, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: 0.8,
           stagger: 0.15,
-          ease: 'expo.out',
+          ease: "expo.out",
           scrollTrigger: {
-            trigger: '.blog-grid',
-            start: 'top 75%',
+            trigger: ".blog-grid",
+            start: "top 75%",
           },
         }
       );
@@ -91,73 +69,83 @@ const Blog = () => {
               Latest <span className="text-gradient">Insights</span>
             </h2>
           </div>
-          <a
-            href="#"
+          <Link
+            to="/blog"
+            onClick={() => window.scrollTo(0, 0)}
             className="inline-flex items-center text-brand-blue font-medium hover:underline group"
           >
             View All Articles
             <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-          </a>
+          </Link>
         </div>
 
         {/* Blog Grid */}
         <div className="blog-grid grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {articles.map((article, index) => (
-            <article
-              key={index}
-              className="blog-card group bg-white rounded-2xl overflow-hidden shadow-lg shadow-gray-200/50 border border-gray-100 transition-all duration-500 hover:shadow-xl hover:shadow-brand-blue/10 hover:-translate-y-2"
+          {homeArticles.map((article) => (
+            <Link
+              to={`/blog/${article.slug}`}
+              key={article.id}
+              onClick={() => window.scrollTo(0, 0)}
+              className="blog-card group"
             >
-              {/* Image */}
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  src={article.image}
-                  alt={article.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                
-                {/* Category Badge */}
-                <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-brand-blue text-xs font-semibold rounded-full">
-                    {article.category}
-                  </span>
-                </div>
-              </div>
+              <article className="bg-white rounded-2xl overflow-hidden shadow-lg shadow-gray-200/50 border border-gray-100 transition-all duration-500 hover:shadow-xl hover:shadow-brand-blue/10 hover:-translate-y-2 h-full flex flex-col">
+                {/* Image */}
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-              {/* Content */}
-              <div className="p-6">
-                {/* Meta */}
-                <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                  <div className="flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4" />
-                    <span>{article.date}</span>
+                  {/* Category Badge */}
+                  <div className="absolute top-4 left-4">
+                    <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-brand-blue text-xs font-semibold rounded-full">
+                      {article.category}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <User className="w-4 h-4" />
-                    <span>{article.author}</span>
+
+                  {/* Read Time */}
+                  <div className="absolute top-4 right-4">
+                    <span className="px-2.5 py-1 bg-black/50 backdrop-blur-sm text-white text-xs font-medium rounded-full flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {article.readTime}
+                    </span>
                   </div>
                 </div>
 
-                {/* Title */}
-                <h3 className="font-display text-xl font-bold text-brand-dark mb-3 group-hover:text-brand-blue transition-colors line-clamp-2">
-                  {article.title}
-                </h3>
+                {/* Content */}
+                <div className="p-6 flex flex-col flex-1">
+                  {/* Meta */}
+                  <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-4 h-4" />
+                      <span>{article.date}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <User className="w-4 h-4" />
+                      <span>{article.author.name}</span>
+                    </div>
+                  </div>
 
-                {/* Excerpt */}
-                <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">
-                  {article.excerpt}
-                </p>
+                  {/* Title */}
+                  <h3 className="font-display text-xl font-bold text-brand-dark mb-3 group-hover:text-brand-blue transition-colors line-clamp-2">
+                    {article.title}
+                  </h3>
 
-                {/* Read More */}
-                <a
-                  href="#"
-                  className="inline-flex items-center text-brand-blue font-medium text-sm group/link"
-                >
-                  Read More
-                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover/link:translate-x-1" />
-                </a>
-              </div>
-            </article>
+                  {/* Excerpt */}
+                  <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2 flex-1">
+                    {article.excerpt}
+                  </p>
+
+                  {/* Read More */}
+                  <div className="inline-flex items-center text-brand-blue font-medium text-sm group/link mt-auto">
+                    Read More
+                    <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover/link:translate-x-1 group-hover:translate-x-1" />
+                  </div>
+                </div>
+              </article>
+            </Link>
           ))}
         </div>
       </div>

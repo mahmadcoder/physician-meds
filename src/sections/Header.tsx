@@ -258,20 +258,38 @@ const Header = () => {
                         </Link>
                       </div>
                       <div className="grid grid-cols-2 gap-x-8 gap-y-1">
-                        {services.slice(0, 10).map((service) => (
-                          <a
-                            key={service.name}
-                            href={service.href}
-                            onClick={(e) => { 
-                              e.preventDefault(); 
-                              setIsServicesOpen(false);
-                              scrollToSection(service.href); 
-                            }}
-                            className="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-brand-blue hover:bg-brand-blue/5 transition-all duration-200"
-                          >
-                            {service.name}
-                          </a>
-                        ))}
+                        {services.slice(0, 10).map((service) =>
+                          service.href.startsWith('/') ? (
+                            <Link
+                              key={service.name}
+                              to={service.href}
+                              onClick={() => {
+                                setIsServicesOpen(false);
+                                window.scrollTo(0, 0);
+                              }}
+                              className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                location.pathname === service.href
+                                  ? 'bg-brand-blue/10 text-brand-blue'
+                                  : 'text-gray-600 hover:text-brand-blue hover:bg-brand-blue/5'
+                              }`}
+                            >
+                              {service.name}
+                            </Link>
+                          ) : (
+                            <a
+                              key={service.name}
+                              href={service.href}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setIsServicesOpen(false);
+                                scrollToSection(service.href);
+                              }}
+                              className="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-brand-blue hover:bg-brand-blue/5 transition-all duration-200"
+                            >
+                              {service.name}
+                            </a>
+                          )
+                        )}
                       </div>
                     </div>
                   </div>

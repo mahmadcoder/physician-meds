@@ -1,23 +1,25 @@
-import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Header from './sections/Header';
-import Hero from './sections/Hero';
-import Services from './sections/Services';
-import About from './sections/About';
-import Process from './sections/Process';
-import Stats from './sections/Stats';
-import Testimonials from './sections/Testimonials';
-import Blog from './sections/Blog';
-import CTA from './sections/CTA';
-import Footer from './sections/Footer';
-import ServicesPage from './pages/ServicesPage';
-import ConsultPage from './pages/ConsultPage';
-import AboutUsPage from './pages/AboutUsPage';
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
-import TermsConditionsPage from './pages/TermsConditionsPage';
-import CookieConsent from './components/CookieConsent';
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Header from "./sections/Header";
+import Hero from "./sections/Hero";
+import Services from "./sections/Services";
+import About from "./sections/About";
+import Process from "./sections/Process";
+import Stats from "./sections/Stats";
+import Testimonials from "./sections/Testimonials";
+import Blog from "./sections/Blog";
+import CTA from "./sections/CTA";
+import Footer from "./sections/Footer";
+import ServicesPage from "./pages/ServicesPage";
+import ConsultPage from "./pages/ConsultPage";
+import AboutUsPage from "./pages/AboutUsPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import TermsConditionsPage from "./pages/TermsConditionsPage";
+import BlogPage from "./pages/BlogPage";
+import BlogArticlePage from "./pages/BlogArticlePage";
+import CookieConsent from "./components/CookieConsent";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -47,7 +49,7 @@ const HomePage = () => {
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-white overflow-x-hidden">
+      <div className="min-h-screen bg-white overflow-x-clip">
         <Header />
         <main>
           <Routes>
@@ -57,10 +59,12 @@ function App() {
             <Route path="/consult-now" element={<ConsultPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/terms-conditions" element={<TermsConditionsPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogArticlePage />} />
           </Routes>
         </main>
         <Footer />
-        
+
         {/* Cookie Consent Banner */}
         <CookieConsent />
       </div>

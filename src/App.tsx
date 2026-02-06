@@ -13,6 +13,8 @@ import Blog from "./sections/Blog";
 import CTA from "./sections/CTA";
 import Footer from "./sections/Footer";
 import ServicesPage from "./pages/ServicesPage";
+import MedicalBillingPage from "./pages/MedicalBillingPage";
+import MedicalCodingPage from "./pages/MedicalCodingPage";
 import ConsultPage from "./pages/ConsultPage";
 import AboutUsPage from "./pages/AboutUsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
@@ -55,6 +57,14 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/services" element={<ServicesPage />} />
+            <Route
+              path="/services/medical-billing"
+              element={<MedicalBillingPage />}
+            />
+            <Route
+              path="/services/medical-coding"
+              element={<MedicalCodingPage />}
+            />
             <Route path="/about-us" element={<AboutUsPage />} />
             <Route path="/consult-now" element={<ConsultPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />

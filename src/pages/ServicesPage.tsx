@@ -1,10 +1,10 @@
-import { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { services } from '@/constants';
-import { Button } from '@/components/ui/button';
+import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { services } from "@/constants";
+import { Button } from "@/components/ui/button";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,53 +16,56 @@ const ServicesPage = () => {
 
   useEffect(() => {
     // Scroll to top immediately and after a small delay to ensure it works
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    setTimeout(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }), 0);
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    setTimeout(
+      () => window.scrollTo({ top: 0, left: 0, behavior: "instant" }),
+      0
+    );
 
     const ctx = gsap.context(() => {
       // Hero section entrance animation
       gsap.fromTo(
-        '.services-hero-content > *',
+        ".services-hero-content > *",
         { y: 30, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: 0.8,
           stagger: 0.15,
-          ease: 'power3.out',
+          ease: "power3.out",
         }
       );
 
       // Service cards staggered animation on scroll
       gsap.fromTo(
-        '.service-card',
+        ".service-card",
         { y: 60, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: 0.6,
           stagger: 0.08,
-          ease: 'power2.out',
+          ease: "power2.out",
           scrollTrigger: {
             trigger: gridRef.current,
-            start: 'top 80%',
+            start: "top 80%",
           },
         }
       );
 
       // CTA section animation
       gsap.fromTo(
-        '.services-cta',
+        ".services-cta",
         { y: 40, opacity: 0, scale: 0.98 },
         {
           y: 0,
           opacity: 1,
           scale: 1,
           duration: 0.8,
-          ease: 'power2.out',
+          ease: "power2.out",
           scrollTrigger: {
             trigger: ctaRef.current,
-            start: 'top 85%',
+            start: "top 85%",
           },
         }
       );
@@ -75,13 +78,16 @@ const ServicesPage = () => {
   }, []);
 
   return (
-    <div ref={pageRef} className="min-h-screen bg-gradient-to-br from-white via-blue-50/30 to-white">
+    <div
+      ref={pageRef}
+      className="min-h-screen bg-gradient-to-br from-white via-blue-50/30 to-white"
+    >
       {/* Hero Section */}
       <section ref={heroRef} className="pt-32 md:pt-40 pb-16 md:pb-20">
         <div className="container-custom">
           <div className="services-hero-content">
             {/* Back Link */}
-            <Link 
+            <Link
               to="/"
               className="inline-flex items-center gap-2 text-gray-600 hover:text-brand-blue transition-colors mb-8 group"
             >
@@ -102,8 +108,9 @@ const ServicesPage = () => {
               </h1>
 
               <p className="text-lg text-gray-600 leading-relaxed">
-                We offer a comprehensive suite of medical billing and healthcare management services 
-                designed to optimize your practice's revenue cycle and reduce administrative burden.
+                We offer a comprehensive suite of medical billing and healthcare
+                management services designed to optimize your practice's revenue
+                cycle and reduce administrative burden.
               </p>
             </div>
           </div>
@@ -113,9 +120,15 @@ const ServicesPage = () => {
       {/* Services Grid */}
       <section className="pb-20 md:pb-28">
         <div className="container-custom">
-          <div ref={gridRef} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            ref={gridRef}
+            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             {services.map((service) => {
               const IconComponent = service.icon;
+              const linkTarget = service.href.startsWith("/")
+                ? service.href
+                : "/#cta";
               return (
                 <div
                   key={service.name}
@@ -135,8 +148,8 @@ const ServicesPage = () => {
                   </p>
 
                   {/* Learn More Link */}
-                  <Link 
-                    to="/#cta"
+                  <Link
+                    to={linkTarget}
                     className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-blue hover:text-brand-blue-dark transition-colors group/link"
                   >
                     Learn More
@@ -157,7 +170,8 @@ const ServicesPage = () => {
               Ready to Optimize Your Revenue Cycle?
             </h2>
             <p className="text-white/90 max-w-2xl mx-auto mb-8">
-              Let our experts help you streamline your medical billing operations and maximize reimbursements.
+              Let our experts help you streamline your medical billing
+              operations and maximize reimbursements.
             </p>
             <Link to="/#cta">
               <Button className="bg-white text-brand-blue hover:bg-gray-100 font-semibold px-10 py-3">

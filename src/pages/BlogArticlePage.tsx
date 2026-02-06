@@ -192,6 +192,7 @@ const BlogArticlePage = () => {
   const { slug } = useParams<{ slug: string }>();
   const pageRef = useRef<HTMLDivElement>(null);
   const articleRef = useRef<HTMLElement>(null);
+  const ctxRef = useRef<gsap.Context | null>(null);
   const [readProgress, setReadProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -243,167 +244,195 @@ const BlogArticlePage = () => {
       0
     );
 
-    const ctx = gsap.context(() => {
-      // --- Hero image scale reveal ---
-      gsap.fromTo(
-        ".article-hero-image",
-        { scale: 1.15 },
-        { scale: 1, duration: 1.5, ease: "expo.out" }
-      );
-
-      // --- Hero overlay content timeline ---
-      const heroTl = gsap.timeline({
-        defaults: { ease: "expo.out" },
-        delay: 0.2,
-      });
-
-      heroTl
-        .fromTo(
-          ".article-breadcrumbs",
-          { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6 }
-        )
-        .fromTo(
-          ".article-category-badge",
-          { scale: 0.8, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.5 },
-          "-=0.3"
-        )
-        .fromTo(
-          ".article-hero-title",
-          { y: 40, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.8 },
-          "-=0.3"
-        )
-        .fromTo(
-          ".article-hero-meta",
-          { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6 },
-          "-=0.4"
+    // Small delay ensures DOM is painted before GSAP runs (fixes mobile reload)
+    const rafId = requestAnimationFrame(() => {
+      const ctx = gsap.context(() => {
+        // --- Hero image scale reveal ---
+        gsap.fromTo(
+          ".article-hero-image",
+          { scale: 1.15 },
+          { scale: 1, duration: 1.5, ease: "expo.out" }
         );
 
-      // --- Article excerpt ---
-      gsap.fromTo(
-        ".article-excerpt",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".article-excerpt", start: "top 85%" },
-        }
-      );
+        // --- Hero overlay content timeline ---
+        const heroTl = gsap.timeline({
+          defaults: { ease: "expo.out" },
+          delay: 0.2,
+        });
 
-      // --- Sidebar entrance ---
-      gsap.fromTo(
-        ".article-sidebar",
-        { x: 40, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.9,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".article-sidebar", start: "top 80%" },
-        }
-      );
+        heroTl
+          .fromTo(
+            ".article-breadcrumbs",
+            { y: 20, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.6 }
+          )
+          .fromTo(
+            ".article-category-badge",
+            { scale: 0.8, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.5 },
+            "-=0.3"
+          )
+          .fromTo(
+            ".article-hero-title",
+            { y: 40, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8 },
+            "-=0.3"
+          )
+          .fromTo(
+            ".article-hero-meta",
+            { y: 20, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.6 },
+            "-=0.4"
+          );
 
-      // --- Tags section ---
-      gsap.fromTo(
-        ".article-tags",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".article-tags", start: "top 85%" },
-        }
-      );
+        // --- Article excerpt ---
+        gsap.fromTo(
+          ".article-excerpt",
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".article-excerpt", start: "top 85%" },
+          }
+        );
 
-      // --- Author card ---
-      gsap.fromTo(
-        ".article-author",
-        { y: 40, opacity: 0, scale: 0.97 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.8,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".article-author", start: "top 85%" },
-        }
-      );
+        // --- Sidebar entrance ---
+        gsap.fromTo(
+          ".article-sidebar",
+          { x: 40, opacity: 0 },
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.9,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".article-sidebar", start: "top 80%" },
+          }
+        );
 
-      // --- Reply section ---
-      gsap.fromTo(
-        ".article-reply-title",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".article-reply-title", start: "top 85%" },
-        }
-      );
+        // --- Tags section ---
+        gsap.fromTo(
+          ".article-tags",
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.7,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".article-tags", start: "top 85%" },
+          }
+        );
 
-      gsap.fromTo(
-        ".reply-form-field",
-        { y: 25, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.08,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".article-reply-form", start: "top 85%" },
-        }
-      );
+        // --- Author card ---
+        gsap.fromTo(
+          ".article-author",
+          { y: 40, opacity: 0, scale: 0.97 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.8,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".article-author", start: "top 85%" },
+          }
+        );
 
-      // --- Related articles ---
-      gsap.fromTo(
-        ".related-title",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".related-title", start: "top 85%" },
-        }
-      );
+        // --- Reply section ---
+        gsap.fromTo(
+          ".article-reply-title",
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.7,
+            ease: "expo.out",
+            scrollTrigger: {
+              trigger: ".article-reply-title",
+              start: "top 85%",
+            },
+          }
+        );
 
-      gsap.fromTo(
-        ".related-card",
-        { y: 50, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".related-grid", start: "top 80%" },
-        }
-      );
+        gsap.fromTo(
+          ".reply-form-field",
+          { y: 25, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.6,
+            stagger: 0.08,
+            ease: "expo.out",
+            scrollTrigger: {
+              trigger: ".article-reply-form",
+              start: "top 85%",
+            },
+          }
+        );
 
-      // --- Bottom CTA ---
-      gsap.fromTo(
-        ".article-bottom-cta",
-        { y: 40, opacity: 0, scale: 0.97 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.9,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".article-bottom-cta", start: "top 85%" },
-        }
-      );
-    }, pageRef);
+        // --- Related articles ---
+        gsap.fromTo(
+          ".related-title",
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.7,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".related-title", start: "top 85%" },
+          }
+        );
 
-    setTimeout(() => ScrollTrigger.refresh(), 100);
-    return () => ctx.revert();
+        gsap.fromTo(
+          ".related-card",
+          { y: 50, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".related-grid", start: "top 80%" },
+          }
+        );
+
+        // --- Bottom CTA ---
+        gsap.fromTo(
+          ".article-bottom-cta",
+          { y: 40, opacity: 0, scale: 0.97 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.9,
+            ease: "expo.out",
+            scrollTrigger: {
+              trigger: ".article-bottom-cta",
+              start: "top 85%",
+            },
+          }
+        );
+      }, pageRef);
+
+      // Delayed refresh to handle mobile scroll restoration
+      setTimeout(() => ScrollTrigger.refresh(true), 300);
+
+      ctxRef.current = ctx;
+    });
+
+    // Handle back-forward cache restoration (mobile)
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) {
+        ScrollTrigger.refresh(true);
+      }
+    };
+    window.addEventListener("pageshow", handlePageShow);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("pageshow", handlePageShow);
+      ctxRef.current?.revert();
+    };
   }, [slug]);
 
   // 404 handling

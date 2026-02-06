@@ -83,16 +83,17 @@ export const services: {
 }[] = [
   {
     name: "Medical Billing",
-    href: "#services",
+    href: "/services/medical-billing",
     description:
       "Comprehensive medical billing solutions for healthcare providers.",
     icon: Receipt,
   },
   {
     name: "Medical Coding",
-    href: "#services",
+    href: "/services/medical-coding",
     description: "Accurate ICD-10, CPT, and HCPCS coding services.",
     icon: FileCode,
+    isPage: true,
   },
   {
     name: "Practice Management",

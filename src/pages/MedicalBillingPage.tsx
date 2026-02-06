@@ -1,0 +1,743 @@
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  ArrowLeft,
+  ArrowRight,
+  TrendingUp,
+  CheckCircle,
+  ChevronDown,
+  Phone,
+} from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  billingHero,
+  billingStats,
+  billingHighlights,
+  billingServices,
+  billingPainPoints,
+  billingProcess,
+  billingSpecialties,
+  billingFAQs,
+  billingPageMeta,
+} from "@/constants/medicalBillingData";
+import { contactInfo } from "@/constants";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const MedicalBillingPage = () => {
+  const pageRef = useRef<HTMLDivElement>(null);
+  const ctxRef = useRef<gsap.Context | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    setTimeout(
+      () => window.scrollTo({ top: 0, left: 0, behavior: "instant" }),
+      0
+    );
+
+    const rafId = requestAnimationFrame(() => {
+      const ctx = gsap.context(() => {
+        // Hero timeline
+        const heroTl = gsap.timeline({ defaults: { ease: "expo.out" } });
+        heroTl
+          .fromTo(
+            ".billing-back",
+            { x: -30, opacity: 0 },
+            { x: 0, opacity: 1, duration: 0.5 }
+          )
+          .fromTo(
+            ".billing-badge",
+            { scale: 0.8, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.5 },
+            "-=0.2"
+          )
+          .fromTo(
+            ".billing-title",
+            { y: 40, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8 },
+            "-=0.3"
+          )
+          .fromTo(
+            ".billing-desc",
+            { y: 30, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.7 },
+            "-=0.4"
+          )
+          .fromTo(
+            ".billing-cta-buttons",
+            { y: 20, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.6 },
+            "-=0.3"
+          )
+          .fromTo(
+            ".billing-hero-stat",
+            { y: 15, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.5, stagger: 0.08 },
+            "-=0.3"
+          );
+
+        // Hero image
+        gsap.fromTo(
+          ".billing-hero-img",
+          { x: 50, opacity: 0, scale: 0.95 },
+          {
+            x: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 1,
+            ease: "expo.out",
+            delay: 0.3,
+          }
+        );
+
+        // Highlights
+        gsap.fromTo(
+          ".billing-highlight",
+          { y: 40, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.7,
+            stagger: 0.12,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".billing-highlights", start: "top 80%" },
+          }
+        );
+
+        // Pain points title
+        gsap.fromTo(
+          ".pain-title",
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.7,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".pain-title", start: "top 85%" },
+          }
+        );
+
+        // Pain point cards
+        gsap.fromTo(
+          ".pain-card",
+          { y: 40, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".pain-grid", start: "top 80%" },
+          }
+        );
+
+        // Services section
+        gsap.fromTo(
+          ".services-title-section",
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.7,
+            ease: "expo.out",
+            scrollTrigger: {
+              trigger: ".services-title-section",
+              start: "top 85%",
+            },
+          }
+        );
+
+        gsap.fromTo(
+          ".service-card",
+          { y: 40, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".services-grid", start: "top 80%" },
+          }
+        );
+
+        // Process section
+        gsap.fromTo(
+          ".process-title-section",
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.7,
+            ease: "expo.out",
+            scrollTrigger: {
+              trigger: ".process-title-section",
+              start: "top 85%",
+            },
+          }
+        );
+
+        gsap.fromTo(
+          ".process-step",
+          { x: -30, opacity: 0 },
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".process-steps", start: "top 78%" },
+          }
+        );
+
+        gsap.fromTo(
+          ".process-img",
+          { x: 40, opacity: 0, scale: 0.96 },
+          {
+            x: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.9,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".process-img", start: "top 80%" },
+          }
+        );
+
+        // Stats
+        gsap.fromTo(
+          ".stats-section-title",
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.7,
+            ease: "expo.out",
+            scrollTrigger: {
+              trigger: ".stats-section-title",
+              start: "top 85%",
+            },
+          }
+        );
+
+        gsap.fromTo(
+          ".stat-card",
+          { y: 30, opacity: 0, scale: 0.95 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".stats-grid", start: "top 80%" },
+          }
+        );
+
+        // Specialties
+        gsap.fromTo(
+          ".specialty-pill",
+          { y: 15, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.4,
+            stagger: 0.04,
+            ease: "expo.out",
+            scrollTrigger: {
+              trigger: ".specialties-section",
+              start: "top 82%",
+            },
+          }
+        );
+
+        // FAQ
+        gsap.fromTo(
+          ".faq-item",
+          { y: 20, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.5,
+            stagger: 0.08,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".faq-grid", start: "top 82%" },
+          }
+        );
+
+        // Bottom CTA
+        gsap.fromTo(
+          ".billing-bottom-cta",
+          { y: 40, opacity: 0, scale: 0.97 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.9,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".billing-bottom-cta", start: "top 85%" },
+          }
+        );
+      }, pageRef);
+
+      setTimeout(() => ScrollTrigger.refresh(true), 300);
+      ctxRef.current = ctx;
+    });
+
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) ScrollTrigger.refresh(true);
+    };
+    window.addEventListener("pageshow", handlePageShow);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("pageshow", handlePageShow);
+      ctxRef.current?.revert();
+    };
+  }, []);
+
+  return (
+    <div
+      ref={pageRef}
+      className="min-h-screen bg-gradient-to-br from-white via-blue-50/20 to-white"
+    >
+      {/* ============ HERO ============ */}
+      <section className="pt-24 sm:pt-28 md:pt-36 lg:pt-40 pb-10 sm:pb-14 md:pb-20 relative overflow-hidden">
+        {/* Background blobs */}
+        <div className="absolute top-20 right-0 w-52 sm:w-80 h-52 sm:h-80 bg-brand-blue/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-72 sm:w-96 h-72 sm:h-96 bg-brand-accent/5 rounded-full blur-3xl" />
+
+        <div className="container-custom relative z-10">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-14 xl:gap-16 items-center">
+            {/* Left: Content */}
+            <div>
+              <Link
+                to="/services"
+                onClick={() => window.scrollTo(0, 0)}
+                className="billing-back inline-flex items-center gap-2 text-gray-600 hover:text-brand-blue transition-colors group text-sm mb-5 sm:mb-6"
+              >
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                Back to Services
+              </Link>
+
+              <div className="billing-badge inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-brand-blue/10 rounded-full mb-4 sm:mb-5">
+                <TrendingUp className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-brand-blue" />
+                <span className="text-xs sm:text-sm font-medium text-brand-blue">
+                  {billingHero.badge}
+                </span>
+              </div>
+
+              <h1 className="billing-title font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-brand-dark leading-[1.12] mb-4 sm:mb-5">
+                {billingHero.titleLine1}{" "}
+                <span className="text-gradient">
+                  {billingHero.titleHighlight}
+                </span>
+              </h1>
+
+              <p className="billing-desc text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed mb-5 sm:mb-6 max-w-xl">
+                {billingHero.description}
+              </p>
+
+              <div className="billing-cta-buttons flex flex-col sm:flex-row gap-2.5 sm:gap-3 mb-6 sm:mb-8">
+                <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
+                  <button className="w-full sm:w-auto btn-primary px-6 sm:px-8 py-3 text-sm sm:text-base">
+                    {billingHero.ctaPrimary}
+                  </button>
+                </Link>
+                <a href={`tel:${contactInfo.phone}`}>
+                  <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 bg-white text-brand-blue font-medium rounded-lg border-2 border-brand-blue hover:bg-brand-blue/5 transition-all text-sm sm:text-base">
+                    {billingHero.ctaSecondary}
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </a>
+              </div>
+
+              {/* Mini stat badges */}
+              <div className="flex flex-wrap gap-2 sm:gap-3">
+                {billingStats.slice(0, 3).map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="billing-hero-stat flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-gray-100 rounded-xl shadow-sm"
+                  >
+                    <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm text-gray-700">
+                      <span className="font-bold text-brand-dark">
+                        {stat.value}
+                        {stat.suffix}
+                      </span>{" "}
+                      {stat.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Hero Image */}
+            <div className="billing-hero-img relative">
+              <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-brand-blue/15">
+                <img
+                  src={billingHero.images.hero}
+                  alt="Medical billing team working"
+                  className="w-full h-[260px] sm:h-[340px] md:h-[400px] lg:h-[460px] object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-blue/20 to-transparent" />
+              </div>
+              {/* Floating badge */}
+              <div className="absolute -bottom-4 sm:-bottom-6 right-4 sm:right-6 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-xl border border-gray-100 max-w-[180px] sm:max-w-[210px]">
+                <div className="text-2xl sm:text-3xl font-bold text-brand-blue mb-0.5">
+                  35-45%
+                </div>
+                <p className="text-[10px] sm:text-xs text-gray-600 leading-snug">
+                  Potential increase in net collections
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ HIGHLIGHTS ============ */}
+      <section className="billing-highlights py-10 sm:py-14 md:py-20">
+        <div className="container-custom">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+            {billingHighlights.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.title}
+                  className="billing-highlight bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 shadow-lg shadow-gray-100/60 border border-gray-100 hover:shadow-xl hover:border-brand-blue/20 transition-all duration-300 group"
+                >
+                  <div className="w-11 sm:w-12 h-11 sm:h-12 bg-brand-blue/10 rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                    <Icon className="w-5 sm:w-6 h-5 sm:h-6 text-brand-blue group-hover:text-white transition-colors" />
+                  </div>
+                  <h3 className="font-display text-base sm:text-lg font-bold text-brand-dark mb-1.5 sm:mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ PAIN POINTS ============ */}
+      <section className="py-10 sm:py-14 md:py-24 bg-gradient-to-b from-gray-50/80 to-white">
+        <div className="container-custom">
+          <div className="pain-title text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+            <span className="inline-block text-xs sm:text-sm font-semibold text-brand-blue uppercase tracking-wider mb-2 sm:mb-3">
+              The Problem
+            </span>
+            <h2 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-brand-dark mb-3 sm:mb-4">
+              {billingPageMeta.painPointsTitle}
+            </h2>
+            <p className="text-gray-600 text-xs sm:text-sm md:text-base">
+              {billingPageMeta.painPointsDescription}
+            </p>
+          </div>
+
+          <div className="pain-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {billingPainPoints.map((point) => {
+              const Icon = point.icon;
+              return (
+                <div
+                  key={point.title}
+                  className="pain-card bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="flex items-center gap-3 mb-3 sm:mb-4">
+                    <div className="w-10 sm:w-11 h-10 sm:h-11 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-red-500" />
+                    </div>
+                    <span className="text-xl sm:text-2xl font-bold text-red-500">
+                      {point.stat}
+                    </span>
+                  </div>
+                  <h3 className="font-display text-sm sm:text-base font-bold text-brand-dark mb-1.5 sm:mb-2">
+                    {point.title}
+                  </h3>
+                  <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
+                    {point.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ SERVICES GRID ============ */}
+      <section className="py-10 sm:py-14 md:py-24">
+        <div className="container-custom">
+          <div className="services-title-section text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+            <span className="inline-block text-xs sm:text-sm font-semibold text-brand-blue uppercase tracking-wider mb-2 sm:mb-3">
+              End-to-End Coverage
+            </span>
+            <h2 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-brand-dark mb-3 sm:mb-4">
+              {billingPageMeta.servicesTitle}
+            </h2>
+            <p className="text-gray-600 text-xs sm:text-sm md:text-base">
+              {billingPageMeta.servicesDescription}
+            </p>
+          </div>
+
+          <div className="services-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {billingServices.map((service, i) => {
+              const Icon = service.icon;
+              return (
+                <div
+                  key={service.title}
+                  className="service-card bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 shadow-lg shadow-gray-100/60 border border-gray-100 hover:shadow-xl hover:border-brand-blue/20 hover:-translate-y-1 transition-all duration-300 group"
+                >
+                  <div className="flex items-center gap-3 mb-3 sm:mb-4">
+                    <div className="w-11 sm:w-12 h-11 sm:h-12 bg-brand-blue/10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-brand-blue transition-colors">
+                      <Icon className="w-5 sm:w-6 h-5 sm:h-6 text-brand-blue group-hover:text-white transition-colors" />
+                    </div>
+                    <span className="w-7 h-7 rounded-full bg-gray-100 text-gray-400 text-xs font-bold flex items-center justify-center">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                  <h3 className="font-display text-base sm:text-lg font-bold text-brand-dark mb-1.5 sm:mb-2">
+                    {service.title}
+                  </h3>
+                  <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
+                    {service.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ PROCESS ============ */}
+      <section className="py-10 sm:py-14 md:py-24 bg-gradient-to-b from-blue-50/40 to-white">
+        <div className="container-custom">
+          <div className="process-title-section text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+            <span className="inline-block text-xs sm:text-sm font-semibold text-brand-blue uppercase tracking-wider mb-2 sm:mb-3">
+              Our Process
+            </span>
+            <h2 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-brand-dark mb-3 sm:mb-4">
+              {billingPageMeta.processTitle}
+            </h2>
+            <p className="text-gray-600 text-xs sm:text-sm md:text-base">
+              {billingPageMeta.processDescription}
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-14 items-center">
+            {/* Steps */}
+            <div className="process-steps space-y-3 sm:space-y-4">
+              {billingProcess.map((step, index) => (
+                <div
+                  key={step.title}
+                  className="process-step flex items-start gap-3 sm:gap-4 bg-white rounded-xl p-4 sm:p-5 border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-blue/20 transition-all duration-300"
+                >
+                  <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-full bg-brand-blue text-white flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <h3 className="font-display font-bold text-brand-dark text-sm sm:text-base mb-0.5 sm:mb-1">
+                      {step.title}
+                    </h3>
+                    <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Image */}
+            <div className="process-img relative">
+              <div className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-brand-blue/10">
+                <img
+                  src={billingHero.images.process}
+                  alt="Medical billing workflow"
+                  className="w-full h-[260px] sm:h-[340px] md:h-[400px] lg:h-[480px] object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-4 sm:-bottom-6 left-4 sm:left-6 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-xl border border-gray-100 max-w-[200px] sm:max-w-[220px]">
+                <div className="text-xs sm:text-sm font-bold text-brand-blue mb-0.5">
+                  Real-time Tracking
+                </div>
+                <p className="text-[10px] sm:text-xs text-gray-600 leading-snug">
+                  Transparent claim status updates throughout the cycle.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ STATS ============ */}
+      <section className="py-10 sm:py-14 md:py-20 bg-gradient-to-r from-brand-blue to-brand-accent relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 sm:w-72 h-48 sm:h-72 bg-white/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-40 sm:w-56 h-40 sm:h-56 bg-white/5 rounded-full blur-3xl" />
+
+        <div className="container-custom relative z-10">
+          <div className="stats-section-title text-center max-w-2xl mx-auto mb-8 sm:mb-10">
+            <h2 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
+              {billingPageMeta.resultTitle}
+            </h2>
+            <p className="text-white/80 text-xs sm:text-sm md:text-base">
+              {billingPageMeta.resultDescription}
+            </p>
+          </div>
+
+          <div className="stats-grid grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            {billingStats.map((stat) => (
+              <div
+                key={stat.label}
+                className="stat-card bg-white/10 border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-center backdrop-blur-sm hover:bg-white/15 transition-all"
+              >
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">
+                  {stat.value}
+                  {stat.suffix && (
+                    <span className="text-lg sm:text-xl">{stat.suffix}</span>
+                  )}
+                </div>
+                <div className="text-[10px] sm:text-xs md:text-sm text-white/80">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ SPECIALTIES ============ */}
+      <section className="specialties-section py-10 sm:py-14 md:py-24">
+        <div className="container-custom">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-14 items-center">
+            <div>
+              <span className="inline-block text-xs sm:text-sm font-semibold text-brand-blue uppercase tracking-wider mb-2 sm:mb-3">
+                Specialty Coverage
+              </span>
+              <h2 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-brand-dark mb-3 sm:mb-4">
+                {billingPageMeta.specialtiesTitle}
+              </h2>
+              <p className="text-gray-600 text-xs sm:text-sm md:text-base mb-5 sm:mb-6">
+                {billingPageMeta.specialtiesDescription}
+              </p>
+
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                {billingSpecialties.map((specialty) => (
+                  <span
+                    key={specialty}
+                    className="specialty-pill px-3 sm:px-4 py-1.5 sm:py-2 bg-brand-blue/[0.07] text-brand-blue text-xs sm:text-sm font-medium rounded-full hover:bg-brand-blue hover:text-white transition-colors cursor-default"
+                  >
+                    {specialty}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-brand-blue/15">
+                <img
+                  src={billingHero.images.specialties}
+                  alt="Specialty medical billing"
+                  className="w-full h-[260px] sm:h-[340px] md:h-[400px] object-cover"
+                />
+              </div>
+              <div className="absolute -top-4 sm:-top-6 right-4 sm:right-6 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-xl border border-gray-100 max-w-[180px] sm:max-w-[220px]">
+                <div className="text-xs sm:text-sm font-bold text-brand-blue mb-0.5">
+                  Dedicated Teams
+                </div>
+                <p className="text-[10px] sm:text-xs text-gray-600 leading-snug">
+                  Specialty-trained billers aligned to your workflows.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ FAQ ============ */}
+      <section className="py-10 sm:py-14 md:py-24 bg-gradient-to-b from-gray-50/60 to-white">
+        <div className="container-custom">
+          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+            <span className="inline-block text-xs sm:text-sm font-semibold text-brand-blue uppercase tracking-wider mb-2 sm:mb-3">
+              FAQ
+            </span>
+            <h2 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-brand-dark mb-3 sm:mb-4">
+              {billingPageMeta.faqTitle}
+            </h2>
+            <p className="text-gray-600 text-xs sm:text-sm md:text-base">
+              {billingPageMeta.faqDescription}
+            </p>
+          </div>
+
+          <div className="faq-grid max-w-3xl mx-auto space-y-3 sm:space-y-4">
+            {billingFAQs.map((faq, index) => (
+              <div
+                key={faq.question}
+                className="faq-item bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md"
+              >
+                <button
+                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                  className="w-full flex items-center justify-between gap-3 p-4 sm:p-5 md:p-6 text-left"
+                >
+                  <h3 className="font-display font-bold text-brand-dark text-sm sm:text-base pr-4">
+                    {faq.question}
+                  </h3>
+                  <ChevronDown
+                    className={`w-4 sm:w-5 h-4 sm:h-5 text-brand-blue flex-shrink-0 transition-transform duration-300 ${
+                      openFaq === index ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                <div
+                  className={`overflow-hidden transition-all duration-300 ${
+                    openFaq === index ? "max-h-60" : "max-h-0"
+                  }`}
+                >
+                  <p className="px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6 text-gray-600 text-xs sm:text-sm leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ BOTTOM CTA ============ */}
+      <section className="pb-12 sm:pb-16 md:pb-24">
+        <div className="container-custom">
+          <div className="billing-bottom-cta bg-gradient-to-r from-brand-blue to-brand-accent rounded-xl sm:rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 lg:p-16 text-center text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-40 sm:w-56 md:w-72 h-40 sm:h-56 md:h-72 bg-white/5 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-32 sm:w-40 md:w-56 h-32 sm:h-40 md:h-56 bg-white/5 rounded-full blur-2xl" />
+
+            <div className="relative z-10">
+              <h2 className="font-display text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold mb-3 sm:mb-4">
+                {billingPageMeta.ctaTitle}
+              </h2>
+              <p className="text-white/90 max-w-2xl mx-auto mb-5 sm:mb-6 md:mb-8 text-xs sm:text-sm md:text-base">
+                {billingPageMeta.ctaDescription}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 justify-center">
+                <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
+                  <button className="w-full sm:w-auto bg-white text-brand-blue hover:bg-gray-100 font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-all flex items-center justify-center gap-2 group text-sm sm:text-base">
+                    Schedule a Free Consultation
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </Link>
+                <a href={`tel:${contactInfo.phone}`}>
+                  <button className="w-full sm:w-auto border-2 border-white bg-transparent text-white hover:bg-white hover:text-brand-blue font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-all flex items-center justify-center gap-2 text-sm sm:text-base">
+                    <Phone className="w-4 h-4" />
+                    {contactInfo.phoneDisplay}
+                  </button>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default MedicalBillingPage;

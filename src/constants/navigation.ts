@@ -93,7 +93,6 @@ export const services: {
     href: "/services/medical-coding",
     description: "Accurate ICD-10, CPT, and HCPCS coding services.",
     icon: FileCode,
-    isPage: true,
   },
   {
     name: "Practice Management",

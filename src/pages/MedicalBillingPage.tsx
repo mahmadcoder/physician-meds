@@ -311,14 +311,16 @@ const MedicalBillingPage = () => {
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-14 xl:gap-16 items-center">
             {/* Left: Content */}
             <div>
-              <Link
-                to="/services"
-                onClick={() => window.scrollTo(0, 0)}
-                className="billing-back inline-flex items-center gap-2 text-gray-600 hover:text-brand-blue transition-colors group text-sm mb-5 sm:mb-6"
-              >
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                Back to Services
-              </Link>
+              <div className="mb-5 sm:mb-6">
+                <Link
+                  to="/services"
+                  onClick={() => window.scrollTo(0, 0)}
+                  className="billing-back inline-flex items-center gap-2 text-gray-600 hover:text-brand-blue transition-colors group text-sm"
+                >
+                  <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                  Back to Services
+                </Link>
+              </div>
 
               <div className="billing-badge inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-brand-blue/10 rounded-full mb-4 sm:mb-5">
                 <TrendingUp className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-brand-blue" />

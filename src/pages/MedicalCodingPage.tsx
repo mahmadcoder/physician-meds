@@ -374,14 +374,16 @@ const MedicalCodingPage = () => {
 
         <div className="container-custom relative z-10 pt-24 sm:pt-28 md:pt-36 lg:pt-40 pb-10 sm:pb-14 md:pb-20">
           {/* Nav */}
-          <Link
-            to="/services"
-            onClick={() => window.scrollTo(0, 0)}
-            className="mc-nav inline-flex items-center gap-2 text-gray-500 hover:text-brand-blue transition-colors group text-sm mb-5 sm:mb-6"
-          >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Back to Services
-          </Link>
+          <div className="mb-5 sm:mb-6">
+            <Link
+              to="/services"
+              onClick={() => window.scrollTo(0, 0)}
+              className="mc-nav inline-flex items-center gap-2 text-gray-500 hover:text-brand-blue transition-colors group text-sm"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              Back to Services
+            </Link>
+          </div>
 
           <div className="mc-badge inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-brand-blue/10 rounded-full mb-6 sm:mb-8">
             <Code2 className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-brand-blue" />

@@ -121,3 +121,45 @@ export const TimelineSVG = () => (
     <polygon points="124,36 132,40 124,44" fill="#22c55e" />
   </svg>
 );
+
+/**
+ * Denial Management SVGs
+ */
+
+export const CircularProcessSVG = () => (
+  <svg viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+    <defs>
+      <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#3B82F6" />
+        <stop offset="100%" stopColor="#8B5CF6" />
+      </linearGradient>
+    </defs>
+    
+    {/* Central circle */}
+    <circle cx="300" cy="300" r="80" fill="url(#circleGrad)" opacity="0.1" />
+    <circle cx="300" cy="300" r="80" stroke="url(#circleGrad)" strokeWidth="3" fill="none" />
+    <text x="300" y="295" textAnchor="middle" className="fill-brand-blue font-bold text-base">Denial</text>
+    <text x="300" y="315" textAnchor="middle" className="fill-brand-blue font-bold text-base">Recovery</text>
+    
+    {/* Connecting circle */}
+    <circle cx="300" cy="300" r="200" stroke="#E5E7EB" strokeWidth="2" strokeDasharray="5,5" fill="none" />
+    
+    {/* Process dots at 6 positions */}
+    {[0, 60, 120, 180, 240, 300].map((angle, i) => {
+      const rad = (angle - 90) * (Math.PI / 180);
+      const x = 300 + 200 * Math.cos(rad);
+      const y = 300 + 200 * Math.sin(rad);
+      const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EC4899', '#8B5CF6', '#06B6D4'];
+      const labels = ['Identify', 'Analyze', 'Document', 'Appeal', 'Follow-Up', 'Recover'];
+      
+      return (
+        <g key={i} className="dm-process-step">
+          <circle cx={x} cy={y} r="50" fill={colors[i]} />
+          <circle cx={x} cy={y} r="50" stroke={colors[i]} strokeWidth="3" fill="none" opacity="0.3" />
+          <text x={x} y={y - 5} textAnchor="middle" fill="white" fontWeight="700" fontSize="24">{i + 1}</text>
+          <text x={x} y={y + 15} textAnchor="middle" fill="white" fontWeight="500" fontSize="14">{labels[i]}</text>
+        </g>
+      );
+    })}
+  </svg>
+);

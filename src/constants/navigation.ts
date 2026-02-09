@@ -114,7 +114,7 @@ export const services: {
   },
   {
     name: "Denial Management",
-    href: "#services",
+    href: "/services/denial-management",
     description: "Expert denial analysis and appeal services.",
     icon: ShieldX,
   },

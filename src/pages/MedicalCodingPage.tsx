@@ -11,7 +11,6 @@ import {
   Star,
   Check,
   X,
-  Quote,
 } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -48,279 +47,137 @@ const MedicalCodingPage = () => {
       // Hero timeline
       const heroTl = gsap.timeline({ defaults: { ease: "expo.out" } });
       heroTl
-        .fromTo(
-          ".mc-nav",
-          { y: -20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.5 }
-        )
-        .fromTo(
-          ".mc-badge",
-          { scale: 0.8, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.5 },
-          "-=0.2"
-        )
-        .fromTo(
-          ".mc-title",
-          { y: 50, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.9 },
-          "-=0.3"
-        )
-        .fromTo(
-          ".mc-desc",
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.7 },
-          "-=0.4"
-        )
-        .fromTo(
-          ".mc-hero-point",
-          { x: -20, opacity: 0 },
-          { x: 0, opacity: 1, duration: 0.4, stagger: 0.08 },
-          "-=0.3"
-        )
-        .fromTo(
-          ".mc-hero-cta",
-          { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6 },
-          "-=0.2"
-        )
-        .fromTo(
-          ".mc-hero-visual",
-          { scale: 0.9, opacity: 0, y: 30 },
-          { scale: 1, opacity: 1, y: 0, duration: 1.1 },
-          "-=0.6"
-        );
+        .fromTo(".mc-nav", { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6 })
+        .fromTo(".mc-badge", { scale: 0, rotate: -10 }, { scale: 1, rotate: 0, duration: 0.6, ease: "elastic.out(1, 0.5)" }, "-=0.2")
+        .fromTo(".mc-title", { y: 60, opacity: 0, clipPath: "inset(100% 0 0 0)" }, { y: 0, opacity: 1, clipPath: "inset(0% 0 0 0)", duration: 0.9 }, "-=0.3")
+        .fromTo(".mc-desc", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 }, "-=0.4")
+        .fromTo(".mc-hero-point", { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, stagger: 0.1 }, "-=0.3")
+        .fromTo(".mc-hero-cta", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, "-=0.2");
 
-      // Counter stats
-      gsap.fromTo(
-        ".mc-counter",
-        { scale: 0.85, opacity: 0 },
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "back.out(1.4)",
-          scrollTrigger: { trigger: ".mc-counters", start: "top 85%" },
-        }
-      );
+      // Hero image - clipPath reveal
+      gsap.fromTo(".mc-hero-visual", { x: 80, opacity: 0, clipPath: "inset(0 100% 0 0)" }, {
+        x: 0, opacity: 1, clipPath: "inset(0 0% 0 0)", duration: 1.2, ease: "expo.out", delay: 0.3,
+      });
 
-      // Why accurate coding section
-      gsap.fromTo(
-        ".mc-why-section",
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".mc-why-section", start: "top 82%" },
-        }
-      );
+      // Stats - scale bounce
+      gsap.fromTo(".mc-stat", { y: 40, opacity: 0, scale: 0.85 }, {
+        y: 0, opacity: 1, scale: 1, duration: 0.7, stagger: 0.1, ease: "back.out(1.7)",
+        scrollTrigger: { trigger: ".mc-stats-section", start: "top 80%" },
+      });
 
-      // Pain cards
-      gsap.fromTo(
-        ".mc-pain-card",
-        { y: 40, opacity: 0, rotateX: -5 },
-        {
-          y: 0,
-          opacity: 1,
-          rotateX: 0,
-          duration: 0.6,
-          stagger: 0.08,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".mc-pain-grid", start: "top 80%" },
-        }
-      );
+      // Why it matters - clipPath image
+      gsap.fromTo(".mc-why-section", { y: 50, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.9, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-why-section", start: "top 75%" },
+      });
 
-      // Services
-      gsap.fromTo(
-        ".mc-services-header",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: ".mc-services-header",
-            start: "top 85%",
-          },
-        }
-      );
+      // Pain points header
+      gsap.fromTo(".mc-pain-header", { y: 40, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-pain-header", start: "top 80%" },
+      });
 
-      gsap.fromTo(
-        ".mc-service-item",
-        { y: 50, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          stagger: 0.06,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".mc-services-list", start: "top 78%" },
-        }
-      );
+      // Pain point cards - 3D rotateX
+      gsap.fromTo(".mc-pain-card", { y: 60, opacity: 0, rotateX: 10 }, {
+        y: 0, opacity: 1, rotateX: 0, duration: 0.8, stagger: 0.12, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-pain-grid", start: "top 75%" },
+      });
 
-      // Process
-      gsap.fromTo(
-        ".mc-process-header",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: ".mc-process-header",
-            start: "top 85%",
-          },
-        }
-      );
+      // Services header
+      gsap.fromTo(".mc-services-header", { y: 40, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-services-header", start: "top 80%" },
+      });
 
-      gsap.fromTo(
-        ".mc-step",
-        { y: 30, opacity: 0, scale: 0.95 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.5,
-          stagger: 0.1,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".mc-steps-row", start: "top 80%" },
-        }
-      );
+      // Service tabs
+      gsap.fromTo(".mc-services-tabs", { y: 50, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-services-tabs", start: "top 75%" },
+      });
 
-      // Challenges
-      gsap.fromTo(
-        ".mc-challenges-section",
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: ".mc-challenges-section",
-            start: "top 82%",
-          },
-        }
-      );
+      // Service cards - 3D rotateY like homepage
+      gsap.fromTo(".mc-service-card", { y: 60, opacity: 0, rotateY: -15 }, {
+        y: 0, opacity: 1, rotateY: 0, duration: 0.8, stagger: 0.15, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-service-cards", start: "top 75%" },
+      });
 
-      // Why Choose
-      gsap.fromTo(
-        ".mc-choose-section",
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: ".mc-choose-section",
-            start: "top 82%",
-          },
-        }
-      );
+      // Process header
+      gsap.fromTo(".mc-process-header", { y: 40, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-process-header", start: "top 80%" },
+      });
 
-      // Comparison
-      gsap.fromTo(
-        ".mc-comparison",
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".mc-comparison", start: "top 82%" },
-        }
-      );
+      // Process circles - scale elastic
+      gsap.fromTo(".mc-process-step", { scale: 0, opacity: 0 }, {
+        scale: 1, opacity: 1, duration: 0.6, stagger: 0.12, ease: "elastic.out(1, 0.5)",
+        scrollTrigger: { trigger: ".mc-process-grid", start: "top 75%" },
+      });
 
-      // HIPAA
-      gsap.fromTo(
-        ".mc-hipaa",
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".mc-hipaa", start: "top 82%" },
-        }
-      );
+      // Challenges header
+      gsap.fromTo(".mc-challenges-header", { y: 40, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-challenges-header", start: "top 80%" },
+      });
 
-      // Benefits
-      gsap.fromTo(
-        ".mc-benefit",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.5,
-          stagger: 0.06,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".mc-benefits-grid", start: "top 80%" },
-        }
-      );
+      // Challenge accordion items
+      gsap.fromTo(".mc-challenge-item", { x: -50, opacity: 0 }, {
+        x: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-challenges-list", start: "top 75%" },
+      });
 
-      // Specialties
-      gsap.fromTo(
-        ".mc-spec-pill",
-        { y: 12, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.3,
-          stagger: 0.03,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".mc-specs", start: "top 82%" },
-        }
-      );
+      // Why choose section - clipPath image
+      gsap.fromTo(".mc-choose-section", { y: 50, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.9, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-choose-section", start: "top 75%" },
+      });
 
-      // Testimonials
-      gsap.fromTo(
-        ".mc-testimonial",
-        { y: 35, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.12,
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: ".mc-testimonials-grid",
-            start: "top 80%",
-          },
-        }
-      );
+      // Comparison table
+      gsap.fromTo(".mc-comparison", { y: 60, opacity: 0, scale: 0.95 }, {
+        y: 0, opacity: 1, scale: 1, duration: 0.9, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-comparison", start: "top 75%" },
+      });
 
-      // FAQ
-      gsap.fromTo(
-        ".mc-faq-item",
-        { y: 20, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.5,
-          stagger: 0.06,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".mc-faq-grid", start: "top 82%" },
-        }
-      );
+      // HIPAA banner
+      gsap.fromTo(".mc-hipaa", { clipPath: "inset(0 50% 0 50%)", opacity: 0 }, {
+        clipPath: "inset(0 0% 0 0%)", opacity: 1, duration: 1, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-hipaa", start: "top 80%" },
+      });
 
-      // Bottom CTA
-      gsap.fromTo(
-        ".mc-bottom-cta",
-        { y: 40, opacity: 0, scale: 0.97 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.9,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".mc-bottom-cta", start: "top 85%" },
-        }
-      );
+      // Benefits header
+      gsap.fromTo(".mc-benefits-header", { y: 40, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-benefits-header", start: "top 80%" },
+      });
+
+      // Benefit cards - 3D rotateY
+      gsap.fromTo(".mc-benefit", { y: 60, opacity: 0, rotateY: -15 }, {
+        y: 0, opacity: 1, rotateY: 0, duration: 0.8, stagger: 0.1, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-benefits-grid", start: "top 75%" },
+      });
+
+      // Specialties pills - scale bounce
+      gsap.fromTo(".mc-spec-pill", { y: 20, opacity: 0, scale: 0.8 }, {
+        y: 0, opacity: 1, scale: 1, duration: 0.5, stagger: 0.04, ease: "back.out(1.7)",
+        scrollTrigger: { trigger: ".mc-specs", start: "top 75%" },
+      });
+
+      // Testimonial cards - scale reveal
+      gsap.fromTo(".mc-testimonial", { scale: 0.9, opacity: 0, y: 50 }, {
+        scale: 1, opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-testimonials-grid", start: "top 75%" },
+      });
+
+      // FAQ items
+      gsap.fromTo(".mc-faq-item", { y: 40, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-faq-grid", start: "top 75%" },
+      });
+
+      // Bottom CTA - clipPath reveal
+      gsap.fromTo(".mc-bottom-cta", { clipPath: "inset(0 50% 0 50%)", opacity: 0 }, {
+        clipPath: "inset(0 0% 0 0%)", opacity: 1, duration: 1, ease: "expo.out",
+        scrollTrigger: { trigger: ".mc-bottom-cta", start: "top 80%" },
+      });
     }, pageRef);
 
     ctxRef.current = ctx;
@@ -501,12 +358,12 @@ const MedicalCodingPage = () => {
       {/* ============================================== */}
       {/* ANIMATED COUNTER STATS — Horizontal colored bar */}
       {/* ============================================== */}
-      <section className="mc-counters bg-brand-blue relative overflow-hidden">
+      <section className="mc-counters mc-stats-section bg-brand-blue relative overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_25%,rgba(255,255,255,0.05)_25%,rgba(255,255,255,0.05)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.05)_75%)] bg-[length:20px_20px]" />
         <div className="container-custom relative z-10 py-6 sm:py-8 md:py-10">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             {codingStats.map((stat) => (
-              <div key={stat.label} className="mc-counter text-center">
+              <div key={stat.label} className="mc-counter mc-stat text-center">
                 <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-none mb-1">
                   {stat.value}
                   {stat.suffix && (
@@ -573,7 +430,7 @@ const MedicalCodingPage = () => {
       {/* ============================================== */}
       <section className="py-10 sm:py-14 md:py-24 bg-gradient-to-b from-red-50/30 via-white to-white">
         <div className="container-custom">
-          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+          <div className="mc-pain-header text-center max-w-2xl mx-auto mb-8 sm:mb-12">
             <span className="inline-block text-xs sm:text-sm font-semibold text-red-500 uppercase tracking-wider mb-2 sm:mb-3">
               The Cost of Errors
             </span>
@@ -638,7 +495,7 @@ const MedicalCodingPage = () => {
           </div>
 
           {/* Tab Buttons */}
-          <div className="flex justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
+          <div className="mc-services-tabs flex justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
             {serviceTabs.map((tab, i) => (
               <button
                 key={tab.label}
@@ -655,13 +512,13 @@ const MedicalCodingPage = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="mc-services-list grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          <div className="mc-services-list mc-service-cards grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {serviceTabs[activeTab].services.map((service, i) => {
               const Icon = service.icon;
               return (
                 <div
                   key={service.title}
-                  className="mc-service-item bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-100 shadow-lg shadow-gray-100/50 hover:shadow-xl hover:border-brand-blue/20 hover:-translate-y-1 transition-all duration-300 group"
+                  className="mc-service-item mc-service-card bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-gray-100 shadow-lg shadow-gray-100/50 hover:shadow-xl hover:border-brand-blue/20 hover:-translate-y-1 transition-all duration-300 group"
                 >
                   <div className="flex items-center gap-3 mb-3 sm:mb-4">
                     <div
@@ -704,13 +561,13 @@ const MedicalCodingPage = () => {
           </div>
 
           {/* Horizontal process cards with connecting line */}
-          <div className="mc-steps-row relative">
+          <div className="mc-steps-row mc-process-grid relative">
             {/* Connecting line (desktop only) */}
             <div className="hidden lg:block absolute top-10 left-[10%] right-[10%] h-0.5 bg-brand-blue/10" />
 
             <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
               {codingProcess.map((step, index) => (
-                <div key={step.title} className="mc-step text-center relative">
+                <div key={step.title} className="mc-step mc-process-step text-center relative">
                   {/* Step circle */}
                   <div className="relative z-10 w-14 sm:w-16 h-14 sm:h-16 mx-auto rounded-full bg-brand-blue text-white flex items-center justify-center text-lg sm:text-xl font-bold shadow-lg shadow-brand-blue/25 mb-4 sm:mb-5">
                     {String(index + 1).padStart(2, "0")}
@@ -735,7 +592,7 @@ const MedicalCodingPage = () => {
         <div className="container-custom">
           <div className="mc-challenges-section grid lg:grid-cols-2 gap-8 lg:gap-14 items-start">
             {/* Left */}
-            <div>
+            <div className="mc-challenges-header">
               <span className="inline-block text-xs sm:text-sm font-semibold text-brand-blue uppercase tracking-wider mb-2 sm:mb-3">
                 Deep Expertise
               </span>
@@ -756,11 +613,11 @@ const MedicalCodingPage = () => {
             </div>
 
             {/* Right — Accordion */}
-            <div className="space-y-3 sm:space-y-4">
+            <div className="mc-challenges-list space-y-3 sm:space-y-4">
               {codingChallenges.map((challenge, index) => (
                 <div
                   key={challenge.abbr}
-                  className={`bg-white rounded-xl sm:rounded-2xl border overflow-hidden transition-all duration-300 ${
+                  className={`mc-challenge-item bg-white rounded-xl sm:rounded-2xl border overflow-hidden transition-all duration-300 ${
                     openChallenge === index
                       ? "border-brand-blue/30 shadow-lg"
                       : "border-gray-100 shadow-sm hover:shadow-md"
@@ -872,21 +729,19 @@ const MedicalCodingPage = () => {
             </p>
           </div>
 
-          <div className="mc-comparison max-w-4xl mx-auto overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200 shadow-lg">
-            {/* Table Header */}
+          {/* Desktop Table */}
+          <div className="mc-comparison max-w-4xl mx-auto hidden md:block overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200 shadow-lg">
             <div className="grid grid-cols-3 bg-gray-50">
-              <div className="p-3 sm:p-4 md:p-5 font-display font-bold text-brand-dark text-xs sm:text-sm border-r border-gray-200">
+              <div className="p-4 md:p-5 font-display font-bold text-brand-dark text-sm border-r border-gray-200">
                 Feature
               </div>
-              <div className="p-3 sm:p-4 md:p-5 font-display font-bold text-brand-blue text-xs sm:text-sm text-center border-r border-gray-200 bg-brand-blue/5">
+              <div className="p-4 md:p-5 font-display font-bold text-brand-blue text-sm text-center border-r border-gray-200 bg-brand-blue/5">
                 PhysicianMeds
               </div>
-              <div className="p-3 sm:p-4 md:p-5 font-display font-bold text-gray-500 text-xs sm:text-sm text-center">
+              <div className="p-4 md:p-5 font-display font-bold text-gray-500 text-sm text-center">
                 Competitors
               </div>
             </div>
-
-            {/* Table Rows */}
             {codingComparison.map((row, i) => (
               <div
                 key={row.feature}
@@ -894,19 +749,57 @@ const MedicalCodingPage = () => {
                   i % 2 === 0 ? "bg-white" : "bg-gray-50/50"
                 } border-t border-gray-100`}
               >
-                <div className="p-3 sm:p-4 md:p-5 font-semibold text-brand-dark text-xs sm:text-sm border-r border-gray-200">
+                <div className="p-4 md:p-5 font-semibold text-brand-dark text-sm border-r border-gray-200">
                   {row.feature}
                 </div>
-                <div className="p-3 sm:p-4 md:p-5 text-xs sm:text-sm text-gray-700 border-r border-gray-200 bg-green-50/30">
+                <div className="p-4 md:p-5 text-sm text-gray-700 border-r border-gray-200 bg-green-50/30">
                   <div className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
                     <span>{row.us}</span>
                   </div>
                 </div>
-                <div className="p-3 sm:p-4 md:p-5 text-xs sm:text-sm text-gray-500">
+                <div className="p-4 md:p-5 text-sm text-gray-500">
                   <div className="flex items-start gap-2">
                     <X className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                     <span>{row.competitors}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="mc-comparison max-w-4xl mx-auto md:hidden space-y-4">
+            {codingComparison.map((row) => (
+              <div
+                key={row.feature}
+                className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+              >
+                <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                  <h4 className="font-display font-bold text-brand-dark text-sm">
+                    {row.feature}
+                  </h4>
+                </div>
+                <div className="px-4 py-3 border-b border-gray-100 bg-green-50/30">
+                  <span className="text-[10px] font-bold text-brand-blue uppercase tracking-wider">
+                    PhysicianMeds
+                  </span>
+                  <div className="flex items-start gap-2 mt-1">
+                    <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-xs text-gray-700 leading-relaxed">
+                      {row.us}
+                    </span>
+                  </div>
+                </div>
+                <div className="px-4 py-3">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                    Competitors
+                  </span>
+                  <div className="flex items-start gap-2 mt-1">
+                    <X className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-xs text-gray-500 leading-relaxed">
+                      {row.competitors}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -956,7 +849,7 @@ const MedicalCodingPage = () => {
       {/* ============================================== */}
       <section className="py-10 sm:py-14 md:py-24 bg-gradient-to-b from-gray-50/50 to-white">
         <div className="container-custom">
-          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+          <div className="mc-benefits-header text-center max-w-2xl mx-auto mb-8 sm:mb-12">
             <span className="inline-block text-xs sm:text-sm font-semibold text-brand-blue uppercase tracking-wider mb-2 sm:mb-3">
               Why Outsource
             </span>
@@ -1044,39 +937,55 @@ const MedicalCodingPage = () => {
             </p>
           </div>
 
-          <div className="mc-testimonials-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
-            {codingTestimonials.map((testimonial) => (
-              <div
-                key={testimonial.name}
-                className="mc-testimonial bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-7 border border-gray-100 shadow-md hover:shadow-xl transition-all duration-300 relative"
-              >
-                {/* Quote icon */}
-                <Quote className="w-8 sm:w-10 h-8 sm:h-10 text-brand-blue/10 absolute top-4 right-4" />
+          <div className="mc-testimonials-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            {codingTestimonials.map((testimonial) => {
+              const initials = testimonial.name.split(" ").map(n => n[0]).join("").slice(0, 2);
+              return (
+                <div
+                  key={testimonial.name}
+                  className="mc-testimonial group bg-white rounded-2xl sm:rounded-3xl border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden"
+                >
+                  {/* Top gradient accent bar */}
+                  <div className="h-1.5 bg-gradient-to-r from-brand-blue to-brand-accent" />
 
-                {/* Stars */}
-                <div className="flex gap-0.5 mb-3 sm:mb-4">
-                  {Array.from({ length: testimonial.rating }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-4 h-4 fill-amber-400 text-amber-400"
-                    />
-                  ))}
-                </div>
+                  <div className="p-5 sm:p-6 md:p-7">
+                    {/* Metric highlight */}
+                    <div className="flex items-center justify-between mb-4 sm:mb-5">
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: testimonial.rating }).map((_, i) => (
+                          <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+                      {testimonial.metric && (
+                        <div className="bg-brand-blue/5 rounded-lg px-3 py-1.5 text-center">
+                          <div className="text-sm sm:text-base font-bold text-brand-blue leading-none">{testimonial.metric}</div>
+                          <div className="text-[9px] sm:text-[10px] text-brand-blue/70 font-medium">{testimonial.metricLabel}</div>
+                        </div>
+                      )}
+                    </div>
 
-                <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-4 sm:mb-5 italic">
-                  "{testimonial.quote}"
-                </p>
+                    {/* Quote */}
+                    <div className="relative mb-5 sm:mb-6">
+                      <svg className="absolute -top-1 -left-1 w-6 h-6 text-brand-blue/10" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z" />
+                      </svg>
+                      <p className="text-gray-600 text-xs sm:text-sm leading-relaxed pl-5 sm:pl-6">{testimonial.quote}</p>
+                    </div>
 
-                <div className="border-t border-gray-100 pt-3 sm:pt-4">
-                  <div className="font-display font-bold text-brand-dark text-sm">
-                    {testimonial.name}
+                    {/* Author */}
+                    <div className="flex items-center gap-3 pt-4 sm:pt-5 border-t border-gray-100">
+                      <div className="w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-gradient-to-br from-brand-blue to-brand-accent flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                        {initials}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-display font-bold text-brand-dark text-sm truncate">{testimonial.name}</div>
+                        <div className="text-xs text-gray-500 truncate">{testimonial.role} — {testimonial.specialty}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-500">
-                    {testimonial.role} — {testimonial.specialty}
-                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>

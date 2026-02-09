@@ -7,6 +7,7 @@ import {
   CheckCircle,
   ChevronDown,
   Phone,
+  Star,
 } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -19,6 +20,7 @@ import {
   billingProcess,
   billingSpecialties,
   billingFAQs,
+  billingTestimonials,
   billingPageMeta,
 } from "@/constants/medicalBillingData";
 import { contactInfo } from "@/constants";
@@ -37,242 +39,101 @@ const MedicalBillingPage = () => {
       // Hero timeline
       const heroTl = gsap.timeline({ defaults: { ease: "expo.out" } });
       heroTl
-        .fromTo(
-          ".billing-back",
-          { x: -30, opacity: 0 },
-          { x: 0, opacity: 1, duration: 0.5 }
-        )
-        .fromTo(
-          ".billing-badge",
-          { scale: 0.8, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.5 },
-          "-=0.2"
-        )
-        .fromTo(
-          ".billing-title",
-          { y: 40, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.8 },
-          "-=0.3"
-        )
-        .fromTo(
-          ".billing-desc",
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.7 },
-          "-=0.4"
-        )
-        .fromTo(
-          ".billing-cta-buttons",
-          { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6 },
-          "-=0.3"
-        )
-        .fromTo(
-          ".billing-hero-stat",
-          { y: 15, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.5, stagger: 0.08 },
-          "-=0.3"
-        );
+        .fromTo(".billing-back", { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6 })
+        .fromTo(".billing-badge", { scale: 0, rotate: -10 }, { scale: 1, rotate: 0, duration: 0.6, ease: "elastic.out(1, 0.5)" }, "-=0.2")
+        .fromTo(".billing-title", { y: 60, opacity: 0, clipPath: "inset(100% 0 0 0)" }, { y: 0, opacity: 1, clipPath: "inset(0% 0 0 0)", duration: 0.9 }, "-=0.3")
+        .fromTo(".billing-desc", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 }, "-=0.4")
+        .fromTo(".billing-cta-buttons", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, "-=0.3")
+        .fromTo(".billing-hero-stat", { y: 20, opacity: 0, scale: 0.9 }, { y: 0, opacity: 1, scale: 1, duration: 0.5, stagger: 0.1, ease: "back.out(1.7)" }, "-=0.3");
 
-      // Hero image
-      gsap.fromTo(
-        ".billing-hero-img",
-        { x: 50, opacity: 0, scale: 0.95 },
-        {
-          x: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 1,
-          ease: "expo.out",
-          delay: 0.3,
-        }
-      );
+      // Hero image - clipPath reveal
+      gsap.fromTo(".billing-hero-img", { x: 80, opacity: 0, clipPath: "inset(0 100% 0 0)" }, {
+        x: 0, opacity: 1, clipPath: "inset(0 0% 0 0)", duration: 1.2, ease: "expo.out", delay: 0.3,
+      });
 
-      // Highlights
-      gsap.fromTo(
-        ".billing-highlight",
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          stagger: 0.12,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".billing-highlights", start: "top 80%" },
-        }
-      );
+      // Highlights - 3D cards
+      gsap.fromTo(".billing-highlight", { y: 60, opacity: 0, rotateY: -15 }, {
+        y: 0, opacity: 1, rotateY: 0, duration: 0.8, stagger: 0.15, ease: "expo.out",
+        scrollTrigger: { trigger: ".billing-highlights", start: "top 75%" },
+      });
 
       // Pain points title
-      gsap.fromTo(
-        ".pain-title",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".pain-title", start: "top 85%" },
-        }
-      );
+      gsap.fromTo(".pain-title", { y: 40, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, ease: "expo.out",
+        scrollTrigger: { trigger: ".pain-title", start: "top 80%" },
+      });
 
-      // Pain point cards
-      gsap.fromTo(
-        ".pain-card",
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".pain-grid", start: "top 80%" },
-        }
-      );
+      // Pain point cards - 3D rotate
+      gsap.fromTo(".pain-card", { y: 60, opacity: 0, rotateX: 10 }, {
+        y: 0, opacity: 1, rotateX: 0, duration: 0.8, stagger: 0.12, ease: "expo.out",
+        scrollTrigger: { trigger: ".pain-grid", start: "top 75%" },
+      });
 
-      // Services section
-      gsap.fromTo(
-        ".services-title-section",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: ".services-title-section",
-            start: "top 85%",
-          },
-        }
-      );
+      // Services title
+      gsap.fromTo(".services-title-section", { y: 40, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, ease: "expo.out",
+        scrollTrigger: { trigger: ".services-title-section", start: "top 80%" },
+      });
 
-      gsap.fromTo(
-        ".service-card",
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".services-grid", start: "top 80%" },
-        }
-      );
+      // Service cards - 3D rotateY like homepage
+      gsap.fromTo(".service-card", { y: 60, opacity: 0, rotateY: -15 }, {
+        y: 0, opacity: 1, rotateY: 0, duration: 0.8, stagger: 0.15, ease: "expo.out",
+        scrollTrigger: { trigger: ".services-grid", start: "top 75%" },
+      });
 
-      // Process section
-      gsap.fromTo(
-        ".process-title-section",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: ".process-title-section",
-            start: "top 85%",
-          },
-        }
-      );
+      // Process title
+      gsap.fromTo(".process-title-section", { y: 40, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, ease: "expo.out",
+        scrollTrigger: { trigger: ".process-title-section", start: "top 80%" },
+      });
 
-      gsap.fromTo(
-        ".process-step",
-        { x: -30, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".process-steps", start: "top 78%" },
-        }
-      );
+      // Process steps - alternating slide
+      gsap.fromTo(".process-step", { x: -60, opacity: 0 }, {
+        x: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: "expo.out",
+        scrollTrigger: { trigger: ".process-steps", start: "top 75%" },
+      });
 
-      gsap.fromTo(
-        ".process-img",
-        { x: 40, opacity: 0, scale: 0.96 },
-        {
-          x: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.9,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".process-img", start: "top 80%" },
-        }
-      );
+      // Process image - clipPath reveal
+      gsap.fromTo(".process-img", { x: 80, opacity: 0, clipPath: "inset(0 100% 0 0)" }, {
+        x: 0, opacity: 1, clipPath: "inset(0 0% 0 0)", duration: 1, ease: "expo.out",
+        scrollTrigger: { trigger: ".process-img", start: "top 75%" },
+      });
 
-      // Stats
-      gsap.fromTo(
-        ".stats-section-title",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: ".stats-section-title",
-            start: "top 85%",
-          },
-        }
-      );
+      // Stats title
+      gsap.fromTo(".stats-section-title", { y: 40, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, ease: "expo.out",
+        scrollTrigger: { trigger: ".stats-section-title", start: "top 80%" },
+      });
 
-      gsap.fromTo(
-        ".stat-card",
-        { y: 30, opacity: 0, scale: 0.95 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".stats-grid", start: "top 80%" },
-        }
-      );
+      // Stat cards - scale + bounce
+      gsap.fromTo(".stat-card", { y: 50, opacity: 0, scale: 0.85 }, {
+        y: 0, opacity: 1, scale: 1, duration: 0.8, stagger: 0.12, ease: "back.out(1.4)",
+        scrollTrigger: { trigger: ".stats-grid", start: "top 75%" },
+      });
 
-      // Specialties
-      gsap.fromTo(
-        ".specialty-pill",
-        { y: 15, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.4,
-          stagger: 0.04,
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: ".specialties-section",
-            start: "top 82%",
-          },
-        }
-      );
+      // Specialties pills
+      gsap.fromTo(".specialty-pill", { y: 20, opacity: 0, scale: 0.8 }, {
+        y: 0, opacity: 1, scale: 1, duration: 0.5, stagger: 0.04, ease: "back.out(1.7)",
+        scrollTrigger: { trigger: ".specialties-section", start: "top 75%" },
+      });
 
-      // FAQ
-      gsap.fromTo(
-        ".faq-item",
-        { y: 20, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.5,
-          stagger: 0.08,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".faq-grid", start: "top 82%" },
-        }
-      );
+      // FAQ items
+      gsap.fromTo(".faq-item", { y: 40, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "expo.out",
+        scrollTrigger: { trigger: ".faq-grid", start: "top 75%" },
+      });
 
-      // Bottom CTA
-      gsap.fromTo(
-        ".billing-bottom-cta",
-        { y: 40, opacity: 0, scale: 0.97 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.9,
-          ease: "expo.out",
-          scrollTrigger: { trigger: ".billing-bottom-cta", start: "top 85%" },
-        }
-      );
+      // Testimonials - scale reveal
+      gsap.fromTo(".billing-testimonial", { scale: 0.9, opacity: 0, y: 50 }, {
+        scale: 1, opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "expo.out",
+        scrollTrigger: { trigger: ".billing-testimonials-grid", start: "top 75%" },
+      });
+
+      // Bottom CTA - clipPath reveal
+      gsap.fromTo(".billing-bottom-cta", { clipPath: "inset(0 50% 0 50%)", opacity: 0 }, {
+        clipPath: "inset(0 0% 0 0%)", opacity: 1, duration: 1, ease: "expo.out",
+        scrollTrigger: { trigger: ".billing-bottom-cta", start: "top 80%" },
+      });
     }, pageRef);
 
     ctxRef.current = ctx;
@@ -370,7 +231,7 @@ const MedicalBillingPage = () => {
                   </button>
                 </Link>
                 <a href={`tel:${contactInfo.phone}`}>
-                  <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 bg-white text-brand-blue font-medium rounded-lg border-2 border-brand-blue hover:bg-brand-blue/5 transition-all text-sm sm:text-base">
+                  <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 bg-white text-brand-blue font-medium rounded-lg border-2 border-brand-blue/20 hover:border-brand-blue hover:bg-brand-blue/5 transition-all text-sm sm:text-base shadow-sm">
                     {billingHero.ctaSecondary}
                     <ArrowRight className="w-4 h-4" />
                   </button>
@@ -680,6 +541,92 @@ const MedicalBillingPage = () => {
         </div>
       </section>
 
+      {/* ============ TESTIMONIALS ============ */}
+      <section className="py-10 sm:py-14 md:py-24">
+        <div className="container-custom">
+          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+            <span className="inline-block text-xs sm:text-sm font-semibold text-brand-blue uppercase tracking-wider mb-2 sm:mb-3">
+              Client Results
+            </span>
+            <h2 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-brand-dark mb-3 sm:mb-4">
+              Trusted by Healthcare Practices
+            </h2>
+            <p className="text-gray-600 text-xs sm:text-sm md:text-base">
+              Real results from practices that transformed their billing with
+              PhysicianMeds.
+            </p>
+          </div>
+
+          <div className="billing-testimonials-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            {billingTestimonials.map((testimonial) => {
+              const initials = testimonial.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2);
+              return (
+                <div
+                  key={testimonial.name}
+                  className="billing-testimonial group bg-white rounded-2xl sm:rounded-3xl border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden"
+                >
+                  <div className="h-1.5 bg-gradient-to-r from-brand-blue to-brand-accent" />
+
+                  <div className="p-5 sm:p-6 md:p-7">
+                    <div className="flex items-center justify-between mb-4 sm:mb-5">
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: testimonial.rating }).map(
+                          (_, i) => (
+                            <Star
+                              key={i}
+                              className="w-4 h-4 fill-amber-400 text-amber-400"
+                            />
+                          )
+                        )}
+                      </div>
+                      <div className="bg-brand-blue/5 rounded-lg px-3 py-1.5 text-center">
+                        <div className="text-sm sm:text-base font-bold text-brand-blue leading-none">
+                          {testimonial.metric}
+                        </div>
+                        <div className="text-[9px] sm:text-[10px] text-brand-blue/70 font-medium">
+                          {testimonial.metricLabel}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="relative mb-5 sm:mb-6">
+                      <svg
+                        className="absolute -top-1 -left-1 w-6 h-6 text-brand-blue/10"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z" />
+                      </svg>
+                      <p className="text-gray-600 text-xs sm:text-sm leading-relaxed pl-5 sm:pl-6">
+                        {testimonial.quote}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3 pt-4 sm:pt-5 border-t border-gray-100">
+                      <div className="w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-gradient-to-br from-brand-blue to-brand-accent flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                        {initials}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-display font-bold text-brand-dark text-sm truncate">
+                          {testimonial.name}
+                        </div>
+                        <div className="text-xs text-gray-500 truncate">
+                          {testimonial.role} — {testimonial.specialty}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* ============ FAQ ============ */}
       <section className="py-10 sm:py-14 md:py-24 bg-gradient-to-b from-gray-50/60 to-white">
         <div className="container-custom">
@@ -732,7 +679,8 @@ const MedicalBillingPage = () => {
       {/* ============ BOTTOM CTA ============ */}
       <section className="pb-12 sm:pb-16 md:pb-24">
         <div className="container-custom">
-          <div className="billing-bottom-cta bg-gradient-to-r from-brand-blue to-brand-accent rounded-xl sm:rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 lg:p-16 text-center text-white relative overflow-hidden">
+          <div className="billing-bottom-cta bg-gradient-to-br from-brand-blue via-brand-blue to-brand-accent rounded-xl sm:rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 lg:p-16 text-center text-white relative overflow-hidden">
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_25%,rgba(255,255,255,0.03)_25%,rgba(255,255,255,0.03)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.03)_75%)] bg-[length:30px_30px]" />
             <div className="absolute top-0 right-0 w-40 sm:w-56 md:w-72 h-40 sm:h-56 md:h-72 bg-white/5 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-32 sm:w-40 md:w-56 h-32 sm:h-40 md:h-56 bg-white/5 rounded-full blur-2xl" />
 

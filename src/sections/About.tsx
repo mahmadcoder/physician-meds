@@ -6,7 +6,7 @@ import { Check, Award, Users, TrendingUp } from 'lucide-react';
 gsap.registerPlugin(ScrollTrigger);
 
 const stats = [
-  { icon: Award, value: '98%', label: 'Clean Claim Rate' },
+  { icon: Award, value: '98.5%', label: 'First Pass Clean Claims Rate' },
   { icon: Users, value: '100+', label: 'Healthcare Providers' },
   { icon: TrendingUp, value: '30%', label: 'Faster Reimbursements' },
 ];

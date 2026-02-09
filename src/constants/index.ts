@@ -4,3 +4,5 @@ export * from "./legalData";
 export * from "./blogData";
 export * from "./medicalBillingData";
 export * from "./medicalCodingData";
+export * from "./practiceManagementData";
+export * from "./credentialEnrollmentData";

@@ -155,7 +155,7 @@ const Hero = () => {
               <div className="hero-stat flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-brand-success" />
                 <span className="text-sm font-medium text-gray-600">
-                  98% Clean Claim Rate
+                  98.5% First Pass Clean Claims Rate
                 </span>
               </div>
               <div className="hero-stat flex items-center gap-2">

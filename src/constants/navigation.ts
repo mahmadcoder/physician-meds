@@ -96,13 +96,13 @@ export const services: {
   },
   {
     name: "Practice Management",
-    href: "#services",
+    href: "/services/practice-management",
     description: "Streamline your practice operations and workflow.",
     icon: Building2,
   },
   {
     name: "Credential & Enrollment",
-    href: "#services",
+    href: "/services/credential-enrollment",
     description: "Provider credentialing and payer enrollment services.",
     icon: BadgeCheck,
   },

@@ -82,6 +82,8 @@ export interface CodingTestimonial {
   specialty: string;
   quote: string;
   rating: number;
+  metric?: string;
+  metricLabel?: string;
 }
 
 // --- Hero ---
@@ -96,7 +98,7 @@ export const codingHero = {
   ctaPrimary: "Book Free Consultation",
   ctaSecondary: "Talk to a Coding Expert",
   heroPoints: [
-    "99.9% Accurate Code Assignments",
+    "99% Accurate Code Assignments",
     "Up to 30% Revenue Recovery",
     "24/7 Expert Support Available",
   ],
@@ -112,8 +114,8 @@ export const codingHero = {
 export const codingStats: CodingStat[] = [
   { value: "100", suffix: "%", label: "HIPAA Compliant" },
   { value: "30", suffix: "%", label: "Revenue Increase" },
-  { value: "99.9", suffix: "%", label: "Code Accuracy" },
-  { value: "99", suffix: "%", label: "First-Pass Acceptance" },
+  { value: "99", suffix: "%", label: "Code Accuracy" },
+  { value: "98.5", suffix: "%", label: "First-Pass Acceptance" },
 ];
 
 // --- Why Accurate Coding Matters ---
@@ -350,6 +352,8 @@ export const codingTestimonials: CodingTestimonial[] = [
     quote:
       "With PhysicianMeds handling our coding, collections have consistently been above 85%. They handle patient-billing communications too, which improved satisfaction. Highly recommended.",
     rating: 5,
+    metric: "85%+",
+    metricLabel: "Collection Rate",
   },
   {
     name: "Dr. Samuel Nguyen",
@@ -358,6 +362,8 @@ export const codingTestimonials: CodingTestimonial[] = [
     quote:
       "Their team understood our specialty's coding challenges and negotiated better payer contracts. Our reimbursement per procedure went up, and we finally feel they have our back.",
     rating: 5,
+    metric: "32%",
+    metricLabel: "Higher Reimbursement",
   },
   {
     name: "Rebecca Gomez",
@@ -366,6 +372,8 @@ export const codingTestimonials: CodingTestimonial[] = [
     quote:
       "Transitioning to PhysicianMeds was the easiest business change we've made. They handled credentialing, legacy data migration, and we experienced minimal disruption.",
     rating: 5,
+    metric: "2 Weeks",
+    metricLabel: "Full Transition",
   },
 ];
 

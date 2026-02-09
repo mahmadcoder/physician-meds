@@ -62,7 +62,7 @@ export const billingHero = {
   titleHighlight: "Maximizes Reimbursements",
   description:
     "PhysicianMeds delivers end-to-end medical billing services that reduce denials, accelerate payments, and keep your practice 100% compliant. Our experts become an extension of your team — so you can focus on patient care.",
-  ctaPrimary: "Get a Free Quote",
+  ctaPrimary: "Book Free Consultation",
   ctaSecondary: "Talk to an Expert",
   images: {
     hero: "/services/images/medical-billing-1.jpg",
@@ -74,7 +74,7 @@ export const billingHero = {
 // --- Trust Stats ---
 
 export const billingStats: BillingStat[] = [
-  { value: "99", suffix: "%", label: "First-Pass Claim Acceptance" },
+  { value: "98.5", suffix: "%", label: "First-Pass Claim Acceptance" },
   { value: "95", suffix: "%", label: "Net Collection Rate" },
   { value: "24/7", label: "Expert Support Available" },
   { value: "35-45", suffix: "%", label: "Revenue Lift Potential" },
@@ -280,6 +280,51 @@ export const billingFAQs: BillingFAQ[] = [
     question: "Is there a long-term contract required?",
     answer:
       "No. We believe in earning your business every month. Our agreements are flexible with no long-term lock-ins.",
+  },
+];
+
+// --- Testimonials ---
+
+export interface BillingTestimonial {
+  name: string;
+  role: string;
+  specialty: string;
+  quote: string;
+  rating: number;
+  metric: string;
+  metricLabel: string;
+}
+
+export const billingTestimonials: BillingTestimonial[] = [
+  {
+    name: "Dr. Patricia Okonkwo",
+    role: "Practice Owner",
+    specialty: "Internal Medicine",
+    quote:
+      "Before PhysicianMeds, our denial rate was 18%. Within 3 months, it dropped to under 5%. Their team handles everything — from claim scrubbing to appeals — so my staff can focus on patients.",
+    rating: 5,
+    metric: "5%",
+    metricLabel: "Denial Rate",
+  },
+  {
+    name: "Mark Sullivan",
+    role: "CFO",
+    specialty: "Multi-Specialty Clinic",
+    quote:
+      "We saw a 38% increase in collections in the first quarter. The real-time reporting dashboard gives us full visibility into every dollar. Best billing partner we've ever had.",
+    rating: 5,
+    metric: "38%",
+    metricLabel: "More Collections",
+  },
+  {
+    name: "Dr. Anita Sharma",
+    role: "Medical Director",
+    specialty: "Cardiology Group",
+    quote:
+      "Switching to PhysicianMeds was seamless. They onboarded our 8-provider practice in 10 days flat. Our cash flow has never been more consistent, and payer follow-up is exceptional.",
+    rating: 5,
+    metric: "10 Days",
+    metricLabel: "Full Onboarding",
   },
 ];
 

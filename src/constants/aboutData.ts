@@ -34,7 +34,7 @@ export const aboutStoryContent = {
     billing specialists to deliver accurate, efficient, and transparent billing 
     services that maximize your revenue.`,
     `Today, we proudly serve 100+ healthcare practices across the United States, 
-    helping them achieve 98% clean claim rates and 30% faster reimbursements. 
+    helping them achieve 98.5% first pass clean claims rates and 30% faster reimbursements. 
     But numbers only tell part of the story — our real measure of success is 
     seeing our clients thrive.`,
   ],
@@ -124,7 +124,7 @@ export interface StatItem {
 
 export const statsData: StatItem[] = [
   { value: 100, suffix: '+', label: 'Healthcare Providers', icon: Users },
-  { value: 98, suffix: '%', label: 'Clean Claim Rate', icon: Award },
+  { value: 98.5, suffix: '%', label: 'First Pass Clean Claims Rate', icon: Award },
   { value: 30, suffix: '%', label: 'Faster Reimbursements', icon: TrendingUp },
   { value: 24, suffix: '/7', label: 'Support Available', icon: Clock },
 ];
@@ -161,7 +161,7 @@ export const journeySteps: JourneyStep[] = [
   {
     year: '2024',
     title: 'Industry Leader',
-    description: 'Serving 100+ practices with a 98% clean claim rate and industry-leading results.',
+    description: 'Serving 100+ practices with a 98.5% first pass clean claims rate and industry-leading results.',
   },
 ];
 
@@ -190,7 +190,7 @@ export const whyChooseUsSection = {
     '24/7 support and real-time reporting access',
   ],
   highlightStats: [
-    { value: '98%', label: 'Clean Claim Rate', type: 'primary' as const },
+    { value: '98.5%', label: 'First Pass Clean Claims Rate', type: 'primary' as const },
     { value: '30%', label: 'Faster Payments', type: 'default' as const },
     { value: '100+', label: 'Practices Served', type: 'default' as const },
     { value: '$100K+', label: 'Revenue Processed', type: 'accent' as const },

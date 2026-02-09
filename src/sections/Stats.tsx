@@ -7,7 +7,7 @@ gsap.registerPlugin(ScrollTrigger);
 const stats = [
   { value: 100, suffix: '+', label: 'Healthcare Providers', prefix: '' },
   { value: 100, suffix: 'K+', label: 'Revenue Processed', prefix: '$' },
-  { value: 98, suffix: '%', label: 'Clean Claim Rate', prefix: '' },
+  { value: 98.5, suffix: '%', label: 'First Pass Clean Claims Rate', prefix: '' },
   { value: 30, suffix: '%', label: 'Faster Payments', prefix: '' },
 ];
 

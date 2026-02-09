@@ -230,7 +230,7 @@ const CredentialEnrollmentPage = () => {
                 <div className="text-2xl sm:text-3xl font-bold text-green-600 leading-none">99.8%</div>
                 <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5 font-medium">Approval Rate</p>
               </div>
-              <div className="absolute -bottom-3 sm:-bottom-5 -right-2 sm:-right-4 bg-brand-blue text-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-xl z-10 max-w-[160px] sm:max-w-[190px]">
+              <div className="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 bg-brand-blue text-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-xl z-10 max-w-[160px] sm:max-w-[190px]">
                 <div className="flex items-center gap-2 mb-1">
                   <BadgeCheck className="w-4 h-4" />
                   <span className="text-xs sm:text-sm font-bold">Fast-Track</span>

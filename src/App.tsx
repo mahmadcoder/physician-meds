@@ -17,6 +17,7 @@ import MedicalBillingPage from "./pages/MedicalBillingPage";
 import MedicalCodingPage from "./pages/MedicalCodingPage";
 import PracticeManagementPage from "./pages/PracticeManagementPage";
 import CredentialEnrollmentPage from "./pages/CredentialEnrollmentPage";
+import AccountsReceivablePage from "./pages/AccountsReceivablePage";
 import ConsultPage from "./pages/ConsultPage";
 import AboutUsPage from "./pages/AboutUsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
@@ -74,6 +75,10 @@ function App() {
             <Route
               path="/services/credential-enrollment"
               element={<CredentialEnrollmentPage />}
+            />
+            <Route
+              path="/services/accounts-receivable"
+              element={<AccountsReceivablePage />}
             />
             <Route path="/about-us" element={<AboutUsPage />} />
             <Route path="/consult-now" element={<ConsultPage />} />

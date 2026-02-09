@@ -108,7 +108,7 @@ export const services: {
   },
   {
     name: "Accounts Receivable",
-    href: "#services",
+    href: "/services/accounts-receivable",
     description: "Maximize collections and reduce outstanding balances.",
     icon: Wallet,
   },

@@ -6,3 +6,4 @@ export * from "./medicalBillingData";
 export * from "./medicalCodingData";
 export * from "./practiceManagementData";
 export * from "./credentialEnrollmentData";
+export * from "./accountsReceivableData";

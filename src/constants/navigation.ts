@@ -126,7 +126,7 @@ export const services: {
   },
   {
     name: "Patient Billing",
-    href: "#services",
+    href: "/services/patient-billing",
     description: "Patient-friendly billing and statement services.",
     icon: Users,
   },

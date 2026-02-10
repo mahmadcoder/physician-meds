@@ -20,6 +20,7 @@ import CredentialEnrollmentPage from "./pages/CredentialEnrollmentPage";
 import AccountsReceivablePage from "./pages/AccountsReceivablePage";
 import DenialManagementPage from "./pages/DenialManagementPage";
 import OutOfNetworkPage from "./pages/OutOfNetworkPage";
+import PatientBillingPage from "./pages/PatientBillingPage";
 import ConsultPage from "./pages/ConsultPage";
 import AboutUsPage from "./pages/AboutUsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
@@ -89,6 +90,10 @@ function App() {
             <Route
               path="/services/out-of-network-billing"
               element={<OutOfNetworkPage />}
+            />
+            <Route
+              path="/services/patient-billing"
+              element={<PatientBillingPage />}
             />
             <Route path="/about-us" element={<AboutUsPage />} />
             <Route path="/consult-now" element={<ConsultPage />} />

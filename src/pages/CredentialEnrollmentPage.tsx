@@ -5,7 +5,6 @@ import {
   ArrowRight,
   Check,
   ChevronDown,
-  Phone,
   BadgeCheck,
   CheckCircle,
   Circle,

@@ -237,13 +237,13 @@ const PatientBillingPage = () => {
                     className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/20 via-transparent to-transparent" />
+                  {/* Floating badge inside image */}
+                  <div className="absolute top-4 right-4 bg-gradient-to-br from-emerald-500 to-green-600 text-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-xl z-10 max-w-[150px] sm:max-w-[160px]">
+                    <div className="text-2xl sm:text-3xl font-bold leading-none mb-1">98%</div>
+                    <p className="text-[10px] sm:text-xs text-white/90">Patient Satisfaction</p>
+                  </div>
                 </div>
-                {/* Floating badges */}
-                <div className="absolute -top-4 -right-4 bg-gradient-to-br from-emerald-500 to-green-600 text-white rounded-xl sm:rounded-2xl p-4 shadow-xl z-10 max-w-[160px]">
-                  <div className="text-2xl sm:text-3xl font-bold leading-none mb-1">98%</div>
-                  <p className="text-xs text-white/90">Patient Satisfaction</p>
-                </div>
-                <div className="absolute bottom-6 left-6 bg-white rounded-xl p-3 sm:p-4 shadow-xl max-w-[170px]">
+                <div className="absolute -bottom-4 sm:-bottom-6 left-4 sm:left-6 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-xl border border-gray-100 max-w-[170px]">
                   <div className="text-2xl font-bold text-brand-blue mb-1">65%</div>
                   <p className="text-xs text-gray-600">Fewer Billing Disputes</p>
                 </div>

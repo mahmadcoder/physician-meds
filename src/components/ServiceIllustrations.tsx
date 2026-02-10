@@ -334,3 +334,48 @@ export const ReimbursementFlowSVG = () => (
   </svg>
 );
 
+/**
+ * Quality Payment Program SVGs
+ */
+
+export const QPPScoreGaugeSVG = () => (
+  <svg viewBox="0 0 400 280" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+    <defs>
+      <linearGradient id="qppGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#3B82F6" />
+        <stop offset="100%" stopColor="#10B981" />
+      </linearGradient>
+    </defs>
+
+    {/* Score arc background */}
+    <path d="M 60 220 A 140 140 0 0 1 340 220" stroke="#E5E7EB" strokeWidth="24" strokeLinecap="round" fill="none" />
+    
+    {/* Score arc filled - approximately 95% */}
+    <path d="M 60 220 A 140 140 0 1 1 326 178" stroke="url(#qppGrad)" strokeWidth="24" strokeLinecap="round" fill="none" />
+
+    {/* Center score */}
+    <text x="200" y="180" textAnchor="middle" fontSize="56" fill="#1E293B" fontWeight="800">95</text>
+    <text x="200" y="210" textAnchor="middle" fontSize="14" fill="#64748b" fontWeight="600">MIPS Score</text>
+
+    {/* Category indicators */}
+    <g transform="translate(50, 250)">
+      <circle cx="0" cy="0" r="6" fill="#3B82F6" />
+      <text x="12" y="4" fontSize="11" fill="#64748b" fontWeight="500">Quality</text>
+      
+      <circle cx="85" cy="0" r="6" fill="#10B981" />
+      <text x="97" y="4" fontSize="11" fill="#64748b" fontWeight="500">Cost</text>
+      
+      <circle cx="150" cy="0" r="6" fill="#8B5CF6" />
+      <text x="162" y="4" fontSize="11" fill="#64748b" fontWeight="500">PI</text>
+      
+      <circle cx="195" cy="0" r="6" fill="#F59E0B" />
+      <text x="207" y="4" fontSize="11" fill="#64748b" fontWeight="500">IA</text>
+    </g>
+
+    {/* Tick marks */}
+    <text x="52" y="238" textAnchor="middle" fontSize="11" fill="#94a3b8" fontWeight="600">0</text>
+    <text x="200" y="55" textAnchor="middle" fontSize="11" fill="#94a3b8" fontWeight="600">50</text>
+    <text x="348" y="238" textAnchor="middle" fontSize="11" fill="#94a3b8" fontWeight="600">100</text>
+  </svg>
+);
+

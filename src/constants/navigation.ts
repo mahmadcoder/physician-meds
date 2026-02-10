@@ -132,7 +132,7 @@ export const services: {
   },
   {
     name: "Quality Payment Program",
-    href: "#services",
+    href: "/services/quality-payment-program",
     description: "MIPS and APM reporting and optimization.",
     icon: Award,
   },

@@ -22,6 +22,7 @@ import DenialManagementPage from "./pages/DenialManagementPage";
 import OutOfNetworkPage from "./pages/OutOfNetworkPage";
 import PatientBillingPage from "./pages/PatientBillingPage";
 import QualityPaymentPage from "./pages/QualityPaymentPage";
+import PatientCenteredPage from "./pages/PatientCenteredPage";
 import ConsultPage from "./pages/ConsultPage";
 import AboutUsPage from "./pages/AboutUsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
@@ -99,6 +100,10 @@ function App() {
             <Route
               path="/services/quality-payment-program"
               element={<QualityPaymentPage />}
+            />
+            <Route
+              path="/services/patient-centered-medical-home"
+              element={<PatientCenteredPage />}
             />
             <Route path="/about-us" element={<AboutUsPage />} />
             <Route path="/consult-now" element={<ConsultPage />} />

@@ -339,43 +339,122 @@ export const ReimbursementFlowSVG = () => (
  */
 
 export const QPPScoreGaugeSVG = () => (
-  <svg viewBox="0 0 400 280" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+  <svg viewBox="0 0 320 340" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
     <defs>
-      <linearGradient id="qppGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <linearGradient id="qppRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" stopColor="#3B82F6" />
+        <stop offset="50%" stopColor="#6366F1" />
         <stop offset="100%" stopColor="#10B981" />
       </linearGradient>
+      <filter id="qppGlow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="6" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
     </defs>
 
-    {/* Score arc background */}
-    <path d="M 60 220 A 140 140 0 0 1 340 220" stroke="#E5E7EB" strokeWidth="24" strokeLinecap="round" fill="none" />
-    
-    {/* Score arc filled - approximately 95% */}
-    <path d="M 60 220 A 140 140 0 1 1 326 178" stroke="url(#qppGrad)" strokeWidth="24" strokeLinecap="round" fill="none" />
+    {/* Outer glow ring */}
+    <circle cx="160" cy="150" r="115" stroke="#3B82F6" strokeWidth="1" strokeDasharray="4 8" fill="none" opacity="0.15" />
 
-    {/* Center score */}
-    <text x="200" y="180" textAnchor="middle" fontSize="56" fill="#1E293B" fontWeight="800">95</text>
-    <text x="200" y="210" textAnchor="middle" fontSize="14" fill="#64748b" fontWeight="600">MIPS Score</text>
+    {/* Background track */}
+    <circle cx="160" cy="150" r="100" stroke="#E5E7EB" strokeWidth="14" fill="none" strokeLinecap="round" />
 
-    {/* Category indicators */}
-    <g transform="translate(50, 250)">
-      <circle cx="0" cy="0" r="6" fill="#3B82F6" />
-      <text x="12" y="4" fontSize="11" fill="#64748b" fontWeight="500">Quality</text>
-      
-      <circle cx="85" cy="0" r="6" fill="#10B981" />
-      <text x="97" y="4" fontSize="11" fill="#64748b" fontWeight="500">Cost</text>
-      
-      <circle cx="150" cy="0" r="6" fill="#8B5CF6" />
-      <text x="162" y="4" fontSize="11" fill="#64748b" fontWeight="500">PI</text>
-      
-      <circle cx="195" cy="0" r="6" fill="#F59E0B" />
-      <text x="207" y="4" fontSize="11" fill="#64748b" fontWeight="500">IA</text>
+    {/* Score ring — 95% filled (circumference ≈ 628, 95% ≈ 597) */}
+    <circle cx="160" cy="150" r="100" stroke="url(#qppRingGrad)" strokeWidth="14" fill="none" strokeLinecap="round"
+      strokeDasharray="597 628" strokeDashoffset="157" filter="url(#qppGlow)" />
+
+    {/* Center content */}
+    <text x="160" y="140" textAnchor="middle" fontSize="48" fill="#1E293B" fontWeight="800">95</text>
+    <text x="160" y="158" textAnchor="middle" fontSize="11" fill="#94A3B8" fontWeight="600" letterSpacing="2">/ 100</text>
+    <text x="160" y="180" textAnchor="middle" fontSize="13" fill="#3B82F6" fontWeight="700" letterSpacing="1">MIPS SCORE</text>
+
+    {/* Category colored bars */}
+    <g transform="translate(40, 270)">
+      <rect x="0" y="0" rx="4" ry="4" width="56" height="8" fill="#3B82F6" opacity="0.8" />
+      <text x="28" y="22" textAnchor="middle" fontSize="9" fill="#64748b" fontWeight="600">Quality</text>
+      <text x="28" y="32" textAnchor="middle" fontSize="8" fill="#94a3b8" fontWeight="500">30%</text>
+
+      <rect x="66" y="0" rx="4" ry="4" width="56" height="8" fill="#10B981" opacity="0.8" />
+      <text x="94" y="22" textAnchor="middle" fontSize="9" fill="#64748b" fontWeight="600">Cost</text>
+      <text x="94" y="32" textAnchor="middle" fontSize="8" fill="#94a3b8" fontWeight="500">30%</text>
+
+      <rect x="132" y="0" rx="4" ry="4" width="56" height="8" fill="#8B5CF6" opacity="0.8" />
+      <text x="160" y="22" textAnchor="middle" fontSize="9" fill="#64748b" fontWeight="600">PI</text>
+      <text x="160" y="32" textAnchor="middle" fontSize="8" fill="#94a3b8" fontWeight="500">25%</text>
+
+      <rect x="198" y="0" rx="4" ry="4" width="42" height="8" fill="#F59E0B" opacity="0.8" />
+      <text x="220" y="22" textAnchor="middle" fontSize="9" fill="#64748b" fontWeight="600">IA</text>
+      <text x="220" y="32" textAnchor="middle" fontSize="8" fill="#94a3b8" fontWeight="500">15%</text>
     </g>
-
-    {/* Tick marks */}
-    <text x="52" y="238" textAnchor="middle" fontSize="11" fill="#94a3b8" fontWeight="600">0</text>
-    <text x="200" y="55" textAnchor="middle" fontSize="11" fill="#94a3b8" fontWeight="600">50</text>
-    <text x="348" y="238" textAnchor="middle" fontSize="11" fill="#94a3b8" fontWeight="600">100</text>
   </svg>
 );
 
+export const PCMHHubSVG = () => (
+  <svg viewBox="0 0 400 380" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+    <defs>
+      <linearGradient id="pcmhGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#2563EB" />
+        <stop offset="100%" stopColor="#0891B2" />
+      </linearGradient>
+      <linearGradient id="pcmhLine" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#2563EB" stopOpacity="0.25" />
+        <stop offset="100%" stopColor="#0891B2" stopOpacity="0.25" />
+      </linearGradient>
+      <filter id="pcmhGlow" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="4" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+
+    {/* Outer decorative ring */}
+    <circle cx="200" cy="180" r="155" stroke="url(#pcmhGrad)" strokeWidth="1" strokeDasharray="4 8" fill="none" opacity="0.15" />
+
+    {/* Connecting lines */}
+    <line x1="200" y1="180" x2="105" y2="85" stroke="url(#pcmhLine)" strokeWidth="2.5" strokeDasharray="6 4" />
+    <line x1="200" y1="180" x2="295" y2="85" stroke="url(#pcmhLine)" strokeWidth="2.5" strokeDasharray="6 4" />
+    <line x1="200" y1="180" x2="60" y2="240" stroke="url(#pcmhLine)" strokeWidth="2.5" strokeDasharray="6 4" />
+    <line x1="200" y1="180" x2="340" y2="240" stroke="url(#pcmhLine)" strokeWidth="2.5" strokeDasharray="6 4" />
+    <line x1="200" y1="180" x2="200" y2="310" stroke="url(#pcmhLine)" strokeWidth="2.5" strokeDasharray="6 4" />
+
+    {/* Center patient circle */}
+    <circle cx="200" cy="180" r="55" fill="url(#pcmhGrad)" opacity="0.08" />
+    <circle cx="200" cy="180" r="40" fill="url(#pcmhGrad)" opacity="0.15" />
+    <circle cx="200" cy="180" r="28" fill="url(#pcmhGrad)" filter="url(#pcmhGlow)" />
+    <text x="200" y="186" textAnchor="middle" fontSize="22" fill="white" fontWeight="700">&#9829;</text>
+
+    {/* Pillar nodes — Access */}
+    <circle cx="105" cy="85" r="30" fill="#2563EB" opacity="0.1" />
+    <circle cx="105" cy="85" r="20" fill="#2563EB" />
+    <text x="105" y="90" textAnchor="middle" fontSize="14" fill="white" fontWeight="700">A</text>
+    <text x="105" y="125" textAnchor="middle" fontSize="13" fill="#475569" fontWeight="600">Access</text>
+
+    {/* Team */}
+    <circle cx="295" cy="85" r="30" fill="#7C3AED" opacity="0.1" />
+    <circle cx="295" cy="85" r="20" fill="#7C3AED" />
+    <text x="295" y="90" textAnchor="middle" fontSize="14" fill="white" fontWeight="700">T</text>
+    <text x="295" y="125" textAnchor="middle" fontSize="13" fill="#475569" fontWeight="600">Team</text>
+
+    {/* Quality */}
+    <circle cx="60" cy="240" r="30" fill="#059669" opacity="0.1" />
+    <circle cx="60" cy="240" r="20" fill="#059669" />
+    <text x="60" y="245" textAnchor="middle" fontSize="14" fill="white" fontWeight="700">Q</text>
+    <text x="60" y="280" textAnchor="middle" fontSize="13" fill="#475569" fontWeight="600">Quality</text>
+
+    {/* Data */}
+    <circle cx="340" cy="240" r="30" fill="#D97706" opacity="0.1" />
+    <circle cx="340" cy="240" r="20" fill="#D97706" />
+    <text x="340" y="245" textAnchor="middle" fontSize="14" fill="white" fontWeight="700">D</text>
+    <text x="340" y="280" textAnchor="middle" fontSize="13" fill="#475569" fontWeight="600">Data</text>
+
+    {/* Coordination */}
+    <circle cx="200" cy="310" r="30" fill="#DC2626" opacity="0.1" />
+    <circle cx="200" cy="310" r="20" fill="#DC2626" />
+    <text x="200" y="315" textAnchor="middle" fontSize="14" fill="white" fontWeight="700">C</text>
+    <text x="200" y="350" textAnchor="middle" fontSize="13" fill="#475569" fontWeight="600">Coordination</text>
+  </svg>
+);

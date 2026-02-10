@@ -138,7 +138,7 @@ export const services: {
   },
   {
     name: "Patient-Centered Medical Home",
-    href: "#services",
+    href: "/services/patient-centered-medical-home",
     description: "PCMH recognition and transformation support.",
     icon: Home,
   },

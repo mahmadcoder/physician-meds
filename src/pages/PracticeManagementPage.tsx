@@ -4,15 +4,16 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
-  ChevronDown,
-  Phone,
   Settings,
-  Star,
   CheckCircle,
   Shield,
 } from "lucide-react";
+import ServiceTestimonials from "@/components/ServiceTestimonials";
+import ServiceFAQ from "@/components/ServiceFAQ";
+import ServiceBottomCTA from "@/components/ServiceBottomCTA";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+
 import {
   pmHero,
   pmStats,
@@ -35,7 +36,6 @@ gsap.registerPlugin(ScrollTrigger);
 const PracticeManagementPage = () => {
   const pageRef = useRef<HTMLDivElement>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activePhase, setActivePhase] = useState(0);
 
   useEffect(() => {
@@ -275,14 +275,20 @@ const PracticeManagementPage = () => {
         <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_25%,rgba(255,255,255,0.05)_25%,rgba(255,255,255,0.05)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.05)_75%)] bg-[length:20px_20px]" />
         <div className="container-custom relative z-10 py-6 sm:py-8 md:py-10">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
-            {pmStats.map((stat) => (
-              <div key={stat.label} className="pm-stat text-center">
-                <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-none mb-1">
-                  {stat.value}<span className="text-xl sm:text-2xl">{stat.suffix}</span>
+            {pmStats.map((stat) => {
+              const Icon = stat.icon;
+              return (
+                <div key={stat.label} className="pm-stat text-center">
+                  <div className="flex justify-center mb-2">
+                    <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                  </div>
+                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-none mb-1">
+                    {stat.value}<span className="text-xl sm:text-2xl">{stat.suffix}</span>
+                  </div>
+                  <div className="text-[11px] sm:text-xs md:text-sm text-white/75 font-medium">{stat.label}</div>
                 </div>
-                <div className="text-[11px] sm:text-xs md:text-sm text-white/75 font-medium">{stat.label}</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -580,127 +586,37 @@ const PracticeManagementPage = () => {
         </div>
       </section>
 
-      {/* ========== TESTIMONIALS — Redesigned with metric cards ========== */}
-      <section className="py-10 sm:py-14 md:py-24">
-        <div className="container-custom">
-          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-            <span className="inline-block text-xs sm:text-sm font-semibold text-brand-blue uppercase tracking-wider mb-2 sm:mb-3">Client Results</span>
-            <h2 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-brand-dark mb-3 sm:mb-4">Trusted by Healthcare Practices</h2>
-            <p className="text-gray-600 text-xs sm:text-sm md:text-base">Real results from practices that transformed their operations with PhysicianMeds.</p>
-          </div>
-
-          <div className="pm-testimonials-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-            {pmTestimonials.map((testimonial) => {
-              const initials = testimonial.name.split(" ").map(n => n[0]).join("").slice(0, 2);
-              return (
-                <div key={testimonial.name} className="pm-testimonial group bg-white rounded-2xl sm:rounded-3xl border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden">
-                  {/* Top gradient accent bar */}
-                  <div className="h-1.5 bg-gradient-to-r from-brand-blue to-brand-accent" />
-
-                  <div className="p-5 sm:p-6 md:p-7">
-                    {/* Metric highlight */}
-                    <div className="flex items-center justify-between mb-4 sm:mb-5">
-                      <div className="flex gap-0.5">
-                        {Array.from({ length: testimonial.rating }).map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                        ))}
-                      </div>
-                      <div className="bg-brand-blue/5 rounded-lg px-3 py-1.5 text-center">
-                        <div className="text-sm sm:text-base font-bold text-brand-blue leading-none">{testimonial.metric}</div>
-                        <div className="text-[9px] sm:text-[10px] text-brand-blue/70 font-medium">{testimonial.metricLabel}</div>
-                      </div>
-                    </div>
-
-                    {/* Quote */}
-                    <div className="relative mb-5 sm:mb-6">
-                      <svg className="absolute -top-1 -left-1 w-6 h-6 text-brand-blue/10" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z" />
-                      </svg>
-                      <p className="text-gray-600 text-xs sm:text-sm leading-relaxed pl-5 sm:pl-6">{testimonial.quote}</p>
-                    </div>
-
-                    {/* Author */}
-                    <div className="flex items-center gap-3 pt-4 sm:pt-5 border-t border-gray-100">
-                      <div className="w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-gradient-to-br from-brand-blue to-brand-accent flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                        {initials}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="font-display font-bold text-brand-dark text-sm truncate">{testimonial.name}</div>
-                        <div className="text-xs text-gray-500 truncate">{testimonial.role} — {testimonial.specialty}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+      {/* ========== TESTIMONIALS ========== */}
+      <div className="pm-testimonials-grid">
+        <div className="pm-testimonial">
+          <ServiceTestimonials
+            title="Trusted by Healthcare Practices"
+            subtitle="Real results from practices that transformed their operations with PhysicianMeds."
+            testimonials={pmTestimonials}
+          />
         </div>
-      </section>
+      </div>
 
       {/* ========== FAQ ========== */}
-      <section className="py-10 sm:py-14 md:py-24 bg-gradient-to-b from-gray-50/40 to-white">
-        <div className="container-custom">
-          <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
-            <div className="lg:col-span-2">
-              <span className="inline-block text-xs sm:text-sm font-semibold text-brand-blue uppercase tracking-wider mb-2 sm:mb-3">FAQ</span>
-              <h2 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-brand-dark mb-3 sm:mb-4">{pmPageMeta.faqTitle}</h2>
-              <p className="text-gray-600 text-xs sm:text-sm md:text-base mb-5 sm:mb-6">{pmPageMeta.faqDescription}</p>
-              <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
-                <button className="inline-flex items-center gap-2 text-brand-blue font-semibold text-sm sm:text-base hover:gap-3 transition-all group">
-                  Still have questions? Talk to us
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </Link>
-            </div>
-
-            <div className="lg:col-span-3">
-              <div className="pm-faq-grid space-y-3 sm:space-y-4">
-                {pmFAQs.map((faq, index) => (
-                  <div key={faq.question} className="pm-faq-item bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
-                    <button onClick={() => setOpenFaq(openFaq === index ? null : index)} className="w-full flex items-center justify-between gap-3 p-4 sm:p-5 text-left">
-                      <h3 className="font-display font-bold text-brand-dark text-sm sm:text-base pr-4">{faq.question}</h3>
-                      <ChevronDown className={`w-4 sm:w-5 h-4 sm:h-5 text-brand-blue flex-shrink-0 transition-transform duration-300 ${openFaq === index ? "rotate-180" : ""}`} />
-                    </button>
-                    <div className={`overflow-hidden transition-all duration-300 ${openFaq === index ? "max-h-60" : "max-h-0"}`}>
-                      <p className="px-4 sm:px-5 pb-4 sm:pb-5 text-gray-600 text-xs sm:text-sm leading-relaxed">{faq.answer}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+      <div className="pm-faq-grid">
+        <div className="pm-faq-item">
+          <ServiceFAQ
+            title={pmPageMeta.faqTitle}
+            description={pmPageMeta.faqDescription}
+            faqs={pmFAQs}
+            ctaText="Still have questions? Talk to us"
+          />
         </div>
-      </section>
+      </div>
 
       {/* ========== BOTTOM CTA ========== */}
-      <section className="pb-12 sm:pb-16 md:pb-24">
-        <div className="container-custom">
-          <div className="pm-bottom-cta bg-gradient-to-br from-brand-blue via-brand-blue to-brand-accent rounded-xl sm:rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 lg:p-16 text-center text-white relative overflow-hidden">
-            <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_25%,rgba(255,255,255,0.03)_25%,rgba(255,255,255,0.03)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.03)_75%)] bg-[length:30px_30px]" />
-            <div className="absolute top-0 right-0 w-40 sm:w-56 md:w-72 h-40 sm:h-56 md:h-72 bg-white/5 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-32 sm:w-40 md:w-56 h-32 sm:h-40 md:h-56 bg-white/5 rounded-full blur-2xl" />
-
-            <div className="relative z-10">
-              <h2 className="font-display text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold mb-3 sm:mb-4">{pmPageMeta.ctaTitle}</h2>
-              <p className="text-white/90 max-w-2xl mx-auto mb-5 sm:mb-6 md:mb-8 text-xs sm:text-sm md:text-base">{pmPageMeta.ctaDescription}</p>
-              <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 justify-center">
-                <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
-                  <button className="w-full sm:w-auto bg-white text-brand-blue hover:bg-gray-100 font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-all flex items-center justify-center gap-2 group text-sm sm:text-base">
-                    Schedule Free Assessment
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </Link>
-                <a href={`tel:${contactInfo.phone}`}>
-                  <button className="w-full sm:w-auto border-2 border-white bg-transparent text-white hover:bg-white hover:text-brand-blue font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-all flex items-center justify-center gap-2 text-sm sm:text-base">
-                    <Phone className="w-4 h-4" />
-                    {contactInfo.phoneDisplay}
-                  </button>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div className="pm-bottom-cta">
+        <ServiceBottomCTA
+          title={pmPageMeta.ctaTitle}
+          description={pmPageMeta.ctaDescription}
+          primaryButtonText="Schedule Free Assessment"
+        />
+      </div>
     </div>
   );
 };

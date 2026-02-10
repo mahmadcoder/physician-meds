@@ -7,6 +7,9 @@ import {
   RefreshCw,
   Layers,
   BarChart3,
+  Zap,
+  CheckCircle,
+  Shield,
   type LucideIcon,
 } from "lucide-react";
 
@@ -30,6 +33,7 @@ export interface CEStat {
   value: string;
   suffix?: string;
   label: string;
+  icon: LucideIcon;
 }
 
 export interface CERisk {
@@ -91,10 +95,10 @@ export const ceHero = {
 // --- Stats ---
 
 export const ceStats: CEStat[] = [
-  { value: "60", suffix: "%", label: "Faster Credentialing" },
-  { value: "99.8", suffix: "%", label: "First-Pass Approval" },
-  { value: "500", suffix: "+", label: "Providers Credentialed" },
-  { value: "50", suffix: "+", label: "Insurance Networks" },
+  { value: "60", suffix: "%", label: "Faster Credentialing", icon: Zap },
+  { value: "99.8", suffix: "%", label: "First-Pass Approval", icon: CheckCircle },
+  { value: "500", suffix: "+", label: "Providers Credentialed", icon: Users },
+  { value: "50", suffix: "+", label: "Insurance Networks", icon: Shield },
 ];
 
 // --- Core Services ---

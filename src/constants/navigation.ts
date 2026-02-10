@@ -120,7 +120,7 @@ export const services: {
   },
   {
     name: "Out of Network Medical Billing",
-    href: "#services",
+    href: "/services/out-of-network-billing",
     description: "Specialized billing for out-of-network claims.",
     icon: FileText,
   },

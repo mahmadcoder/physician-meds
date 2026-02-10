@@ -163,3 +163,174 @@ export const CircularProcessSVG = () => (
     })}
   </svg>
 );
+
+export const OutOfNetworkCircularSVG = () => (
+  <svg viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+    <defs>
+      <linearGradient id="oonCircleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#3B82F6" />
+        <stop offset="100%" stopColor="#8B5CF6" />
+      </linearGradient>
+    </defs>
+    
+    {/* Central circle */}
+    <circle cx="300" cy="300" r="80" fill="url(#oonCircleGrad)" opacity="0.1" />
+    <circle cx="300" cy="300" r="80" stroke="url(#oonCircleGrad)" strokeWidth="3" fill="none" />
+    <text x="300" y="295" textAnchor="middle" className="fill-brand-blue font-bold text-base">Out-of-Network</text>
+    <text x="300" y="315" textAnchor="middle" className="fill-brand-blue font-bold text-base">Billing</text>
+    
+    {/* Connecting circle */}
+    <circle cx="300" cy="300" r="200" stroke="#E5E7EB" strokeWidth="2" strokeDasharray="5,5" fill="none" />
+    
+    {/* Process dots at 6 positions */}
+    {[0, 60, 120, 180, 240, 300].map((angle, i) => {
+      const rad = (angle - 90) * (Math.PI / 180);
+      const x = 300 + 200 * Math.cos(rad);
+      const y = 300 + 200 * Math.sin(rad);
+      const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EC4899', '#8B5CF6', '#06B6D4'];
+      const labels = ['Identify', 'Analyze', 'Document', 'Appeal', 'Follow-Up', 'Recover'];
+      
+      return (
+        <g key={i} className="oon-process-step">
+          <circle cx={x} cy={y} r="50" fill={colors[i]} />
+          <circle cx={x} cy={y} r="50" stroke={colors[i]} strokeWidth="3" fill="none" opacity="0.3" />
+          <text x={x} y={y - 5} textAnchor="middle" fill="white" fontWeight="700" fontSize="24">{i + 1}</text>
+          <text x={x} y={y + 15} textAnchor="middle" fill="white" fontWeight="500" fontSize="14">{labels[i]}</text>
+        </g>
+      );
+    })}
+  </svg>
+);
+
+/**
+ * Out of Network SVGs
+ */
+
+export const NetworkNodesSVG = () => (
+  <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+    <defs>
+      <linearGradient id="oonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#3B82F6" />
+        <stop offset="100%" stopColor="#8B5CF6" />
+      </linearGradient>
+    </defs>
+    
+    {/* Central patient node */}
+    <circle cx="200" cy="200" r="40" fill="url(#oonGrad)" />
+    <text x="200" y="205" textAnchor="middle" fontSize="14" fill="white" fontWeight="700">Patient</text>
+    
+    {/* Connecting lines to providers */}
+    {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
+      const rad = (angle * Math.PI) / 180;
+      const x = 200 + 120 * Math.cos(rad);
+      const y = 200 + 120 * Math.sin(rad);
+      const isInNetwork = i % 3 === 0;
+      
+      return (
+        <g key={i}>
+          {/* Connection line */}
+          <line
+            x1="200"
+            y1="200"
+            x2={x}
+            y2={y}
+            stroke={isInNetwork ? "#10B981" : "#4F7DF3"}
+            strokeWidth="2"
+            strokeDasharray={isInNetwork ? "0" : "5,5"}
+            opacity="0.4"
+          />
+          
+          {/* Provider node */}
+          <circle cx={x} cy={y} r="25" fill={isInNetwork ? "#10B981" : "#4F7DF3"} opacity="0.9" />
+          <text x={x} y={y + 4} textAnchor="middle" fontSize="10" fill="white" fontWeight="600">
+            {isInNetwork ? "In" : "Out"}
+          </text>
+        </g>
+      );
+    })}
+    
+    {/* Legend */}
+    <g transform="translate(20, 350)">
+      <circle cx="0" cy="0" r="8" fill="#10B981" />
+      <text x="15" y="4" fontSize="11" fill="#64748b">In-Network</text>
+      <circle cx="100" cy="0" r="8" fill="#4F7DF3" />
+      <text x="115" y="4" fontSize="11" fill="#64748b">Out-of-Network</text>
+    </g>
+  </svg>
+);
+
+export const BalanceScaleSVG = () => (
+  <svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+    {/* Central support */}
+    <rect x="145" y="120" width="10" height="60" fill="#64748b" rx="2" />
+    <rect x="120" y="175" width="60" height="8" fill="#64748b" rx="4" />
+    
+    {/* Balance beam - tilted towards right */}
+    <line x1="60" y1="130" x2="240" y2="110" stroke="#64748b" strokeWidth="4" strokeLinecap="round" />
+    
+    {/* Left side - Limited Network */}
+    <line x1="60" y1="130" x2="60" y2="155" stroke="#64748b" strokeWidth="2" />
+    <rect x="30" y="155" width="60" height="40" rx="4" fill="#F59E0B" opacity="0.2" stroke="#F59E0B" strokeWidth="2" />
+    <text x="60" y="178" textAnchor="middle" fontSize="10" fill="#F59E0B" fontWeight="700">Limited</text>
+    
+    {/* Right side - Unlimited Access - Higher position (advantage) */}
+    <line x1="240" y1="110" x2="240" y2="135" stroke="#64748b" strokeWidth="2" />
+    <rect x="210" y="135" width="60" height="40" rx="4" fill="#10B981" opacity="0.2" stroke="#10B981" strokeWidth="2" />
+    <text x="240" y="158" textAnchor="middle" fontSize="10" fill="#10B981" fontWeight="700">Unlimited</text>
+    
+    {/* Center pivot point */}
+    <circle cx="150" cy="120" r="6" fill="#64748b" />
+  </svg>
+);
+
+export const ReimbursementFlowSVG = () => (
+  <svg viewBox="0 0 600 150" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+    {/* Flow boxes */}
+    <g>
+      {/* Provider */}
+      <rect x="10" y="40" width="80" height="70" rx="8" fill="#EEF2FF" stroke="#4F7DF3" strokeWidth="2" />
+      <text x="50" y="65" textAnchor="middle" fontSize="12" fill="#4F7DF3" fontWeight="700">Provider</text>
+      <text x="50" y="85" textAnchor="middle" fontSize="10" fill="#64748b">Service</text>
+      
+      {/* Claim */}
+      <rect x="140" y="40" width="80" height="70" rx="8" fill="#F0FDF4" stroke="#10B981" strokeWidth="2" />
+      <text x="180" y="65" textAnchor="middle" fontSize="12" fill="#10B981" fontWeight="700">Claim</text>
+      <text x="180" y="85" textAnchor="middle" fontSize="10" fill="#64748b">Submitted</text>
+      
+      {/* Insurance */}
+      <rect x="270" y="40" width="80" height="70" rx="8" fill="#FEF3C7" stroke="#F59E0B" strokeWidth="2" />
+      <text x="310" y="65" textAnchor="middle" fontSize="12" fill="#F59E0B" fontWeight="700">Insurance</text>
+      <text x="310" y="85" textAnchor="middle" fontSize="10" fill="#64748b">Processing</text>
+      
+      {/* Reimbursement */}
+      <rect x="400" y="40" width="80" height="70" rx="8" fill="#FCE7F3" stroke="#EC4899" strokeWidth="2" />
+      <text x="440" y="65" textAnchor="middle" fontSize="12" fill="#EC4899" fontWeight="700">Payment</text>
+      <text x="440" y="85" textAnchor="middle" fontSize="10" fill="#64748b">Issued</text>
+      
+      {/* Patient */}
+      <rect x="530" y="40" width="60" height="70" rx="8" fill="#EDE9FE" stroke="#8B5CF6" strokeWidth="2" />
+      <text x="560" y="70" textAnchor="middle" fontSize="12" fill="#8B5CF6" fontWeight="700">Patient</text>
+      <text x="560" y="90" textAnchor="middle" fontSize="10" fill="#64748b">Paid</text>
+    </g>
+    
+    {/* Arrows */}
+    <g>
+      <line x1="95" y1="75" x2="135" y2="75" stroke="#64748b" strokeWidth="2" markerEnd="url(#arrowOON)" />
+      <line x1="225" y1="75" x2="265" y2="75" stroke="#64748b" strokeWidth="2" markerEnd="url(#arrowOON)" />
+      <line x1="355" y1="75" x2="395" y2="75" stroke="#64748b" strokeWidth="2" markerEnd="url(#arrowOON)" />
+      <line x1="485" y1="75" x2="525" y2="75" stroke="#64748b" strokeWidth="2" markerEnd="url(#arrowOON)" />
+    </g>
+    
+    {/* Dollar signs */}
+    <text x="115" y="60" fontSize="14" fill="#10B981" fontWeight="700">$</text>
+    <text x="375" y="60" fontSize="14" fill="#10B981" fontWeight="700">$$</text>
+    <text x="505" y="60" fontSize="14" fill="#10B981" fontWeight="700">$$$</text>
+    
+    <defs>
+      <marker id="arrowOON" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+        <polygon points="0 0, 10 5, 0 10" fill="#64748b" />
+      </marker>
+    </defs>
+  </svg>
+);
+

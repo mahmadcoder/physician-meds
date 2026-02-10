@@ -15,6 +15,7 @@ import {
   Zap,
   RefreshCw,
   MonitorCheck,
+  Heart,
   type LucideIcon,
 } from "lucide-react";
 
@@ -38,6 +39,7 @@ export interface PMStat {
   value: string;
   suffix?: string;
   label: string;
+  icon: LucideIcon;
 }
 
 export interface PMChallenge {
@@ -104,10 +106,10 @@ export const pmHero = {
 // --- Stats ---
 
 export const pmStats: PMStat[] = [
-  { value: "40", suffix: "%", label: "Reduction in Admin Tasks" },
-  { value: "95", suffix: "%", label: "Patient Satisfaction Rate" },
-  { value: "60", suffix: "%", label: "Faster Claim Processing" },
-  { value: "100", suffix: "+", label: "Practices Managed" },
+  { value: "40", suffix: "%", label: "Reduction in Admin Tasks", icon: TrendingUp },
+  { value: "95", suffix: "%", label: "Patient Satisfaction Rate", icon: Heart },
+  { value: "60", suffix: "%", label: "Faster Claim Processing", icon: Zap },
+  { value: "100", suffix: "+", label: "Practices Managed", icon: Users },
 ];
 
 // --- Core Features ---

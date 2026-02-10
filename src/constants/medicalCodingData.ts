@@ -17,6 +17,8 @@ import {
   Users,
   Target,
   Award,
+  TrendingUp,
+  CheckCircle,
   type LucideIcon,
 } from "lucide-react";
 
@@ -38,6 +40,7 @@ export interface CodingStat {
   value: string;
   suffix?: string;
   label: string;
+  icon: LucideIcon;
 }
 
 export interface CodingPainPoint {
@@ -112,10 +115,10 @@ export const codingHero = {
 // --- Stats ---
 
 export const codingStats: CodingStat[] = [
-  { value: "100", suffix: "%", label: "HIPAA Compliant" },
-  { value: "30", suffix: "%", label: "Revenue Increase" },
-  { value: "99", suffix: "%", label: "Code Accuracy" },
-  { value: "98.5", suffix: "%", label: "First-Pass Acceptance" },
+  { value: "100", suffix: "%", label: "HIPAA Compliant", icon: ShieldCheck },
+  { value: "30", suffix: "%", label: "Revenue Increase", icon: TrendingUp },
+  { value: "99", suffix: "%", label: "Code Accuracy", icon: Target },
+  { value: "98.5", suffix: "%", label: "First-Pass Acceptance", icon: CheckCircle },
 ];
 
 // --- Why Accurate Coding Matters ---

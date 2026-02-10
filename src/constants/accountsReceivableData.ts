@@ -37,6 +37,7 @@ export interface ARStat {
   value: string;
   suffix?: string;
   label: string;
+  icon: LucideIcon;
 }
 
 export interface ARChallenge {
@@ -99,10 +100,10 @@ export const arHero = {
 // --- Stats ---
 
 export const arStats: ARStat[] = [
-  { value: "35", suffix: "%", label: "Increase in Collections" },
-  { value: "40", suffix: "", label: "Average A/R Days" },
-  { value: "99", suffix: "%", label: "Clean Claim Rate" },
-  { value: "10", suffix: "M+", label: "Revenue Recovered" },
+  { value: "35", suffix: "%", label: "Increase in Collections", icon: TrendingUp },
+  { value: "40", suffix: "", label: "Average A/R Days", icon: Clock },
+  { value: "99", suffix: "%", label: "Clean Claim Rate", icon: CheckCircle },
+  { value: "10", suffix: "M+", label: "Revenue Recovered", icon: DollarSign },
 ];
 
 // --- Core Features ---

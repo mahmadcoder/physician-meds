@@ -14,6 +14,8 @@ import {
   TrendingDown,
   Clock,
   Scale,
+  CheckCircle,
+  TrendingUp,
   type LucideIcon,
 } from "lucide-react";
 
@@ -40,6 +42,7 @@ export interface BillingStat {
   value: string;
   label: string;
   suffix?: string;
+  icon: LucideIcon;
 }
 
 export interface BillingPainPoint {
@@ -74,10 +77,10 @@ export const billingHero = {
 // --- Trust Stats ---
 
 export const billingStats: BillingStat[] = [
-  { value: "98.5", suffix: "%", label: "First-Pass Claim Acceptance" },
-  { value: "95", suffix: "%", label: "Net Collection Rate" },
-  { value: "24/7", label: "Expert Support Available" },
-  { value: "35-45", suffix: "%", label: "Revenue Lift Potential" },
+  { value: "98.5", suffix: "%", label: "First-Pass Claim Acceptance", icon: CheckCircle },
+  { value: "95", suffix: "%", label: "Net Collection Rate", icon: TrendingUp },
+  { value: "24/7", label: "Expert Support Available", icon: Headphones },
+  { value: "35-45", suffix: "%", label: "Revenue Lift Potential", icon: DollarSign },
 ];
 
 // --- Why Choose Us Highlights ---

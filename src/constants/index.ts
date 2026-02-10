@@ -8,3 +8,4 @@ export * from "./practiceManagementData";
 export * from "./credentialEnrollmentData";
 export * from "./accountsReceivableData";
 export * from "./denialManagementData";
+export * from "./outOfNetworkData";

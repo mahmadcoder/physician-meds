@@ -19,6 +19,7 @@ import PracticeManagementPage from "./pages/PracticeManagementPage";
 import CredentialEnrollmentPage from "./pages/CredentialEnrollmentPage";
 import AccountsReceivablePage from "./pages/AccountsReceivablePage";
 import DenialManagementPage from "./pages/DenialManagementPage";
+import OutOfNetworkPage from "./pages/OutOfNetworkPage";
 import ConsultPage from "./pages/ConsultPage";
 import AboutUsPage from "./pages/AboutUsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
@@ -84,6 +85,10 @@ function App() {
             <Route
               path="/services/denial-management"
               element={<DenialManagementPage />}
+            />
+            <Route
+              path="/services/out-of-network-billing"
+              element={<OutOfNetworkPage />}
             />
             <Route path="/about-us" element={<AboutUsPage />} />
             <Route path="/consult-now" element={<ConsultPage />} />

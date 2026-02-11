@@ -232,7 +232,7 @@ const PatientCenteredPage = () => {
                   <div className="text-2xl sm:text-3xl font-bold leading-none mb-1">97%</div>
                   <p className="text-xs text-white/90">NCQA Approval Rate</p>
                 </div>
-                <div className="absolute -bottom-4 sm:-bottom-6 left-4 sm:left-6 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-xl border border-gray-100 max-w-[170px]">
+                <div className="absolute bottom-6 left-6 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-xl border border-gray-100 max-w-[170px]">
                   <div className="text-2xl font-bold text-brand-blue mb-1">20%+</div>
                   <p className="text-[10px] sm:text-xs text-gray-600">Revenue Increase</p>
                 </div>

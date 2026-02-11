@@ -172,9 +172,9 @@ const QualityPaymentPage = () => {
             </Link>
           </div>
 
-          <div className="qpp-badge inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-500/10 rounded-full mb-6 sm:mb-8">
-            <Award className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-indigo-600" />
-            <span className="text-xs sm:text-sm font-medium text-indigo-600">{qppHero.badge}</span>
+          <div className="qpp-badge inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-brand-blue/10 rounded-full mb-6 sm:mb-8">
+            <Award className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-brand-blue" />
+            <span className="text-xs sm:text-sm font-medium text-brand-blue">{qppHero.badge}</span>
           </div>
 
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-16 items-center">
@@ -216,22 +216,22 @@ const QualityPaymentPage = () => {
 
             <div className="lg:col-span-5">
               <div className="qpp-hero-img relative">
-                <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/10 border-4 border-white">
+                <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-brand-blue/10 border-4 border-white">
                   <img
                     src={qppHero.images.hero}
                     alt="Quality Payment Program"
                     className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/20 via-transparent to-transparent" />
-                  {/* MIPS Score floating badge */}
-                  <div className="absolute top-4 right-4 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-xl z-10 max-w-[150px] sm:max-w-[160px]">
-                    <div className="text-2xl sm:text-3xl font-bold text-indigo-600 leading-none mb-1">95+</div>
-                    <p className="text-[10px] sm:text-xs text-gray-600">Avg. MIPS Score</p>
-                  </div>
-                  <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 bg-gradient-to-br from-emerald-500 to-green-600 text-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-xl border border-white/20 max-w-[170px] z-10">
-                    <div className="text-2xl font-bold mb-1">+9%</div>
-                    <p className="text-[10px] sm:text-xs text-white/90">Max Incentive Earned</p>
-                  </div>
+                </div>
+                {/* Floating stat badges */}
+                <div className="absolute -top-4 -right-4 bg-gradient-to-br from-emerald-500 to-green-600 text-white rounded-xl sm:rounded-2xl p-4 shadow-xl z-10 max-w-[160px]">
+                  <div className="text-2xl sm:text-3xl font-bold leading-none mb-1">95+</div>
+                  <p className="text-xs text-white/90">Avg. MIPS Score</p>
+                </div>
+                <div className="absolute -bottom-4 sm:-bottom-6 left-4 sm:left-6 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-xl border border-gray-100 max-w-[170px]">
+                  <div className="text-2xl font-bold text-brand-blue mb-1">+9%</div>
+                  <p className="text-[10px] sm:text-xs text-gray-600">Max Incentive Earned</p>
                 </div>
               </div>
             </div>
@@ -240,7 +240,7 @@ const QualityPaymentPage = () => {
       </section>
 
       {/* ========== STATS BAR ========== */}
-      <section className="qpp-stats-section bg-gradient-to-r from-indigo-600 via-brand-blue to-indigo-600 relative overflow-hidden">
+      <section className="qpp-stats-section bg-gradient-to-r from-brand-blue via-brand-accent to-brand-blue relative overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_25%,rgba(255,255,255,0.05)_25%,rgba(255,255,255,0.05)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.05)_75%)] bg-[length:20px_20px]" />
         <div className="container-custom relative z-10 py-6 sm:py-8 md:py-10">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">

@@ -23,6 +23,12 @@ import OutOfNetworkPage from "./pages/OutOfNetworkPage";
 import PatientBillingPage from "./pages/PatientBillingPage";
 import QualityPaymentPage from "./pages/QualityPaymentPage";
 import PatientCenteredPage from "./pages/PatientCenteredPage";
+import RCMSoftwarePage from "./pages/RCMSoftwarePage";
+import VirtualAssistantPage from "./pages/VirtualAssistantPage";
+import IncentiveProgramsPage from "./pages/IncentiveProgramsPage";
+import MedicalAuditPage from "./pages/MedicalAuditPage";
+import DigitalMarketingPage from "./pages/DigitalMarketingPage";
+import PracticeReportingPage from "./pages/PracticeReportingPage";
 import ConsultPage from "./pages/ConsultPage";
 import AboutUsPage from "./pages/AboutUsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
@@ -104,6 +110,30 @@ function App() {
             <Route
               path="/services/patient-centered-medical-home"
               element={<PatientCenteredPage />}
+            />
+            <Route
+              path="/services/rcm-software"
+              element={<RCMSoftwarePage />}
+            />
+            <Route
+              path="/services/virtual-assistants"
+              element={<VirtualAssistantPage />}
+            />
+            <Route
+              path="/services/incentive-programs"
+              element={<IncentiveProgramsPage />}
+            />
+            <Route
+              path="/services/medical-audit"
+              element={<MedicalAuditPage />}
+            />
+            <Route
+              path="/services/digital-marketing"
+              element={<DigitalMarketingPage />}
+            />
+            <Route
+              path="/services/practice-reporting"
+              element={<PracticeReportingPage />}
             />
             <Route path="/about-us" element={<AboutUsPage />} />
             <Route path="/consult-now" element={<ConsultPage />} />

@@ -946,10 +946,10 @@ const BottomCTA = () => {
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
               </a>
               <a
-                href="tel:+18006406409"
+                href="tel:+14809189621"
                 className="inline-flex items-center gap-2 text-white/80 hover:text-white font-medium text-sm sm:text-base transition-colors"
               >
-                or call (800) 640-6409
+                or call +14809189621
               </a>
             </div>
           </div>

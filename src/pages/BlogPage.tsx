@@ -297,7 +297,7 @@ const BlogPage = () => {
         <section className="pb-12 sm:pb-16">
           <div className="container-custom">
             <Link
-              to={`/blog/${featuredArticle.slug}`}
+              to={`/blogs/${featuredArticle.slug}`}
               className="blog-featured group block"
             >
               <div className="relative bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl shadow-gray-200/50 border border-gray-100 hover:shadow-2xl hover:shadow-brand-blue/10 transition-all duration-500">
@@ -412,7 +412,7 @@ const BlogPage = () => {
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
                 {paginatedArticles.map((article) => (
                   <Link
-                    to={`/blog/${article.slug}`}
+                    to={`/blogs/${article.slug}`}
                     key={article.id}
                     className="blog-card-item group"
                   >

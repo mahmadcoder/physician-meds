@@ -70,7 +70,7 @@ const Blog = () => {
             </h2>
           </div>
           <Link
-            to="/blog"
+            to="/blogs"
             onClick={() => window.scrollTo(0, 0)}
             className="inline-flex items-center text-brand-blue font-medium hover:underline group"
           >
@@ -83,7 +83,7 @@ const Blog = () => {
         <div className="blog-grid grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {homeArticles.map((article) => (
             <Link
-              to={`/blog/${article.slug}`}
+              to={`/blogs/${article.slug}`}
               key={article.id}
               onClick={() => window.scrollTo(0, 0)}
               className="blog-card group"

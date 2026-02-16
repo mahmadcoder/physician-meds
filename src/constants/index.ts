@@ -18,3 +18,4 @@ export * from "./incentiveProgramsData";
 export * from "./medicalAuditData";
 export * from "./digitalMarketingData";
 export * from "./practiceReportingData";
+export * from "./testimonialData";

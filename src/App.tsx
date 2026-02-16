@@ -11,6 +11,7 @@ import Stats from "./sections/Stats";
 import Testimonials from "./sections/Testimonials";
 import Blog from "./sections/Blog";
 import CTA from "./sections/CTA";
+import Newsletter from "./sections/Newsletter";
 import Footer from "./sections/Footer";
 import ServicesPage from "./pages/ServicesPage";
 import MedicalBillingPage from "./pages/MedicalBillingPage";
@@ -36,6 +37,9 @@ import TermsConditionsPage from "./pages/TermsConditionsPage";
 import BlogPage from "./pages/BlogPage";
 import BlogArticlePage from "./pages/BlogArticlePage";
 import CookieConsent from "./components/CookieConsent";
+import TestimonialsPage from "./pages/TestimonialsPage";
+import SitemapPage from "./pages/SitemapPage";
+import ContactUsPage from "./pages/ContactUsPage";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -58,6 +62,7 @@ const HomePage = () => {
       <Testimonials />
       <Blog />
       <CTA />
+      <Newsletter />
     </>
   );
 };
@@ -137,10 +142,13 @@ function App() {
             />
             <Route path="/about-us" element={<AboutUsPage />} />
             <Route path="/consult-now" element={<ConsultPage />} />
+            <Route path="/contact-us" element={<ContactUsPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/terms-conditions" element={<TermsConditionsPage />} />
-            <Route path="/blog" element={<BlogPage />} />
-            <Route path="/blog/:slug" element={<BlogArticlePage />} />
+            <Route path="/blogs" element={<BlogPage />} />
+            <Route path="/blogs/:slug" element={<BlogArticlePage />} />
+            <Route path="/testimonials" element={<TestimonialsPage />} />
+            <Route path="/sitemap" element={<SitemapPage />} />
           </Routes>
         </main>
         <Footer />

@@ -91,7 +91,7 @@ const Stats = () => {
   return (
     <section
       ref={sectionRef}
-      className="py-16 bg-gradient-to-r from-brand-blue to-brand-accent relative overflow-hidden"
+      className="py-10 md:py-14 bg-gradient-to-r from-brand-blue to-brand-accent relative overflow-hidden"
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">

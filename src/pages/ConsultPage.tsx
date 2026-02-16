@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { contactInfo } from '@/constants';
+import Newsletter from '@/sections/Newsletter';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -522,6 +523,9 @@ const ConsultPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Newsletter Section */}
+      <Newsletter />
     </div>
   );
 };

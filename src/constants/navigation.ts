@@ -35,18 +35,11 @@ export const navLinks = [
     isPage: false,
   },
   {
-    name: "Process",
-    href: "#process",
-    hasDropdown: false,
-    dropdownType: "",
+    name: "Resources",
+    href: "#",
+    hasDropdown: true,
+    dropdownType: "resources",
     isPage: false,
-  },
-  {
-    name: "Blog",
-    href: "/blog",
-    hasDropdown: false,
-    dropdownType: "",
-    isPage: true,
   },
 ];
 
@@ -59,7 +52,7 @@ export const companyLinks = [
   },
   {
     name: "Contact Us",
-    href: "/consult-now",
+    href: "/contact-us",
     description: "Get in touch with our team",
   },
   {
@@ -71,6 +64,20 @@ export const companyLinks = [
     name: "Terms & Conditions",
     href: "/terms-conditions",
     description: "Our terms of service",
+  },
+];
+
+// Resources Links - Used in Resources dropdown
+export const resourcesLinks = [
+  {
+    name: "Blogs",
+    href: "/blogs",
+    description: "Latest insights and articles",
+  },
+  {
+    name: "Testimonials",
+    href: "/testimonials",
+    description: "What our clients say about us",
   },
 ];
 
@@ -182,8 +189,8 @@ export const services: {
 
 // Contact Information
 export const contactInfo = {
-  phone: "+18882199988",
-  phoneDisplay: "(888) 219-9988",
+  phone: "+14809189621",
+  phoneDisplay: "+14809189621",
   email: "info@physicianmeds.com",
   address: "3044 Breckenridge Ln STE102-404, Louisville, KY 40220",
   addressUrl:

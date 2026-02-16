@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { navLinks, services, contactInfo, companyLinks } from "@/constants";
+import { navLinks, services, contactInfo, companyLinks, resourcesLinks } from "@/constants";
 
 // Top Bar Component - Hidden on mobile, visible on md and above
 const TopBar = ({
@@ -79,6 +79,7 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isCompanyOpen, setIsCompanyOpen] = useState(false);
+  const [isResourcesOpen, setIsResourcesOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -91,9 +92,14 @@ const Header = () => {
   const isOnCompanyPage = [
     "/about-us",
     "/consult-now",
+    "/contact-us",
     "/privacy-policy",
     "/terms-conditions",
   ].includes(location.pathname);
+  // Check if on resources pages
+  const isOnResourcesPage = ["/blogs", "/testimonials"].includes(
+    location.pathname
+  );
 
   // Entrance animation on mount
   useEffect(() => {
@@ -114,6 +120,7 @@ const Header = () => {
     setIsMobileMenuOpen(false);
     setIsServicesOpen(false);
     setIsCompanyOpen(false);
+    setIsResourcesOpen(false);
 
     // If not on home page, navigate to home first then scroll
     if (!isOnHomePage) {
@@ -134,10 +141,13 @@ const Header = () => {
   ) => {
     if (dropdownType === "services") {
       setIsServicesOpen(isEntering);
-      if (isEntering) setIsCompanyOpen(false);
+      if (isEntering) { setIsCompanyOpen(false); setIsResourcesOpen(false); }
     } else if (dropdownType === "company") {
       setIsCompanyOpen(isEntering);
-      if (isEntering) setIsServicesOpen(false);
+      if (isEntering) { setIsServicesOpen(false); setIsResourcesOpen(false); }
+    } else if (dropdownType === "resources") {
+      setIsResourcesOpen(isEntering);
+      if (isEntering) { setIsServicesOpen(false); setIsCompanyOpen(false); }
     }
   };
 
@@ -202,7 +212,8 @@ const Header = () => {
                       className={`relative text-[15px] font-semibold transition-colors duration-300 flex items-center gap-1.5 ${
                         (link.dropdownType === "services" &&
                           isOnServicesPage) ||
-                        (link.dropdownType === "company" && isOnCompanyPage)
+                        (link.dropdownType === "company" && isOnCompanyPage) ||
+                        (link.dropdownType === "resources" && isOnResourcesPage)
                           ? "text-brand-blue"
                           : "text-gray-700 hover:text-brand-blue"
                       }`}
@@ -212,7 +223,8 @@ const Header = () => {
                         className={`w-4 h-4 transition-transform duration-300 ${
                           (link.dropdownType === "services" &&
                             isServicesOpen) ||
-                          (link.dropdownType === "company" && isCompanyOpen)
+                          (link.dropdownType === "company" && isCompanyOpen) ||
+                          (link.dropdownType === "resources" && isResourcesOpen)
                             ? "rotate-180"
                             : ""
                         }`}
@@ -340,6 +352,39 @@ const Header = () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Resources Dropdown */}
+                  {link.dropdownType === "resources" && (
+                    <div
+                      className={`absolute top-full left-0 pt-4 transition-all duration-300 ${
+                        isResourcesOpen
+                          ? "opacity-100 visible translate-y-0"
+                          : "opacity-0 invisible -translate-y-2"
+                      }`}
+                    >
+                      <div className="bg-white rounded-xl shadow-2xl shadow-black/10 border border-gray-100 p-4 min-w-[220px]">
+                        <div className="space-y-1">
+                          {resourcesLinks.map((resLink) => (
+                            <Link
+                              key={resLink.name}
+                              to={resLink.href}
+                              onClick={() => {
+                                setIsResourcesOpen(false);
+                                window.scrollTo(0, 0);
+                              }}
+                              className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                location.pathname === resLink.href
+                                  ? "bg-brand-blue/10 text-brand-blue"
+                                  : "text-gray-600 hover:text-brand-blue hover:bg-brand-blue/5"
+                              }`}
+                            >
+                              {resLink.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </nav>
@@ -402,15 +447,22 @@ const Header = () => {
                         if (link.dropdownType === "services") {
                           setIsServicesOpen(!isServicesOpen);
                           setIsCompanyOpen(false);
+                          setIsResourcesOpen(false);
                         } else if (link.dropdownType === "company") {
                           setIsCompanyOpen(!isCompanyOpen);
                           setIsServicesOpen(false);
+                          setIsResourcesOpen(false);
+                        } else if (link.dropdownType === "resources") {
+                          setIsResourcesOpen(!isResourcesOpen);
+                          setIsServicesOpen(false);
+                          setIsCompanyOpen(false);
                         }
                       }}
                       className={`flex items-center justify-between text-base font-medium transition-colors py-2 cursor-pointer ${
                         (link.dropdownType === "services" &&
                           isOnServicesPage) ||
-                        (link.dropdownType === "company" && isOnCompanyPage)
+                        (link.dropdownType === "company" && isOnCompanyPage) ||
+                        (link.dropdownType === "resources" && isOnResourcesPage)
                           ? "text-brand-blue"
                           : "text-gray-600 hover:text-brand-blue"
                       }`}
@@ -420,7 +472,8 @@ const Header = () => {
                         className={`w-4 h-4 transition-transform duration-300 ${
                           (link.dropdownType === "services" &&
                             isServicesOpen) ||
-                          (link.dropdownType === "company" && isCompanyOpen)
+                          (link.dropdownType === "company" && isCompanyOpen) ||
+                          (link.dropdownType === "resources" && isResourcesOpen)
                             ? "rotate-180"
                             : ""
                         }`}
@@ -513,6 +566,38 @@ const Header = () => {
                             View All Services
                             <ArrowRight className="w-4 h-4" />
                           </Link>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Mobile Resources Dropdown */}
+                    {link.dropdownType === "resources" && (
+                      <div
+                        className={`overflow-hidden transition-all duration-300 ${
+                          isResourcesOpen
+                            ? "max-h-[200px] opacity-100"
+                            : "max-h-0 opacity-0"
+                        }`}
+                      >
+                        <div className="pl-4 py-2 space-y-1 border-l-2 border-brand-blue/20 ml-2">
+                          {resourcesLinks.map((resLink) => (
+                            <Link
+                              key={resLink.name}
+                              to={resLink.href}
+                              onClick={() => {
+                                setIsMobileMenuOpen(false);
+                                setIsResourcesOpen(false);
+                                window.scrollTo(0, 0);
+                              }}
+                              className={`block py-2 text-sm transition-colors ${
+                                location.pathname === resLink.href
+                                  ? "text-brand-blue font-medium"
+                                  : "text-gray-600 hover:text-brand-blue"
+                              }`}
+                            >
+                              {resLink.name}
+                            </Link>
+                          ))}
                         </div>
                       </div>
                     )}

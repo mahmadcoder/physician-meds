@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -9,7 +9,6 @@ import {
   MapPin,
   Phone,
   Mail,
-  CheckCircle,
 } from "lucide-react";
 
 // X (Twitter) Icon Component
@@ -35,8 +34,6 @@ const LinkedInIcon = ({ className }: { className?: string }) => (
     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
   </svg>
 );
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { contactInfo } from "@/constants";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -49,16 +46,13 @@ const footerLinks = {
     { name: "Denial Management", href: "#services", isPage: false },
     { name: "RCM Software", href: "#services", isPage: false },
   ],
-  company: [
+  quickLinks: [
     { name: "About Us", href: "/about-us", isPage: true },
-    { name: "Our Process", href: "#process", isPage: false },
-    { name: "Blog", href: "/blog", isPage: true },
-  ],
-  support: [
-    { name: "Contact Us", href: "/consult-now", isPage: true },
-    { name: "FAQs", href: "#", isPage: false },
+    { name: "Blogs", href: "/blogs", isPage: true },
+    { name: "Contact Us", href: "/contact-us", isPage: true },
     { name: "Privacy Policy", href: "/privacy-policy", isPage: true },
-    { name: "Terms of Service", href: "/terms-conditions", isPage: true },
+    { name: "Terms & Conditions", href: "/terms-conditions", isPage: true },
+    { name: "Sitemap", href: "/sitemap", isPage: true },
   ],
 };
 
@@ -71,8 +65,6 @@ const socialLinks = [
 
 const Footer = () => {
   const footerRef = useRef<HTMLDivElement>(null);
-  const [email, setEmail] = useState("");
-  const [isSubscribed, setIsSubscribed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -114,17 +106,6 @@ const Footer = () => {
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      setIsSubscribed(true);
-      setTimeout(() => {
-        setIsSubscribed(false);
-        setEmail("");
-      }, 3000);
-    }
-  };
-
   const scrollToSection = (href: string) => {
     // If not on home page, navigate to home first then scroll
     if (!isOnHomePage && href.startsWith("#")) {
@@ -163,7 +144,7 @@ const Footer = () => {
       <div className="footer-content container-custom relative z-10 py-16 md:py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
           {/* Brand Column */}
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-5">
             {/* Logo */}
             <Link
               to="/"
@@ -234,7 +215,7 @@ const Footer = () => {
           </div>
 
           {/* Services Links */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-3">
             <h4 className="font-display font-semibold text-lg mb-6">
               Services
             </h4>
@@ -268,136 +249,32 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Company Links */}
-          <div className="lg:col-span-2">
-            <h4 className="font-display font-semibold text-lg mb-6">Company</h4>
+          {/* Quick Links */}
+          <div className="lg:col-span-4">
+            <h4 className="font-display font-semibold text-lg mb-6">Quick Links</h4>
             <ul className="space-y-3">
-              {footerLinks.company.map((link, index) => (
+              {footerLinks.quickLinks.map((link, index) => (
                 <li key={index}>
-                  {link.isPage ? (
-                    <Link
-                      to={link.href}
-                      onClick={() => window.scrollTo(0, 0)}
-                      className="text-gray-400 hover:text-brand-blue transition-colors duration-300 hover:translate-x-1 inline-block"
-                    >
-                      {link.name}
-                    </Link>
-                  ) : (
-                    <a
-                      href={link.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        scrollToSection(link.href);
-                      }}
-                      className="text-gray-400 hover:text-brand-blue transition-colors duration-300 hover:translate-x-1 inline-block"
-                    >
-                      {link.name}
-                    </a>
-                  )}
+                  <Link
+                    to={link.href}
+                    onClick={() => window.scrollTo(0, 0)}
+                    className="text-gray-400 hover:text-brand-blue transition-colors duration-300 hover:translate-x-1 inline-block text-sm"
+                  >
+                    {link.name}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Support Links */}
-          <div className="lg:col-span-2">
-            <h4 className="font-display font-semibold text-lg mb-6">Support</h4>
-            <ul className="space-y-3">
-              {footerLinks.support.map((link, index) => (
-                <li key={index}>
-                  {link.isPage ? (
-                    <Link
-                      to={link.href}
-                      onClick={() => window.scrollTo(0, 0)}
-                      className="text-gray-400 hover:text-brand-blue transition-colors duration-300 hover:translate-x-1 inline-block"
-                    >
-                      {link.name}
-                    </Link>
-                  ) : (
-                    <a
-                      href={link.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (link.href.startsWith("#")) {
-                          scrollToSection(link.href);
-                        }
-                      }}
-                      className="text-gray-400 hover:text-brand-blue transition-colors duration-300 hover:translate-x-1 inline-block"
-                    >
-                      {link.name}
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div className="lg:col-span-2">
-            <h4 className="font-display font-semibold text-lg mb-6">
-              Newsletter
-            </h4>
-            <p className="text-gray-400 text-sm mb-4">
-              Get the latest medical billing insights delivered to your inbox.
-            </p>
-            <form onSubmit={handleSubscribe} className="space-y-3">
-              <Input
-                type="email"
-                placeholder="Your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 border-white/20 text-white placeholder:text-gray-500 rounded-lg focus:bg-white/15 focus:border-brand-blue"
-                required
-              />
-              <Button
-                type="submit"
-                className="w-full py-3 bg-brand-blue text-white font-medium rounded-lg hover:bg-brand-blue-dark transition-all duration-300 group"
-                disabled={isSubscribed}
-              >
-                {isSubscribed ? (
-                  <>
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Subscribed!
-                  </>
-                ) : (
-                  <>
-                    Subscribe
-                    <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </>
-                )}
-              </Button>
-            </form>
-          </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-white/10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-500 text-sm text-center md:text-left">
+          <div className="flex items-center justify-center">
+            <p className="text-gray-500 text-sm text-center">
               © {new Date().getFullYear()} PhysicianMeds. All rights reserved.
             </p>
-            <div className="flex gap-6 text-sm">
-              <Link
-                to="/privacy-policy"
-                onClick={() => window.scrollTo(0, 0)}
-                className="text-gray-500 hover:text-brand-blue transition-colors"
-              >
-                Privacy Policy
-              </Link>
-              <Link
-                to="/terms-conditions"
-                onClick={() => window.scrollTo(0, 0)}
-                className="text-gray-500 hover:text-brand-blue transition-colors"
-              >
-                Terms of Service
-              </Link>
-              <a
-                href="#"
-                className="text-gray-500 hover:text-brand-blue transition-colors"
-              >
-                Sitemap
-              </a>
-            </div>
           </div>
         </div>
       </div>

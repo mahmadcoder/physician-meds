@@ -460,7 +460,7 @@ const BlogArticlePage = () => {
           <p className="text-gray-600 mb-6 text-sm sm:text-base">
             The article you're looking for doesn't exist or has been moved.
           </p>
-          <Link to="/blog" className="btn-primary">
+          <Link to="/blogs" className="btn-primary">
             Back to Blog
           </Link>
         </div>
@@ -495,8 +495,8 @@ const BlogArticlePage = () => {
                   Home
                 </Link>
                 <span>/</span>
-                <Link to="/blog" className="hover:text-white transition-colors">
-                  Blog
+                <Link to="/blogs" className="hover:text-white transition-colors">
+                  Blogs
                 </Link>
                 <span>/</span>
                 <span className="text-white/90 font-medium line-clamp-1">
@@ -557,7 +557,7 @@ const BlogArticlePage = () => {
                   <Tag className="w-4 h-4 text-gray-400" />
                   {article.tags.map((tag) => (
                     <Link
-                      to="/blog"
+                      to="/blogs"
                       key={tag}
                       className="px-2.5 sm:px-3 py-1 sm:py-1.5 bg-gray-100 text-gray-600 text-xs sm:text-sm rounded-lg hover:bg-brand-blue/10 hover:text-brand-blue transition-colors"
                     >
@@ -792,7 +792,7 @@ const BlogArticlePage = () => {
                 </h2>
               </div>
               <Link
-                to="/blog"
+                to="/blogs"
                 className="inline-flex items-center text-brand-blue font-medium hover:underline group text-sm sm:text-base"
               >
                 View All Articles
@@ -803,7 +803,7 @@ const BlogArticlePage = () => {
             <div className="related-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-8">
               {relatedArticles.map((relArticle) => (
                 <Link
-                  to={`/blog/${relArticle.slug}`}
+                  to={`/blogs/${relArticle.slug}`}
                   key={relArticle.id}
                   onClick={() => window.scrollTo(0, 0)}
                   className="related-card group"
@@ -866,7 +866,7 @@ const BlogArticlePage = () => {
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </Link>
-                <Link to="/blog" onClick={() => window.scrollTo(0, 0)}>
+                <Link to="/blogs" onClick={() => window.scrollTo(0, 0)}>
                   <button className="w-full sm:w-auto border-2 border-white bg-transparent text-white hover:bg-white hover:text-brand-blue font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-all text-sm sm:text-base">
                     Browse More Articles
                   </button>

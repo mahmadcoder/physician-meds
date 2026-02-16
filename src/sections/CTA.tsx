@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, Phone, Mail, CheckCircle, Clock, Shield } from 'lucide-react';
+import { ArrowRight, Phone, Mail, CheckCircle, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { contactInfo } from '@/constants';

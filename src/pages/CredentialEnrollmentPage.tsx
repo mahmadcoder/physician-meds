@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import usePageTitle from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -32,6 +33,7 @@ import { CredentialingSVG } from "@/components/ServiceIllustrations";
 gsap.registerPlugin(ScrollTrigger);
 
 const CredentialEnrollmentPage = () => {
+  usePageTitle("Credential & Enrollment");
   const pageRef = useRef<HTMLDivElement>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
   const [expandedService, setExpandedService] = useState<number | null>(0);

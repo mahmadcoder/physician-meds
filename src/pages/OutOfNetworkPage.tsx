@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import usePageTitle from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -29,6 +30,7 @@ import { contactInfo } from "@/constants";
 gsap.registerPlugin(ScrollTrigger);
 
 const OutOfNetworkPage = () => {
+  usePageTitle("Out-of-Network Billing");
   const pageRef = useRef<HTMLDivElement>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
   const [currentCaseStudy, setCurrentCaseStudy] = useState(0);

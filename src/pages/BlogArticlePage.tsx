@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from "react";
+import usePageTitle from "@/hooks/usePageTitle";
 import { Link, useParams } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -190,14 +191,13 @@ function slugify(text: string): string {
 
 const BlogArticlePage = () => {
   const { slug } = useParams<{ slug: string }>();
+  const article = blogArticles.find((a) => a.slug === slug);
+  usePageTitle(article?.title || "Blog Article");
   const pageRef = useRef<HTMLDivElement>(null);
   const articleRef = useRef<HTMLElement>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
   const [readProgress, setReadProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
-
-  // Find current article
-  const article = blogArticles.find((a) => a.slug === slug);
 
   // Related articles (same category, excluding current)
   const relatedArticles = useMemo(() => {

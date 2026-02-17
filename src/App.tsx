@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import usePageTitle from "./hooks/usePageTitle";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -45,6 +46,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Home Page Component
 const HomePage = () => {
+  usePageTitle();
+
   useEffect(() => {
     const ctx = gsap.context(() => {
       ScrollTrigger.refresh();

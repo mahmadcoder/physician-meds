@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from "react";
+import usePageTitle from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -23,6 +24,7 @@ import {
 gsap.registerPlugin(ScrollTrigger);
 
 const BlogPage = () => {
+  usePageTitle("Blog");
   const pageRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");

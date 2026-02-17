@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import usePageTitle from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -30,6 +31,7 @@ import { contactInfo } from "@/constants";
 gsap.registerPlugin(ScrollTrigger);
 
 const DigitalMarketingPage = () => {
+  usePageTitle("Digital Marketing");
   const pageRef = useRef<HTMLDivElement>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
 

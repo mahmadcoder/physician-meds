@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
+import usePageTitle from "@/hooks/usePageTitle";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -964,6 +965,7 @@ const BottomCTA = () => {
    ═══════════════════════════════════════════════════════ */
 
 const TestimonialsPage = () => {
+  usePageTitle("Testimonials");
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

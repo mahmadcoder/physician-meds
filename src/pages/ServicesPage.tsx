@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import usePageTitle from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import gsap from "gsap";
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/button";
 gsap.registerPlugin(ScrollTrigger);
 
 const ServicesPage = () => {
+  usePageTitle("Our Services");
   const pageRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);

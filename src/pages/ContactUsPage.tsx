@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import usePageTitle from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -58,6 +59,7 @@ const contactCards = [
 ];
 
 const ContactUsPage = () => {
+  usePageTitle("Contact Us");
   const pageRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);

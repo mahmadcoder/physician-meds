@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import usePageTitle from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -31,6 +32,7 @@ import ServiceBottomCTA from "@/components/ServiceBottomCTA";
 gsap.registerPlugin(ScrollTrigger);
 
 const QualityPaymentPage = () => {
+  usePageTitle("Quality Payment Program");
   const pageRef = useRef<HTMLDivElement>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
   const [activeTrack, setActiveTrack] = useState(0);

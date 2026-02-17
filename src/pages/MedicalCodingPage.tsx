@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import usePageTitle from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -35,6 +36,7 @@ import { contactInfo } from "@/constants";
 gsap.registerPlugin(ScrollTrigger);
 
 const MedicalCodingPage = () => {
+  usePageTitle("Medical Coding");
   const pageRef = useRef<HTMLDivElement>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
   const [openChallenge, setOpenChallenge] = useState<number | null>(0);

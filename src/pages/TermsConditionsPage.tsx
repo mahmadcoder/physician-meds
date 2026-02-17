@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import usePageTitle from '@/hooks/usePageTitle';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, FileText, Mail } from 'lucide-react';
 import gsap from 'gsap';
@@ -8,6 +9,7 @@ import { contactInfo, termsConditionsHero, termsConditionsSections, termsAgreeme
 gsap.registerPlugin(ScrollTrigger);
 
 const TermsConditionsPage = () => {
+  usePageTitle("Terms & Conditions");
   const pageRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLElement>(null);

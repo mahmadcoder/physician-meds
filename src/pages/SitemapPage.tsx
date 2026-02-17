@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import usePageTitle from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Globe, ChevronRight } from "lucide-react";
 import gsap from "gsap";
@@ -67,6 +68,7 @@ const sitemapSections = [
 ];
 
 const SitemapPage = () => {
+  usePageTitle("Sitemap");
   const pageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

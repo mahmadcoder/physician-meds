@@ -84,10 +84,14 @@ const Newsletter = () => {
       >
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
-          <img 
-            src="/news-letter.svg" 
-            alt="Newsletter Background" 
-            className="w-full h-full object-cover"
+          <div 
+            className="absolute inset-0"
+            style={{
+              backgroundImage: "url('/news-letter.svg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }}
           />
           {/* Dark gradient overlay for premium look */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#020409]/95 via-[#0a1628]/90 to-[#0d2137]/85" />

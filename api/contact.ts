@@ -34,12 +34,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: "Failed to save submission." });
     }
 
-    // Send email notification to team
-    await sendEmail({
-      to: process.env.EMAIL_USER!,
-      subject: `New Contact: ${subject}`,
-      html: contactNotificationTemplate({ name, email, phone, subject, message }),
-    });
+    try {
+      await sendEmail({
+        to: process.env.EMAIL_USER!,
+        subject: `New Contact: ${subject}`,
+        html: contactNotificationTemplate({ name, email, phone, subject, message }),
+      });
+    } catch (emailError) {
+      console.error("Email send failed (data was saved):", emailError);
+    }
 
     return res.status(200).json({ success: true, message: "Contact form submitted successfully." });
   } catch (error) {

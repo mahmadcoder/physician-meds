@@ -38,19 +38,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: "Failed to save submission." });
     }
 
-    // Send notification to team
-    await sendEmail({
-      to: process.env.EMAIL_USER!,
-      subject: `New Consultation Request from ${name}`,
-      html: consultNotificationTemplate({ name, email, phone, practiceName, specialty, message }),
-    });
-
-    // Send confirmation to client
-    await sendEmail({
-      to: email,
-      subject: "Your Consultation Request — PhysicianMeds",
-      html: consultConfirmationTemplate({ name }),
-    });
+    // Send emails (don't block the response if they fail)
+    try {
+      await Promise.all([
+        sendEmail({
+          to: process.env.EMAIL_USER!,
+          subject: `New Consultation Request from ${name}`,
+          html: consultNotificationTemplate({ name, email, phone, practiceName, specialty, message }),
+        }),
+        sendEmail({
+          to: email,
+          subject: "Your Consultation Request — PhysicianMeds",
+          html: consultConfirmationTemplate({ name }),
+        }),
+      ]);
+    } catch (emailError) {
+      console.error("Email send failed (data was saved):", emailError);
+    }
 
     return res.status(200).json({ success: true, message: "Consultation request submitted successfully." });
   } catch (error) {

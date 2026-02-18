@@ -49,12 +49,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
-    // Send welcome email
-    await sendEmail({
-      to: email,
-      subject: "Welcome to PhysicianMeds Newsletter! 🎉",
-      html: welcomeSubscriberTemplate(),
-    });
+    try {
+      await sendEmail({
+        to: email,
+        subject: "Welcome to PhysicianMeds Newsletter! 🎉",
+        html: welcomeSubscriberTemplate(),
+      });
+    } catch (emailError) {
+      console.error("Welcome email failed (subscription saved):", emailError);
+    }
 
     return res.status(200).json({ success: true, message: "Successfully subscribed!" });
   } catch (error) {

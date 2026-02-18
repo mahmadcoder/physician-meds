@@ -179,10 +179,10 @@ const AdminBlogEditorPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-gray-50">
+      {/* Admin Top Bar */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate("/pm-portal-x9k2/dashboard")}
@@ -190,7 +190,7 @@ const AdminBlogEditorPage = () => {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="font-display text-2xl font-bold text-brand-dark">
+            <h1 className="font-display text-lg font-bold text-brand-dark">
               {isEditing ? "Edit Post" : "New Post"}
             </h1>
           </div>
@@ -214,6 +214,9 @@ const AdminBlogEditorPage = () => {
             </Button>
           </div>
         </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
 
         {error && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 mb-6 flex items-center gap-2">

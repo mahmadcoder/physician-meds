@@ -13,6 +13,12 @@ export default defineConfig({
     },
   },
   server: {
-    port: parseInt(process.env.PORT || "5173"),
+    proxy: {
+      "/api": {
+        target: "https://www.physicianmeds.com",
+        changeOrigin: true,
+        secure: true,
+      },
+    },
   },
 });

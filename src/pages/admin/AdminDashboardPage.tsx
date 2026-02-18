@@ -85,7 +85,7 @@ const AdminDashboardPage = () => {
 
   useEffect(() => {
     if (!token) {
-      navigate("/admin");
+      navigate("/pm-portal-x9k2");
       return;
     }
     fetchData(activeTab);
@@ -107,7 +107,7 @@ const AdminDashboardPage = () => {
 
       if (response.status === 401) {
         localStorage.removeItem("admin_token");
-        navigate("/admin");
+        navigate("/pm-portal-x9k2");
         return;
       }
 
@@ -165,7 +165,7 @@ const AdminDashboardPage = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
-    navigate("/admin");
+    navigate("/pm-portal-x9k2");
   };
 
   const formatDate = (dateStr: string) => {
@@ -389,7 +389,7 @@ const AdminDashboardPage = () => {
               {activeTab === "blogs" && (
                 <div>
                   <div className="px-5 py-4 border-b border-gray-100">
-                    <Link to="/admin/blog/new">
+                    <Link to="/pm-portal-x9k2/blog/new">
                       <Button className="btn-primary text-sm">
                         <Plus className="w-4 h-4 mr-2" />
                         New Blog Post
@@ -427,7 +427,7 @@ const AdminDashboardPage = () => {
                             {post.is_published ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
                           <Link
-                            to={`/admin/blog/edit/${post.id}`}
+                            to={`/pm-portal-x9k2/blog/edit/${post.id}`}
                             className="p-2 text-gray-400 hover:text-brand-blue hover:bg-blue-50 rounded-lg transition-all"
                           >
                             <Edit className="w-4 h-4" />

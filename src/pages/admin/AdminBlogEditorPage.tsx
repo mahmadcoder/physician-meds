@@ -68,7 +68,7 @@ const AdminBlogEditorPage = () => {
 
   useEffect(() => {
     if (!token) {
-      navigate("/admin");
+      navigate("/pm-portal-x9k2");
       return;
     }
     if (isEditing) {
@@ -130,7 +130,7 @@ const AdminBlogEditorPage = () => {
         }
       }
 
-      navigate("/admin/dashboard");
+      navigate("/pm-portal-x9k2/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save.");
     } finally {
@@ -185,7 +185,7 @@ const AdminBlogEditorPage = () => {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate("/admin/dashboard")}
+              onClick={() => navigate("/pm-portal-x9k2/dashboard")}
               className="p-2 text-gray-400 hover:text-brand-blue hover:bg-blue-50 rounded-lg transition-all"
             >
               <ArrowLeft className="w-5 h-5" />

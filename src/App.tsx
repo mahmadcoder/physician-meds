@@ -156,11 +156,11 @@ function App() {
             <Route path="/testimonials" element={<TestimonialsPage />} />
             <Route path="/sitemap" element={<SitemapPage />} />
 
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLoginPage />} />
-            <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-            <Route path="/admin/blog/new" element={<AdminBlogEditorPage />} />
-            <Route path="/admin/blog/edit/:id" element={<AdminBlogEditorPage />} />
+            {/* Admin Routes — hidden path for security */}
+            <Route path="/pm-portal-x9k2" element={<AdminLoginPage />} />
+            <Route path="/pm-portal-x9k2/dashboard" element={<AdminDashboardPage />} />
+            <Route path="/pm-portal-x9k2/blog/new" element={<AdminBlogEditorPage />} />
+            <Route path="/pm-portal-x9k2/blog/edit/:id" element={<AdminBlogEditorPage />} />
           </Routes>
         </main>
         <Footer />

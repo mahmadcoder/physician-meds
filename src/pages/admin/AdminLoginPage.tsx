@@ -19,7 +19,7 @@ const AdminLoginPage = () => {
   // Check if already logged in
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
-    if (token) navigate("/admin/dashboard");
+    if (token) navigate("/pm-portal-x9k2/dashboard");
   }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -41,7 +41,7 @@ const AdminLoginPage = () => {
       }
 
       localStorage.setItem("admin_token", data.token);
-      navigate("/admin/dashboard");
+      navigate("/pm-portal-x9k2/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed.");
     } finally {

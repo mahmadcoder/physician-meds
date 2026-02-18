@@ -41,6 +41,9 @@ import CookieConsent from "./components/CookieConsent";
 import TestimonialsPage from "./pages/TestimonialsPage";
 import SitemapPage from "./pages/SitemapPage";
 import ContactUsPage from "./pages/ContactUsPage";
+import AdminLoginPage from "./pages/admin/AdminLoginPage";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import AdminBlogEditorPage from "./pages/admin/AdminBlogEditorPage";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -152,6 +155,12 @@ function App() {
             <Route path="/blogs/:slug" element={<BlogArticlePage />} />
             <Route path="/testimonials" element={<TestimonialsPage />} />
             <Route path="/sitemap" element={<SitemapPage />} />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLoginPage />} />
+            <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+            <Route path="/admin/blog/new" element={<AdminBlogEditorPage />} />
+            <Route path="/admin/blog/edit/:id" element={<AdminBlogEditorPage />} />
           </Routes>
         </main>
         <Footer />

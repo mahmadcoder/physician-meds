@@ -11,6 +11,7 @@ const Newsletter = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -65,14 +66,32 @@ const Newsletter = () => {
     return () => ctx.revert();
   }, []);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
+    if (!email) return;
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const result = await response.json();
+        throw new Error(result.error || "Failed to subscribe.");
+      }
+
       setIsSubscribed(true);
       setTimeout(() => {
         setIsSubscribed(false);
         setEmail("");
       }, 3000);
+    } catch (err) {
+      console.error("Newsletter error:", err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -130,12 +149,12 @@ const Newsletter = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-5 py-3.5 sm:py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder:text-white/60 rounded-xl sm:rounded-r-none focus:border-white/40 focus:ring-2 focus:ring-white/10 transition-all duration-300 text-base"
                     required
-                    disabled={isSubscribed}
+                    disabled={isSubscribed || isSubmitting}
                   />
                 </div>
                 <Button
                   type="submit"
-                  disabled={isSubscribed}
+                  disabled={isSubscribed || isSubmitting}
                   className={`sm:rounded-l-none rounded-xl px-7 py-3.5 sm:py-4 font-semibold text-base transition-all duration-300 group ${
                     isSubscribed
                       ? "bg-green-500 hover:bg-green-500 text-white"

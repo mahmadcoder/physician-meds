@@ -49,6 +49,8 @@ const ConsultPage = () => {
   const formRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -180,12 +182,31 @@ const ConsultPage = () => {
     return () => ctx.revert();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!agreedToTerms) {
-      return;
+    if (!agreedToTerms) return;
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const response = await fetch('/api/consult', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to submit.');
+      }
+
+      setIsSubmitted(true);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitted(true);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -416,18 +437,24 @@ const ConsultPage = () => {
                       </label>
                     </div>
 
+                    {submitError && (
+                      <div className="form-field p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600">
+                        {submitError}
+                      </div>
+                    )}
+
                     <div className="form-field">
                       <Button
                         type="submit"
-                        disabled={!agreedToTerms}
+                        disabled={!agreedToTerms || isSubmitting}
                         className={`w-full py-4 text-base group transition-all duration-300 ${
-                          agreedToTerms 
+                          agreedToTerms && !isSubmitting
                             ? 'btn-primary' 
                             : 'bg-gray-300 text-gray-500 cursor-not-allowed hover:bg-gray-300'
                         }`}
                       >
-                        Request Consultation
-                        <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        {isSubmitting ? 'Submitting...' : 'Request Consultation'}
+                        {!isSubmitting && <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />}
                       </Button>
                     </div>
                   </form>

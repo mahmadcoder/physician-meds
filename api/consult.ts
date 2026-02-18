@@ -1,10 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { supabase } from "./_lib/supabase";
-import { sendEmail } from "./_lib/email";
+import { supabase } from "./_lib/supabase.js";
+import { sendEmail } from "./_lib/email.js";
 import {
   consultNotificationTemplate,
   consultConfirmationTemplate,
-} from "./_lib/templates";
+} from "./_lib/templates.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS headers

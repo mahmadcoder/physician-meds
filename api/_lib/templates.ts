@@ -242,3 +242,31 @@ export function welcomeSubscriberTemplate() {
     </table>
   </div>`;
 }
+
+// ─── Newsletter: notification to team ──────────────────
+export function newsletterNotificationTemplate(email: string) {
+  return `
+  <div style="max-width: 600px; margin: 0 auto; ${brandStyles}">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+            <tr>
+              <td style="background-color: #eff6ff; border-radius: 10px; padding: 10px 16px;">
+                <span style="font-size: 16px; font-weight: 700; color: #1e40af;">&#128231; New Newsletter Subscriber</span>
+              </td>
+            </tr>
+          </table>
+          <p style="margin: 16px 0 24px 0; color: #64748b; font-size: 14px; line-height: 1.6;">A new user has subscribed to the newsletter.</p>
+
+          <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-radius: 8px;">
+            ${dataRow("Email", email, true)}
+            ${dataRow("Time", new Date().toLocaleString("en-US", { timeZone: "America/New_York" }), false, true)}
+          </table>
+        </td>
+      </tr>
+      <tr><td>${footerHtml()}</td></tr>
+    </table>
+  </div>`;
+}

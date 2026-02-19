@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { supabase } from "./_lib/supabase.js";
 import { sendEmail } from "./_lib/email.js";
-import { welcomeSubscriberTemplate } from "./_lib/templates.js";
+import { welcomeSubscriberTemplate, newsletterNotificationTemplate } from "./_lib/templates.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS headers
@@ -50,11 +50,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-      await sendEmail({
-        to: email,
-        subject: "Welcome to PhysicianMeds Newsletter! 🎉",
-        html: welcomeSubscriberTemplate(),
-      });
+      await Promise.all([
+        sendEmail({
+          to: email,
+          subject: "Welcome to PhysicianMeds Newsletter! 🎉",
+          html: welcomeSubscriberTemplate(),
+        }),
+        sendEmail({
+          to: process.env.EMAIL_USER!,
+          subject: "New Newsletter Subscriber",
+          html: newsletterNotificationTemplate(email),
+        }),
+      ]);
     } catch (emailError) {
       console.error("Welcome email failed (subscription saved):", emailError);
     }

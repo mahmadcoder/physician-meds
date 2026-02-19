@@ -3,28 +3,32 @@ const siteUrl = "https://www.physicianmeds.com";
 
 const brandStyles = `font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1a1a2e;`;
 
+const brandBlue = "#2563eb";
+const brandDark = "#1a1a2e";
+const brandGray = "#64748b";
+
 function headerHtml() {
   return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
     <tr>
-      <td align="center" style="background-color: #1d4ed8; padding: 30px 20px; border-radius: 12px 12px 0 0;">
+      <td align="center" style="background-color: #ffffff; padding: 30px 20px; border-radius: 12px 12px 0 0; border-bottom: 1px solid #e2e8f0;">
         <a href="${siteUrl}" style="text-decoration: none;">
-          <img src="${logoUrl}" alt="PhysicianMeds" width="52" height="52" style="display: block; margin: 0 auto 14px auto; border: 0;" />
+          <img src="${logoUrl}" alt="PhysicianMeds" width="52" style="display: block; margin: 0 auto 14px auto; border: 0; height: auto;" />
         </a>
         <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin: 0 auto;">
           <tr>
-            <td style="font-size: 24px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px;">Physician</td>
-            <td style="font-size: 24px; font-weight: 700; color: #93c5fd; letter-spacing: -0.3px;">Meds</td>
+            <td style="font-size: 24px; font-weight: 700; color: ${brandDark}; letter-spacing: -0.3px;">Physician</td>
+            <td style="font-size: 24px; font-weight: 700; color: ${brandBlue}; letter-spacing: -0.3px;">Meds</td>
           </tr>
         </table>
-        <p style="color: #bfdbfe; margin: 8px 0 0 0; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;">
+        <p style="color: ${brandGray}; margin: 8px 0 0 0; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;">
           Healthcare Revenue Management
         </p>
       </td>
     </tr>
     <tr>
       <td style="background-color: #ffffff; padding: 0 32px; height: 4px;">
-        <div style="height: 3px; background-color: #3b82f6; border-radius: 2px;"></div>
+        <div style="height: 3px; background-color: ${brandBlue}; border-radius: 2px;"></div>
       </td>
     </tr>
   </table>`;

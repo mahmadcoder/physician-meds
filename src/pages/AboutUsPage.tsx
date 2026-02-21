@@ -16,6 +16,14 @@ import {
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '@/components/ui/button';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 // Import all data from constants
 import {
@@ -51,28 +59,37 @@ const AboutUsPage = () => {
   const [statCounts, setStatCounts] = useState(statsData.map(() => 0));
   const hasAnimated = useRef(false);
   
-  // Testimonials carousel state
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  // Carousel state
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
 
-  // Auto-play testimonials
+  // Sync carousel state
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (!api) return;
+
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
+  // Auto-play
+  useEffect(() => {
+    if (!api) return;
+    
     const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+      api.scrollNext();
     }, 5000);
+
+    // Pause on interaction is handled natively by Embla often, 
+    // but explicit clear on unmount is good. 
+    // Embla AutoPlay plugin is robust, but here we use simple interval.
+    // To prevent fighting with user, interactions might need check, 
+    // but simple interval is what was requested/existing pattern.
+    
     return () => clearInterval(interval);
-  }, [isAutoPlaying]);
-
-  const nextTestimonial = () => {
-    setIsAutoPlaying(false);
-    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-  };
-
-  const prevTestimonial = () => {
-    setIsAutoPlaying(false);
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
+  }, [api]);
 
   useEffect(() => {
     // Scroll to top immediately and after a small delay to ensure it works
@@ -583,62 +600,78 @@ const AboutUsPage = () => {
 
             {/* Main Testimonial Card */}
             <div className="max-w-4xl mx-auto">
-              <div className="relative">
-                {/* Main Card */}
-                <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl shadow-gray-200/50 border border-gray-100 relative overflow-hidden">
-                  {/* Quote Icon */}
-                  <div className="absolute top-4 sm:top-6 right-4 sm:right-6 w-12 sm:w-16 h-12 sm:h-16 bg-brand-blue/5 rounded-full flex items-center justify-center">
-                    <Quote className="w-6 sm:w-8 h-6 sm:h-8 text-brand-blue/30" />
-                  </div>
+              <div className="relative cursor-grab active:cursor-grabbing">
+                <Carousel setApi={setApi} className="w-full" opts={{ loop: true }}>
+                  <CarouselContent>
+                    {testimonials.map((testimonial, index) => (
+                      <CarouselItem key={index}>
+                        <div className="h-full p-1">
+                          {/* Main Card */}
+                          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl shadow-gray-200/50 border border-gray-100 relative overflow-hidden h-full flex flex-col">
+                            {/* Quote Icon */}
+                            <div className="absolute top-4 sm:top-6 right-4 sm:right-6 w-12 sm:w-16 h-12 sm:h-16 bg-brand-blue/5 rounded-full flex items-center justify-center">
+                              <Quote className="w-6 sm:w-8 h-6 sm:h-8 text-brand-blue/30" />
+                            </div>
 
-                  {/* Metric Badge */}
-                  {testimonials[currentTestimonial].metric && (
-                    <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-brand-blue to-brand-accent rounded-full mb-4 sm:mb-6">
-                      <span className="text-lg sm:text-2xl font-bold text-white">
-                        {testimonials[currentTestimonial].metric.value}
-                      </span>
-                      <span className="text-white/90 text-xs sm:text-sm font-medium">
-                        {testimonials[currentTestimonial].metric.label}
-                      </span>
-                    </div>
-                  )}
+                            {/* Metric Badge */}
+                            {testimonial.metric && (
+                              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-brand-blue to-brand-accent rounded-full mb-4 sm:mb-6 self-start">
+                                <span className="text-lg sm:text-2xl font-bold text-white">
+                                  {testimonial.metric.value}
+                                </span>
+                                <span className="text-white/90 text-xs sm:text-sm font-medium">
+                                  {testimonial.metric.label}
+                                </span>
+                              </div>
+                            )}
 
-                  {/* Stars */}
-                  <div className="flex gap-1 mb-4 sm:mb-6">
-                    {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                      <Star key={i} className="w-4 sm:w-5 h-4 sm:h-5 fill-yellow-400 text-yellow-400" />
+                            {/* Stars */}
+                            <div className="flex gap-1 mb-4 sm:mb-6">
+                              {[...Array(testimonial.rating)].map((_, i) => (
+                                <Star key={i} className="w-4 sm:w-5 h-4 sm:h-5 fill-yellow-400 text-yellow-400" />
+                              ))}
+                            </div>
+
+                            {/* Quote */}
+                            <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed mb-6 sm:mb-8 flex-grow">
+                              "{testimonial.content}"
+                            </p>
+
+                            {/* Author */}
+                            <div className="flex items-center gap-3 sm:gap-4 mt-auto">
+                              <div className="w-12 sm:w-14 h-12 sm:h-14 bg-gradient-to-br from-brand-blue to-brand-accent rounded-full flex items-center justify-center text-white font-bold text-lg sm:text-xl flex-shrink-0">
+                                {testimonial.name.charAt(0)}
+                              </div>
+                              <div>
+                                <h4 className="font-display font-bold text-brand-dark text-sm sm:text-base">
+                                  {testimonial.name}
+                                </h4>
+                                <p className="text-gray-500 text-xs sm:text-sm">
+                                  {testimonial.role} • {testimonial.practice}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CarouselItem>
                     ))}
+                  </CarouselContent>
+                  
+                  {/* Navigation Buttons */}
+                  <div className="hidden sm:block">
+                    <CarouselPrevious className="left-[-50px] bg-white border-gray-200 hover:bg-gray-50 hover:text-brand-blue" />
+                    <CarouselNext className="right-[-50px] bg-white border-gray-200 hover:bg-gray-50 hover:text-brand-blue" />
                   </div>
+                </Carousel>
 
-                  {/* Quote */}
-                  <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed mb-6 sm:mb-8">
-                    "{testimonials[currentTestimonial].content}"
-                  </p>
-
-                  {/* Author */}
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="w-12 sm:w-14 h-12 sm:h-14 bg-gradient-to-br from-brand-blue to-brand-accent rounded-full flex items-center justify-center text-white font-bold text-lg sm:text-xl">
-                      {testimonials[currentTestimonial].name.charAt(0)}
-                    </div>
-                    <div>
-                      <h4 className="font-display font-bold text-brand-dark text-sm sm:text-base">
-                        {testimonials[currentTestimonial].name}
-                      </h4>
-                      <p className="text-gray-500 text-xs sm:text-sm">
-                        {testimonials[currentTestimonial].role} • {testimonials[currentTestimonial].practice}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Navigation */}
+                {/* Navigation Dots & Mobile Controls */}
                 <div className="flex items-center justify-center gap-4 mt-6 sm:mt-8">
+                  {/* Previous (Mobile Only) */}
                   <button
-                    onClick={prevTestimonial}
-                    className="w-10 sm:w-12 h-10 sm:h-12 bg-white rounded-full shadow-lg border border-gray-100 flex items-center justify-center text-gray-600 hover:text-brand-blue hover:border-brand-blue/20 transition-all"
-                    aria-label="Previous testimonial"
+                    onClick={() => api?.scrollPrev()}
+                    className="sm:hidden w-10 h-10 bg-white rounded-full shadow-lg border border-gray-100 flex items-center justify-center text-gray-600 hover:text-brand-blue"
                   >
-                    <ChevronLeft className="w-5 sm:w-6 h-5 sm:h-6" />
+                    <ChevronLeft className="w-5 h-5" />
                   </button>
 
                   {/* Dots */}
@@ -646,12 +679,9 @@ const AboutUsPage = () => {
                     {testimonials.map((_, index) => (
                       <button
                         key={index}
-                        onClick={() => {
-                          setIsAutoPlaying(false);
-                          setCurrentTestimonial(index);
-                        }}
+                        onClick={() => api?.scrollTo(index)}
                         className={`h-2 sm:h-2.5 rounded-full transition-all duration-300 ${
-                          index === currentTestimonial
+                          index === current
                             ? 'w-6 sm:w-8 bg-brand-blue'
                             : 'w-2 sm:w-2.5 bg-gray-300 hover:bg-gray-400'
                         }`}
@@ -660,12 +690,12 @@ const AboutUsPage = () => {
                     ))}
                   </div>
 
+                  {/* Next (Mobile Only) */}
                   <button
-                    onClick={nextTestimonial}
-                    className="w-10 sm:w-12 h-10 sm:h-12 bg-white rounded-full shadow-lg border border-gray-100 flex items-center justify-center text-gray-600 hover:text-brand-blue hover:border-brand-blue/20 transition-all"
-                    aria-label="Next testimonial"
+                    onClick={() => api?.scrollNext()}
+                    className="sm:hidden w-10 h-10 bg-white rounded-full shadow-lg border border-gray-100 flex items-center justify-center text-gray-600 hover:text-brand-blue"
                   >
-                    <ChevronRight className="w-5 sm:w-6 h-5 sm:h-6" />
+                    <ChevronRight className="w-5 h-5" />
                   </button>
                 </div>
               </div>
@@ -676,19 +706,16 @@ const AboutUsPage = () => {
               {testimonials.slice(0, 6).map((testimonial, index) => (
                 <button
                   key={testimonial.id}
-                  onClick={() => {
-                    setIsAutoPlaying(false);
-                    setCurrentTestimonial(index);
-                  }}
+                  onClick={() => api?.scrollTo(index)}
                   className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl text-left transition-all duration-300 ${
-                    index === currentTestimonial
+                    index === current
                       ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/30 scale-105'
                       : 'bg-white border border-gray-100 hover:border-brand-blue/20 hover:shadow-lg'
                   }`}
                 >
                   <div className="flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2">
                     <div className={`w-7 sm:w-8 h-7 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold ${
-                      index === currentTestimonial
+                      index === current
                         ? 'bg-white/20 text-white'
                         : 'bg-brand-blue/10 text-brand-blue'
                     }`}>
@@ -696,7 +723,7 @@ const AboutUsPage = () => {
                     </div>
                     <div className="min-w-0">
                       <p className={`font-semibold text-xs sm:text-sm truncate ${
-                        index === currentTestimonial ? 'text-white' : 'text-brand-dark'
+                        index === current ? 'text-white' : 'text-brand-dark'
                       }`}>
                         {testimonial.name}
                       </p>
@@ -704,7 +731,7 @@ const AboutUsPage = () => {
                   </div>
                   {testimonial.metric && (
                     <div className={`text-xs sm:text-sm font-bold ${
-                      index === currentTestimonial ? 'text-white/90' : 'text-brand-blue'
+                      index === current ? 'text-white/90' : 'text-brand-blue'
                     }`}>
                       {testimonial.metric.value} {testimonial.metric.label}
                     </div>

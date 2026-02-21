@@ -58,12 +58,25 @@ CREATE TABLE IF NOT EXISTS blog_posts (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Blog comments
+CREATE TABLE IF NOT EXISTS blog_comments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    post_slug TEXT NOT NULL REFERENCES blog_posts(slug) ON DELETE CASCADE,
+    author_name TEXT NOT NULL,
+    author_email TEXT NOT NULL,
+    author_website TEXT,
+    comment TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    is_read BOOLEAN DEFAULT FALSE
+);
+
 -- Enable Row Level Security (blocks direct client access)
 -- Our backend uses service_role key which bypasses RLS
 ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE consultations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE subscribers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE blog_comments ENABLE ROW LEVEL SECURITY;
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_contacts_created ON contacts(created_at DESC);
@@ -71,3 +84,4 @@ CREATE INDEX IF NOT EXISTS idx_consultations_created ON consultations(created_at
 CREATE INDEX IF NOT EXISTS idx_subscribers_email ON subscribers(email);
 CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts(slug);
 CREATE INDEX IF NOT EXISTS idx_blog_posts_published ON blog_posts(is_published, date DESC);
+CREATE INDEX IF NOT EXISTS idx_blog_comments_slug ON blog_comments(post_slug, created_at DESC);

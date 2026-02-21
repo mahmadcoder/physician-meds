@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import {
   FileText,
   MessageSquare,
+  MessageCircle,
   Users,
   Mail,
   LogOut,
@@ -63,7 +64,18 @@ interface BlogPost {
   is_published: boolean;
 }
 
-type Tab = "contacts" | "consultations" | "subscribers" | "blogs";
+interface Comment {
+  id: string;
+  post_slug: string;
+  author_name: string;
+  author_email: string;
+  author_website: string;
+  comment: string;
+  created_at: string;
+  is_read: boolean;
+}
+
+type Tab = "contacts" | "consultations" | "subscribers" | "blogs" | "comments";
 
 const AdminDashboardPage = () => {
   usePageTitle("Admin Dashboard");
@@ -73,6 +85,7 @@ const AdminDashboardPage = () => {
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -99,6 +112,7 @@ const AdminDashboardPage = () => {
         consultations: "/api/admin/consultations",
         subscribers: "/api/admin/subscribers",
         blogs: "/api/admin/blogs",
+        comments: "/api/admin/comments",
       };
 
       const response = await fetch(endpoints[tab], {
@@ -118,6 +132,7 @@ const AdminDashboardPage = () => {
         case "consultations": setConsultations(data); break;
         case "subscribers": setSubscribers(data); break;
         case "blogs": setBlogs(data); break;
+        case "comments": setComments(data); break;
       }
     } catch (err) {
       console.error("Fetch error:", err);
@@ -126,7 +141,7 @@ const AdminDashboardPage = () => {
     }
   };
 
-  const markAsRead = async (table: "contacts" | "consultations", id: string) => {
+  const markAsRead = async (table: "contacts" | "consultations" | "comments", id: string) => {
     await fetch(`/api/admin/${table}`, {
       method: "PUT",
       headers: authHeaders(),
@@ -163,6 +178,16 @@ const AdminDashboardPage = () => {
     fetchData("blogs");
   };
 
+  const deleteComment = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this comment?")) return;
+    await fetch("/api/admin/comments", {
+      method: "DELETE",
+      headers: authHeaders(),
+      body: JSON.stringify({ id }),
+    });
+    fetchData("comments");
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
     navigate("/pm-portal-x9k2");
@@ -183,6 +208,7 @@ const AdminDashboardPage = () => {
     { id: "consultations" as Tab, label: "Consultations", icon: Users, count: consultations.filter(c => !c.is_read).length },
     { id: "subscribers" as Tab, label: "Subscribers", icon: Mail, count: subscribers.length },
     { id: "blogs" as Tab, label: "Blog Posts", icon: FileText, count: blogs.length },
+    { id: "comments" as Tab, label: "Comments", icon: MessageCircle, count: comments.filter(c => !c.is_read).length },
   ];
 
   return (
@@ -448,6 +474,69 @@ const AdminDashboardPage = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Comments Tab */}
+              {activeTab === "comments" && (
+                <div className="divide-y divide-gray-100">
+                  {comments.length === 0 ? (
+                    <div className="text-center py-16 text-gray-400">
+                      <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-40" />
+                      <p>No blog comments yet</p>
+                    </div>
+                  ) : comments.map((comment) => (
+                    <div key={comment.id} className={`p-5 ${!comment.is_read ? "bg-blue-50/30" : ""}`}>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 cursor-pointer" onClick={() => setExpandedId(expandedId === comment.id ? null : comment.id)}>
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            {!comment.is_read && <div className="w-2 h-2 bg-brand-blue rounded-full" />}
+                            <h3 className="font-semibold text-brand-dark">{comment.author_name}</h3>
+                            <span className="text-xs text-gray-400">•</span>
+                            <span className="text-sm text-gray-500">{comment.author_email}</span>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            <span className="font-medium">Article:</span>{" "}
+                            <a href={`/blogs/${comment.post_slug}`} className="text-brand-blue hover:underline" target="_blank" rel="noreferrer">
+                              {comment.post_slug}
+                            </a>
+                          </p>
+                          <p className="text-sm text-gray-700 mt-1 line-clamp-2">{comment.comment}</p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            <Clock className="w-3 h-3 inline mr-1" />
+                            {formatDate(comment.created_at)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {!comment.is_read && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => markAsRead("comments", comment.id)}
+                              className="text-xs"
+                            >
+                              <CheckCircle className="w-3 h-3 mr-1" /> Read
+                            </Button>
+                          )}
+                          <button
+                            onClick={() => deleteComment(comment.id)}
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => setExpandedId(expandedId === comment.id ? null : comment.id)}>
+                            {expandedId === comment.id ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+                          </button>
+                        </div>
+                      </div>
+                      {expandedId === comment.id && (
+                        <div className="mt-4 p-4 bg-gray-50 rounded-xl text-sm">
+                          {comment.author_website && <p className="text-gray-500 mb-1"><strong>Website:</strong> <a href={comment.author_website} target="_blank" rel="noreferrer" className="text-brand-blue hover:underline">{comment.author_website}</a></p>}
+                          <p className="text-gray-700 whitespace-pre-wrap mt-2">{comment.comment}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </>

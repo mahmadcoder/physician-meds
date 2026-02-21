@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
 import { Link, useParams } from "react-router-dom";
 import gsap from "gsap";
@@ -17,11 +17,25 @@ import {
   Phone,
   MessageSquare,
   Send,
+  Loader2,
+  User,
 } from "lucide-react";
 import { blogArticles, type ArticleContentBlock } from "@/constants/blogData";
 import { contactInfo } from "@/constants";
 
 gsap.registerPlugin(ScrollTrigger);
+
+// --- Types ---
+interface BlogComment {
+  id: string;
+  author_name: string;
+  author_website?: string;
+  comment: string;
+  created_at: string;
+}
+
+const SAVED_INFO_KEY = "blog_commenter_info";
+const API_BASE = import.meta.env.PROD ? "" : "";
 
 // --- Render text with **highlighted** words in brand-blue ---
 
@@ -198,6 +212,115 @@ const BlogArticlePage = () => {
   const ctxRef = useRef<gsap.Context | null>(null);
   const [readProgress, setReadProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Comment form state
+  const [commentText, setCommentText] = useState("");
+  const [authorName, setAuthorName] = useState("");
+  const [authorEmail, setAuthorEmail] = useState("");
+  const [authorWebsite, setAuthorWebsite] = useState("");
+  const [saveInfo, setSaveInfo] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  // Comments display
+  const [comments, setComments] = useState<BlogComment[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(true);
+
+  // Load saved commenter info from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(SAVED_INFO_KEY);
+      if (saved) {
+        const info = JSON.parse(saved);
+        if (info.name) setAuthorName(info.name);
+        if (info.email) setAuthorEmail(info.email);
+        if (info.website) setAuthorWebsite(info.website);
+        setSaveInfo(true);
+      }
+    } catch {}
+  }, []);
+
+  // Fetch comments for this article
+  const fetchComments = useCallback(async () => {
+    if (!slug) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/comments?slug=${encodeURIComponent(slug)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setComments(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch comments:", err);
+    } finally {
+      setCommentsLoading(false);
+    }
+  }, [slug]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]);
+
+  // Handle comment submission
+  const handleCommentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!commentText.trim() || !authorName.trim() || !authorEmail.trim()) return;
+
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      const res = await fetch(`${API_BASE}/api/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          postSlug: slug,
+          authorName: authorName.trim(),
+          authorEmail: authorEmail.trim(),
+          authorWebsite: authorWebsite.trim() || undefined,
+          comment: commentText.trim(),
+          articleTitle: article?.title || slug,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // Save or clear localStorage
+        if (saveInfo) {
+          localStorage.setItem(SAVED_INFO_KEY, JSON.stringify({
+            name: authorName.trim(),
+            email: authorEmail.trim(),
+            website: authorWebsite.trim(),
+          }));
+        } else {
+          localStorage.removeItem(SAVED_INFO_KEY);
+        }
+
+        setSubmitStatus({ type: "success", message: "Your comment has been posted successfully!" });
+        setCommentText("");
+        // Refresh comments list
+        fetchComments();
+        // Auto-dismiss success message
+        setTimeout(() => setSubmitStatus(null), 5000);
+      } else {
+        setSubmitStatus({ type: "error", message: data.error || "Failed to post comment." });
+      }
+    } catch {
+      setSubmitStatus({ type: "error", message: "Network error. Please try again." });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const formatCommentDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   // Related articles (same category, excluding current)
   const relatedArticles = useMemo(() => {
@@ -587,92 +710,189 @@ const BlogArticlePage = () => {
                 </div>
               </div>
 
-              {/* Leave a Reply */}
+              {/* Comments Display */}
               <div className="mt-10 sm:mt-12 pt-8 sm:pt-10 border-t border-gray-200">
                 <div className="article-reply-title flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
                   <MessageSquare className="w-5 sm:w-6 h-5 sm:h-6 text-brand-blue" />
                   <h3 className="font-display text-xl sm:text-2xl font-bold text-brand-dark">
-                    Leave a <span className="text-brand-blue">Reply</span>
+                    Comments{" "}
+                    {comments.length > 0 && (
+                      <span className="text-brand-blue">({comments.length})</span>
+                    )}
                   </h3>
                 </div>
 
-                <p className="text-gray-500 text-xs sm:text-sm mb-5 sm:mb-6">
-                  Your email address will not be published. Required fields are
-                  marked <span className="text-red-500">*</span>
-                </p>
-
-                <form
-                  onSubmit={(e) => e.preventDefault()}
-                  className="article-reply-form space-y-4 sm:space-y-5"
-                >
-                  <div className="reply-form-field">
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
-                      Comment <span className="text-red-500">*</span>
-                    </label>
-                    <textarea
-                      rows={4}
-                      placeholder="Write your comment here..."
-                      className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl text-sm sm:text-base text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue focus:bg-white transition-all resize-none"
-                    />
+                {/* Comments list */}
+                {commentsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-5 h-5 text-brand-blue animate-spin" />
                   </div>
-
-                  <div className="reply-form-field grid sm:grid-cols-2 gap-4 sm:gap-5">
-                    <div>
-                      <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
-                        Name <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Your name"
-                        className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl text-sm sm:text-base text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue focus:bg-white transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
-                        Email <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="email"
-                        placeholder="Your email"
-                        className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl text-sm sm:text-base text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue focus:bg-white transition-all"
-                      />
-                    </div>
+                ) : comments.length > 0 ? (
+                  <div className="space-y-4 sm:space-y-5 mb-10 sm:mb-12">
+                    {comments.map((c) => (
+                      <div
+                        key={c.id}
+                        className="p-4 sm:p-5 bg-gray-50 rounded-xl sm:rounded-2xl border border-gray-100 transition-all hover:border-gray-200"
+                      >
+                        <div className="flex items-start gap-3 sm:gap-4">
+                          <div className="w-9 sm:w-10 h-9 sm:h-10 bg-gradient-to-br from-brand-blue to-brand-accent rounded-full flex items-center justify-center text-white text-sm sm:text-base font-bold flex-shrink-0 shadow-sm">
+                            {c.author_name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                              {c.author_website ? (
+                                <a
+                                  href={c.author_website}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="font-semibold text-brand-dark text-sm sm:text-base hover:text-brand-blue transition-colors"
+                                >
+                                  {c.author_name}
+                                </a>
+                              ) : (
+                                <span className="font-semibold text-brand-dark text-sm sm:text-base">
+                                  {c.author_name}
+                                </span>
+                              )}
+                              <span className="text-[10px] sm:text-xs text-gray-400 flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                {formatCommentDate(c.created_at)}
+                              </span>
+                            </div>
+                            <p className="text-gray-700 text-sm sm:text-[15px] leading-relaxed whitespace-pre-wrap">
+                              {c.comment}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-
-                  <div className="reply-form-field">
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
-                      Website
-                    </label>
-                    <input
-                      type="url"
-                      placeholder="Your website (optional)"
-                      className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl text-sm sm:text-base text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue focus:bg-white transition-all"
-                    />
+                ) : (
+                  <div className="text-center py-8 sm:py-10 mb-8 sm:mb-10 bg-gray-50 rounded-xl border border-gray-100">
+                    <User className="w-8 sm:w-10 h-8 sm:h-10 text-gray-300 mx-auto mb-2 sm:mb-3" />
+                    <p className="text-gray-400 text-sm sm:text-base">No comments yet. Be the first to share your thoughts!</p>
                   </div>
+                )}
 
-                  <div className="reply-form-field flex items-start gap-2.5 sm:gap-3">
-                    <input
-                      type="checkbox"
-                      id="save-info"
-                      className="mt-0.5 sm:mt-1 w-3.5 sm:w-4 h-3.5 sm:h-4 rounded border-gray-300 text-brand-blue focus:ring-brand-blue/30"
-                    />
-                    <label
-                      htmlFor="save-info"
-                      className="text-xs sm:text-sm text-gray-600 leading-relaxed"
+                {/* Leave a Reply form */}
+                <div className="pt-6 sm:pt-8 border-t border-gray-200">
+                  <h4 className="font-display text-lg sm:text-xl font-bold text-brand-dark mb-2">
+                    Leave a <span className="text-brand-blue">Reply</span>
+                  </h4>
+                  <p className="text-gray-500 text-xs sm:text-sm mb-5 sm:mb-6">
+                    Your email address will not be published. Required fields are
+                    marked <span className="text-red-500">*</span>
+                  </p>
+
+                  {/* Submit status message */}
+                  {submitStatus && (
+                    <div
+                      className={`mb-5 p-3.5 sm:p-4 rounded-xl text-sm sm:text-base font-medium ${
+                        submitStatus.type === "success"
+                          ? "bg-green-50 text-green-700 border border-green-200"
+                          : "bg-red-50 text-red-700 border border-red-200"
+                      }`}
                     >
-                      Save my name, email, and website in this browser for the
-                      next time I comment.
-                    </label>
-                  </div>
+                      {submitStatus.message}
+                    </div>
+                  )}
 
-                  <button
-                    type="submit"
-                    className="reply-form-field btn-primary gap-2 px-6 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base"
+                  <form
+                    onSubmit={handleCommentSubmit}
+                    className="article-reply-form space-y-4 sm:space-y-5"
                   >
-                    Post Comment
-                    <Send className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
-                  </button>
-                </form>
+                    <div className="reply-form-field">
+                      <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                        Comment <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        rows={4}
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        placeholder="Write your comment here..."
+                        required
+                        className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl text-sm sm:text-base text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue focus:bg-white transition-all resize-none"
+                      />
+                    </div>
+
+                    <div className="reply-form-field grid sm:grid-cols-2 gap-4 sm:gap-5">
+                      <div>
+                        <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                          Name <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={authorName}
+                          onChange={(e) => setAuthorName(e.target.value)}
+                          placeholder="Your name"
+                          required
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl text-sm sm:text-base text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue focus:bg-white transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                          Email <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          value={authorEmail}
+                          onChange={(e) => setAuthorEmail(e.target.value)}
+                          placeholder="Your email"
+                          required
+                          className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl text-sm sm:text-base text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue focus:bg-white transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="reply-form-field">
+                      <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                        Website
+                      </label>
+                      <input
+                        type="url"
+                        value={authorWebsite}
+                        onChange={(e) => setAuthorWebsite(e.target.value)}
+                        placeholder="Your website (optional)"
+                        className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl text-sm sm:text-base text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue focus:bg-white transition-all"
+                      />
+                    </div>
+
+                    <div className="reply-form-field flex items-start gap-2.5 sm:gap-3">
+                      <input
+                        type="checkbox"
+                        id="save-info"
+                        checked={saveInfo}
+                        onChange={(e) => setSaveInfo(e.target.checked)}
+                        className="mt-0.5 sm:mt-1 w-3.5 sm:w-4 h-3.5 sm:h-4 rounded border-gray-300 text-brand-blue focus:ring-brand-blue/30"
+                      />
+                      <label
+                        htmlFor="save-info"
+                        className="text-xs sm:text-sm text-gray-600 leading-relaxed"
+                      >
+                        Save my name, email, and website in this browser for the
+                        next time I comment.
+                      </label>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="reply-form-field btn-primary gap-2 px-6 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base disabled:opacity-70 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-3.5 sm:w-4 h-3.5 sm:h-4 animate-spin" />
+                          Posting...
+                        </>
+                      ) : (
+                        <>
+                          Post Comment
+                          <Send className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
+                        </>
+                      )}
+                    </button>
+                  </form>
+                </div>
               </div>
             </article>
 

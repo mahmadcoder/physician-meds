@@ -66,7 +66,7 @@ const CookieConsent = () => {
   const handleDismiss = useCallback(() => {
     setIsAnimating(false);
     sessionStorage.setItem(COOKIE_DISMISSED_KEY, 'true');
-    setTimeout(() => setIsVisible(false), 300);
+    setTimeout(() => setIsVisible(false), 500);
   }, []);
 
   // Check if consent exists
@@ -124,7 +124,7 @@ const CookieConsent = () => {
     setTimeout(() => {
       setIsVisible(false);
       setShowSettings(false);
-    }, 300);
+    }, 500);
   };
 
   const handleAcceptAll = () => {
@@ -166,10 +166,10 @@ const CookieConsent = () => {
       {/* Cookie Banner */}
       <div
         ref={bannerRef}
-        className={`fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-md z-[9999] transition-all duration-300 ease-out ${
+        className={`fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-md z-[9999] transition-all duration-500 ease-in-out ${
           isAnimating 
             ? 'translate-y-0 opacity-100 scale-100' 
-            : 'translate-y-8 opacity-0 scale-95'
+            : 'translate-y-12 opacity-0 scale-95'
         }`}
       >
         <div className="bg-white rounded-2xl shadow-2xl shadow-gray-200/50 border border-gray-100 overflow-hidden">

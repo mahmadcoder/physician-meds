@@ -270,3 +270,57 @@ export function newsletterNotificationTemplate(email: string) {
     </table>
   </div>`;
 }
+
+// ─── Blog Comment: notification to team ──────────────────
+export function commentNotificationTemplate(data: {
+  authorName: string;
+  authorEmail: string;
+  authorWebsite?: string;
+  comment: string;
+  articleTitle: string;
+  articleSlug: string;
+}) {
+  const articleUrl = `${siteUrl}/blogs/${data.articleSlug}`;
+  return `
+  <div style="max-width: 600px; margin: 0 auto; ${brandStyles}">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+            <tr>
+              <td style="background-color: #faf5ff; border-radius: 10px; padding: 10px 16px;">
+                <span style="font-size: 16px; font-weight: 700; color: #7c3aed;">&#128172; New Blog Comment</span>
+              </td>
+            </tr>
+          </table>
+          <p style="margin: 16px 0 24px 0; color: #64748b; font-size: 14px; line-height: 1.6;">Someone left a comment on your blog article.</p>
+
+          <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-radius: 8px;">
+            ${dataRow("Article", `<a href="${articleUrl}" style="color: #2563eb; font-size: 14px; text-decoration: none;">${data.articleTitle}</a>`, false, true)}
+            ${dataRow("Name", data.authorName)}
+            ${dataRow("Email", data.authorEmail, true, true)}
+            ${dataRow("Website", data.authorWebsite || "Not provided")}
+            ${dataRow("Date", new Date().toLocaleString("en-US", { timeZone: "America/New_York" }), false, true)}
+          </table>
+
+          <div style="margin-top: 24px; padding: 18px; background-color: #faf5ff; border-radius: 10px; border-left: 4px solid #7c3aed;">
+            <p style="margin: 0 0 8px 0; font-weight: 700; color: #7c3aed; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Comment</p>
+            <p style="margin: 0; color: #334155; line-height: 1.7; font-size: 14px; white-space: pre-wrap;">${data.comment}</p>
+          </div>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin-top: 24px;">
+            <tr>
+              <td align="center">
+                <a href="${articleUrl}" style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px;">
+                  View Article &rarr;
+                </a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr><td>${footerHtml()}</td></tr>
+    </table>
+  </div>`;
+}

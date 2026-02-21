@@ -4,7 +4,6 @@ import { sendEmail } from "./_lib/email.js";
 import { commentNotificationTemplate } from "./_lib/templates.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -36,7 +35,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // POST — submit a new comment
     if (req.method === "POST") {
-      const { postSlug, authorName, authorEmail, authorWebsite, comment, articleTitle } = req.body;
+      const body = req.body || {};
+      const { postSlug, authorName, authorEmail, authorWebsite, comment, articleTitle } = body;
 
       // Validation
       if (!postSlug || !authorName || !authorEmail || !comment) {
@@ -53,27 +53,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         author_name: authorName,
         author_email: authorEmail,
         author_website: authorWebsite || null,
-        comment,
+        comment: comment,
       });
 
       if (dbError) {
-        console.error("Supabase insert error:", dbError);
-        return res.status(500).json({ error: "Failed to save comment." });
+        console.error("Supabase insert error:", JSON.stringify(dbError));
+        return res.status(500).json({ error: "Failed to save comment.", detail: dbError.message });
       }
 
-      // Send notification email to team
+      // Send notification email to team (non-blocking)
       try {
+        const emailHtml = commentNotificationTemplate({
+          authorName,
+          authorEmail,
+          authorWebsite: authorWebsite || undefined,
+          comment,
+          articleTitle: articleTitle || postSlug,
+          articleSlug: postSlug,
+        });
+
         await sendEmail({
           to: process.env.EMAIL_USER!,
           subject: `New Blog Comment on: ${articleTitle || postSlug}`,
-          html: commentNotificationTemplate({
-            authorName,
-            authorEmail,
-            authorWebsite,
-            comment,
-            articleTitle: articleTitle || postSlug,
-            articleSlug: postSlug,
-          }),
+          html: emailHtml,
         });
       } catch (emailError) {
         console.error("Comment notification email failed (data was saved):", emailError);

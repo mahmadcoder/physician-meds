@@ -1,7 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { supabase } from "./_lib/supabase.js";
 import { sendEmail } from "./_lib/email.js";
-import { commentNotificationTemplate } from "./_lib/templates.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -38,7 +37,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const body = req.body || {};
       const { postSlug, authorName, authorEmail, authorWebsite, comment, articleTitle } = body;
 
-      // Validation
       if (!postSlug || !authorName || !authorEmail || !comment) {
         return res.status(400).json({ error: "Name, email, comment, and article slug are required." });
       }
@@ -61,20 +59,41 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(500).json({ error: "Failed to save comment.", detail: dbError.message });
       }
 
-      // Send notification email to team (non-blocking)
+      // Send notification email to team
       try {
-        const emailHtml = commentNotificationTemplate({
-          authorName,
-          authorEmail,
-          authorWebsite: authorWebsite || undefined,
-          comment,
-          articleTitle: articleTitle || postSlug,
-          articleSlug: postSlug,
-        });
+        const title = articleTitle || postSlug;
+        const siteUrl = "https://www.physicianmeds.com";
+        const articleUrl = `${siteUrl}/blogs/${postSlug}`;
+
+        const emailHtml = `
+        <div style="max-width: 600px; margin: 0 auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+          <div style="background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;">
+            <div style="padding: 24px; text-align: center; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0; color: #1a1a2e;">Physician<span style="color: #2563eb;">Meds</span></h2>
+            </div>
+            <div style="padding: 24px;">
+              <p style="background: #faf5ff; display: inline-block; padding: 6px 14px; border-radius: 8px; font-weight: 700; color: #7c3aed; font-size: 15px;">&#128172; New Blog Comment</p>
+              <p style="color: #64748b; font-size: 14px;">Someone left a comment on your blog article.</p>
+              <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 16px;">
+                <tr><td style="padding: 10px 14px; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 1px solid #f1f5f9;">Article</td><td style="padding: 10px 14px; border-bottom: 1px solid #f1f5f9;"><a href="${articleUrl}" style="color: #2563eb; text-decoration: none; font-size: 14px;">${title}</a></td></tr>
+                <tr style="background: #f8fafc;"><td style="padding: 10px 14px; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 1px solid #f1f5f9;">Name</td><td style="padding: 10px 14px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #1e293b;">${authorName}</td></tr>
+                <tr><td style="padding: 10px 14px; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 1px solid #f1f5f9;">Email</td><td style="padding: 10px 14px; border-bottom: 1px solid #f1f5f9;"><a href="mailto:${authorEmail}" style="color: #2563eb; text-decoration: none; font-size: 14px;">${authorEmail}</a></td></tr>
+                <tr style="background: #f8fafc;"><td style="padding: 10px 14px; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 1px solid #f1f5f9;">Website</td><td style="padding: 10px 14px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #1e293b;">${authorWebsite || "Not provided"}</td></tr>
+              </table>
+              <div style="margin-top: 20px; padding: 16px; background: #faf5ff; border-radius: 10px; border-left: 4px solid #7c3aed;">
+                <p style="margin: 0 0 6px 0; font-weight: 700; color: #7c3aed; font-size: 12px; text-transform: uppercase;">Comment</p>
+                <p style="margin: 0; color: #334155; line-height: 1.7; font-size: 14px; white-space: pre-wrap;">${comment}</p>
+              </div>
+              <div style="text-align: center; margin-top: 20px;">
+                <a href="${articleUrl}" style="display: inline-block; background: #2563eb; color: #fff; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">View Article &rarr;</a>
+              </div>
+            </div>
+          </div>
+        </div>`;
 
         await sendEmail({
           to: process.env.EMAIL_USER!,
-          subject: `New Blog Comment on: ${articleTitle || postSlug}`,
+          subject: `New Blog Comment on: ${title}`,
           html: emailHtml,
         });
       } catch (emailError) {

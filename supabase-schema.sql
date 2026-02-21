@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS blog_posts (
 -- Blog comments
 CREATE TABLE IF NOT EXISTS blog_comments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    post_slug TEXT NOT NULL REFERENCES blog_posts(slug) ON DELETE CASCADE,
+    post_slug TEXT NOT NULL,
     author_name TEXT NOT NULL,
     author_email TEXT NOT NULL,
     author_website TEXT,

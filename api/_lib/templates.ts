@@ -324,3 +324,67 @@ export function commentNotificationTemplate(data: {
     </table>
   </div>`;
 }
+
+// ─── Blog Comment: confirmation to commenter ──────────────────
+export function commentConfirmationTemplate(data: {
+  authorName: string;
+  articleTitle: string;
+  articleSlug: string;
+}) {
+  const firstName = data.authorName.split(" ")[0];
+  const articleUrl = `${siteUrl}/blogs/${data.articleSlug}`;
+  return `
+  <div style="max-width: 600px; margin: 0 auto; ${brandStyles}">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #1e293b; font-weight: 700;">Thank you, ${firstName}!</h2>
+          <p style="margin: 0 0 24px 0; color: #475569; line-height: 1.8; font-size: 15px;">
+            Your comment on <strong style="color: #1e293b;">"${data.articleTitle}"</strong> has been posted successfully. We appreciate you taking the time to share your thoughts!
+          </p>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #faf5ff; border-radius: 12px; border: 1px solid #e9d5ff;">
+            <tr>
+              <td width="56" valign="top" style="padding: 18px 0 18px 18px;">
+                <div style="width: 44px; height: 44px; background-color: #e9d5ff; border-radius: 10px; text-align: center; line-height: 44px; font-size: 22px;">&#128172;</div>
+              </td>
+              <td valign="top" style="padding: 18px 18px 18px 14px;">
+                <p style="margin: 0 0 4px 0; font-weight: 700; color: #7c3aed; font-size: 14px;">Your comment is live!</p>
+                <p style="margin: 0; color: #475569; font-size: 13px; line-height: 1.6;">Your comment is now visible on the article. Visit the article to see your comment and continue the discussion.</p>
+              </td>
+            </tr>
+          </table>
+
+          <p style="margin: 24px 0; color: #475569; line-height: 1.8; font-size: 15px;">
+            Explore more of our <a href="${siteUrl}/blogs" style="color: #2563eb; text-decoration: none; font-weight: 600;">healthcare insights</a> or learn about our <a href="${siteUrl}/services" style="color: #2563eb; text-decoration: none; font-weight: 600;">services</a> to see how we can help optimize your revenue cycle.
+          </p>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+            <tr>
+              <td align="center" style="padding: 4px 0 28px 0;">
+                <a href="${articleUrl}" style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px;">
+                  View Article &rarr;
+                </a>
+              </td>
+            </tr>
+          </table>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+            <tr>
+              <td align="center" style="padding: 18px;">
+                <p style="margin: 0; color: #475569; font-size: 14px; line-height: 1.6;">
+                  <strong style="color: #1e293b;">Have questions?</strong><br/>
+                  Call <a href="tel:+14809189621" style="color: #2563eb; font-weight: 600; text-decoration: none;">+1 (480) 918-9621</a>
+                  &nbsp;&#8226;&nbsp;
+                  Email <a href="mailto:info@physicianmeds.com" style="color: #2563eb; font-weight: 600; text-decoration: none;">info@physicianmeds.com</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr><td>${footerHtml()}</td></tr>
+    </table>
+  </div>`;
+}

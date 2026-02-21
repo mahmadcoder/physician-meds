@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { supabase } from "./_lib/supabase.js";
 import { sendEmail } from "./_lib/email.js";
-import { commentNotificationTemplate } from "./_lib/templates.js";
+import { commentNotificationTemplate, commentConfirmationTemplate } from "./_lib/templates.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -80,6 +80,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       try {
         const title = articleTitle || postSlug;
+        // Notification to team
         await sendEmail({
           to: process.env.EMAIL_USER!,
           subject: `New Blog Comment on: ${title}`,
@@ -88,6 +89,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             authorEmail,
             authorWebsite,
             comment,
+            articleTitle: title,
+            articleSlug: postSlug,
+          }),
+        });
+        // Confirmation to commenter
+        await sendEmail({
+          to: authorEmail,
+          subject: `Your comment on "${title}" — PhysicianMeds`,
+          html: commentConfirmationTemplate({
+            authorName,
             articleTitle: title,
             articleSlug: postSlug,
           }),

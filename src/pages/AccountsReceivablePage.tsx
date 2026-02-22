@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
+import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -35,8 +36,6 @@ const AccountsReceivablePage = () => {
   const ctxRef = useRef<gsap.Context | null>(null);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-
     const ctx = gsap.context(() => {
       // Hero animations — clipPath + elastic badge
       const heroTl = gsap.timeline({ defaults: { ease: "expo.out" } });
@@ -197,7 +196,7 @@ const AccountsReceivablePage = () => {
 
         <div className="container-custom relative z-10 pt-24 sm:pt-28 md:pt-36 lg:pt-40 pb-10 sm:pb-14 md:pb-20">
           <div className="mb-5 sm:mb-6">
-            <Link to="/services" onClick={() => window.scrollTo(0, 0)} className="ar-nav inline-flex items-center gap-2 text-gray-500 hover:text-brand-blue transition-colors group text-sm">
+            <Link to="/services" className="ar-nav inline-flex items-center gap-2 text-gray-500 hover:text-brand-blue transition-colors group text-sm">
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               Back to Services
             </Link>
@@ -232,7 +231,7 @@ const AccountsReceivablePage = () => {
               </div>
 
               <div className="ar-hero-cta flex flex-col sm:flex-row gap-2.5 sm:gap-3">
-                <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
+                <Link to="/consult-now">
                   <button className="w-full sm:w-auto btn-primary px-6 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base">{arHero.ctaPrimary}</button>
                 </Link>
                 <a href={`tel:${contactInfo.phone}`}>
@@ -396,7 +395,7 @@ const AccountsReceivablePage = () => {
                 </div>
               </div>
 
-              <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
+              <Link to="/consult-now">
                 <button className="inline-flex items-center gap-2 btn-primary px-6 py-3 text-sm sm:text-base">
                   See How It Works
                   <ArrowRight className="w-4 h-4" />
@@ -564,7 +563,7 @@ const AccountsReceivablePage = () => {
                 </li>
               </ul>
 
-              <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
+              <Link to="/consult-now">
                 <button className="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold px-6 py-3 rounded-lg transition-all text-sm sm:text-base shadow-lg shadow-emerald-600/25">
                   Request Dashboard Demo
                   <ArrowRight className="w-4 h-4" />

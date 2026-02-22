@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import usePageTitle from "./hooks/usePageTitle";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Header from "./sections/Header";
@@ -47,6 +48,11 @@ import AdminBlogEditorPage from "./pages/admin/AdminBlogEditorPage";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Let our ScrollToTop component manage scroll restoration instead of the browser
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
+
 // Home Page Component
 const HomePage = () => {
   usePageTitle();
@@ -78,48 +84,51 @@ function AppContent() {
   const isAdmin = location.pathname.startsWith("/pm-portal-x9k2");
 
   return (
-    <div className="min-h-screen bg-white overflow-x-clip">
-      {!isAdmin && <Header />}
-      <main>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/services/medical-billing" element={<MedicalBillingPage />} />
-          <Route path="/services/medical-coding" element={<MedicalCodingPage />} />
-          <Route path="/services/practice-management" element={<PracticeManagementPage />} />
-          <Route path="/services/credential-enrollment" element={<CredentialEnrollmentPage />} />
-          <Route path="/services/accounts-receivable" element={<AccountsReceivablePage />} />
-          <Route path="/services/denial-management" element={<DenialManagementPage />} />
-          <Route path="/services/out-of-network-billing" element={<OutOfNetworkPage />} />
-          <Route path="/services/patient-billing" element={<PatientBillingPage />} />
-          <Route path="/services/quality-payment-program" element={<QualityPaymentPage />} />
-          <Route path="/services/patient-centered-medical-home" element={<PatientCenteredPage />} />
-          <Route path="/services/rcm-software" element={<RCMSoftwarePage />} />
-          <Route path="/services/virtual-assistants" element={<VirtualAssistantPage />} />
-          <Route path="/services/incentive-programs" element={<IncentiveProgramsPage />} />
-          <Route path="/services/medical-audit" element={<MedicalAuditPage />} />
-          <Route path="/services/digital-marketing" element={<DigitalMarketingPage />} />
-          <Route path="/services/practice-reporting" element={<PracticeReportingPage />} />
-          <Route path="/about-us" element={<AboutUsPage />} />
-          <Route path="/consult-now" element={<ConsultPage />} />
-          <Route path="/contact-us" element={<ContactUsPage />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-          <Route path="/terms-conditions" element={<TermsConditionsPage />} />
-          <Route path="/blogs" element={<BlogPage />} />
-          <Route path="/blogs/:slug" element={<BlogArticlePage />} />
-          <Route path="/testimonials" element={<TestimonialsPage />} />
-          <Route path="/sitemap" element={<SitemapPage />} />
+    <>
+      <ScrollToTop />
+      <div className="min-h-screen bg-white overflow-x-clip">
+        {!isAdmin && <Header />}
+        <main>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/services/medical-billing" element={<MedicalBillingPage />} />
+            <Route path="/services/medical-coding" element={<MedicalCodingPage />} />
+            <Route path="/services/practice-management" element={<PracticeManagementPage />} />
+            <Route path="/services/credential-enrollment" element={<CredentialEnrollmentPage />} />
+            <Route path="/services/accounts-receivable" element={<AccountsReceivablePage />} />
+            <Route path="/services/denial-management" element={<DenialManagementPage />} />
+            <Route path="/services/out-of-network-billing" element={<OutOfNetworkPage />} />
+            <Route path="/services/patient-billing" element={<PatientBillingPage />} />
+            <Route path="/services/quality-payment-program" element={<QualityPaymentPage />} />
+            <Route path="/services/patient-centered-medical-home" element={<PatientCenteredPage />} />
+            <Route path="/services/rcm-software" element={<RCMSoftwarePage />} />
+            <Route path="/services/virtual-assistants" element={<VirtualAssistantPage />} />
+            <Route path="/services/incentive-programs" element={<IncentiveProgramsPage />} />
+            <Route path="/services/medical-audit" element={<MedicalAuditPage />} />
+            <Route path="/services/digital-marketing" element={<DigitalMarketingPage />} />
+            <Route path="/services/practice-reporting" element={<PracticeReportingPage />} />
+            <Route path="/about-us" element={<AboutUsPage />} />
+            <Route path="/consult-now" element={<ConsultPage />} />
+            <Route path="/contact-us" element={<ContactUsPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/terms-conditions" element={<TermsConditionsPage />} />
+            <Route path="/blogs" element={<BlogPage />} />
+            <Route path="/blogs/:slug" element={<BlogArticlePage />} />
+            <Route path="/testimonials" element={<TestimonialsPage />} />
+            <Route path="/sitemap" element={<SitemapPage />} />
 
-          {/* Admin Routes */}
-          <Route path="/pm-portal-x9k2" element={<AdminLoginPage />} />
-          <Route path="/pm-portal-x9k2/dashboard" element={<AdminDashboardPage />} />
-          <Route path="/pm-portal-x9k2/blog/new" element={<AdminBlogEditorPage />} />
-          <Route path="/pm-portal-x9k2/blog/edit/:id" element={<AdminBlogEditorPage />} />
-        </Routes>
-      </main>
-      {!isAdmin && <Footer />}
-      {!isAdmin && <CookieConsent />}
-    </div>
+            {/* Admin Routes */}
+            <Route path="/pm-portal-x9k2" element={<AdminLoginPage />} />
+            <Route path="/pm-portal-x9k2/dashboard" element={<AdminDashboardPage />} />
+            <Route path="/pm-portal-x9k2/blog/new" element={<AdminBlogEditorPage />} />
+            <Route path="/pm-portal-x9k2/blog/edit/:id" element={<AdminBlogEditorPage />} />
+          </Routes>
+        </main>
+        {!isAdmin && <Footer />}
+        {!isAdmin && <CookieConsent />}
+      </div>
+    </>
   );
 }
 

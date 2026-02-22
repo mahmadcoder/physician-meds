@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
+import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Globe, ChevronRight } from "lucide-react";
 import gsap from "gsap";
@@ -69,14 +70,12 @@ const sitemapSections = [
 
 const SitemapPage = () => {
   usePageTitle("Sitemap");
+  const isBack = useIsBackNavigation();
   const pageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    setTimeout(
-      () => window.scrollTo({ top: 0, left: 0, behavior: "instant" }),
-      0
-    );
+    // Skip animations on back/forward navigation
+    if (isBack) return;
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
@@ -172,7 +171,7 @@ const SitemapPage = () => {
                     <li key={link.href}>
                       <Link
                         to={link.href}
-                        onClick={() => window.scrollTo(0, 0)}
+                       
                         className="group flex items-center gap-3 py-2.5 px-3 -mx-3 rounded-lg text-gray-600 hover:text-brand-blue hover:bg-brand-blue/5 transition-all duration-200"
                       >
                         <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-brand-blue group-hover:translate-x-0.5 transition-all flex-shrink-0" />

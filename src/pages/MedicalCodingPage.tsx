@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
+import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -37,13 +38,15 @@ gsap.registerPlugin(ScrollTrigger);
 
 const MedicalCodingPage = () => {
   usePageTitle("Medical Coding");
+  const isBack = useIsBackNavigation();
   const pageRef = useRef<HTMLDivElement>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
   const [openChallenge, setOpenChallenge] = useState<number | null>(0);
   const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    // Skip animations on back/forward navigation
+    if (isBack) return;
 
     const ctx = gsap.context(() => {
       // Hero timeline
@@ -256,7 +259,7 @@ const MedicalCodingPage = () => {
           <div className="mb-5 sm:mb-6">
             <Link
               to="/services"
-              onClick={() => window.scrollTo(0, 0)}
+             
               className="mc-nav inline-flex items-center gap-2 text-gray-500 hover:text-brand-blue transition-colors group text-sm"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -304,7 +307,7 @@ const MedicalCodingPage = () => {
               </div>
 
               <div className="mc-hero-cta flex flex-col sm:flex-row gap-2.5 sm:gap-3">
-                <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
+                <Link to="/consult-now">
                   <button className="w-full sm:w-auto btn-primary px-6 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base">
                     {codingHero.ctaPrimary}
                   </button>
@@ -411,7 +414,7 @@ const MedicalCodingPage = () => {
                 while maintaining accuracy, compliance, and timely
                 reimbursements.
               </p>
-              <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
+              <Link to="/consult-now">
                 <button className="btn-primary px-6 sm:px-8 py-3 text-sm sm:text-base inline-flex items-center gap-2 group">
                   Stop Losing Revenue Now
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -839,7 +842,7 @@ const MedicalCodingPage = () => {
               </div>
               <Link
                 to="/consult-now"
-                onClick={() => window.scrollTo(0, 0)}
+               
                 className="flex-shrink-0 mx-auto md:mx-0"
               >
                 <button className="bg-brand-blue hover:bg-brand-blue-dark text-white font-semibold px-5 sm:px-7 py-2.5 sm:py-3 rounded-lg transition-all flex items-center gap-2 group text-sm sm:text-base whitespace-nowrap shadow-lg shadow-brand-blue/30">

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
+import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -60,6 +61,7 @@ const contactCards = [
 
 const ContactUsPage = () => {
   usePageTitle("Contact Us");
+  const isBack = useIsBackNavigation();
   const pageRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -74,11 +76,8 @@ const ContactUsPage = () => {
   });
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    setTimeout(
-      () => window.scrollTo({ top: 0, left: 0, behavior: "instant" }),
-      0
-    );
+    // Skip animations on back/forward navigation
+    if (isBack) return;
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
@@ -455,7 +454,7 @@ const ContactUsPage = () => {
                   </p>
                   <Link
                     to="/consult-now"
-                    onClick={() => window.scrollTo(0, 0)}
+
                     className="mt-6 inline-flex items-center gap-2 text-brand-blue font-semibold hover:underline group"
                   >
                     Schedule a Consultation
@@ -570,7 +569,7 @@ const ContactUsPage = () => {
                   <div className="mt-8 pt-6 border-t border-white/20">
                     <Link
                       to="/consult-now"
-                      onClick={() => window.scrollTo(0, 0)}
+                     
                       className="inline-flex items-center justify-center gap-2 w-full bg-white text-brand-blue hover:bg-white/90 font-semibold px-6 py-3 rounded-xl transition-all duration-300 group"
                     >
                       Schedule Consultation

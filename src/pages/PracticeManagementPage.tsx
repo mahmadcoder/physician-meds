@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
+import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -36,12 +37,14 @@ gsap.registerPlugin(ScrollTrigger);
 
 const PracticeManagementPage = () => {
   usePageTitle("Practice Management");
+  const isBack = useIsBackNavigation();
   const pageRef = useRef<HTMLDivElement>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
   const [activePhase, setActivePhase] = useState(0);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    // Skip animations on back/forward navigation
+    if (isBack) return;
 
     const ctx = gsap.context(() => {
       // Hero — clipPath + elastic badge
@@ -204,7 +207,7 @@ const PracticeManagementPage = () => {
 
         <div className="container-custom relative z-10 pt-24 sm:pt-28 md:pt-36 lg:pt-40 pb-10 sm:pb-14 md:pb-20">
           <div className="mb-5 sm:mb-6">
-            <Link to="/services" onClick={() => window.scrollTo(0, 0)} className="pm-nav inline-flex items-center gap-2 text-gray-500 hover:text-brand-blue transition-colors group text-sm">
+            <Link to="/services" className="pm-nav inline-flex items-center gap-2 text-gray-500 hover:text-brand-blue transition-colors group text-sm">
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               Back to Services
             </Link>
@@ -239,7 +242,7 @@ const PracticeManagementPage = () => {
               </div>
 
               <div className="pm-hero-cta flex flex-col sm:flex-row gap-2.5 sm:gap-3">
-                <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
+                <Link to="/consult-now">
                   <button className="w-full sm:w-auto btn-primary px-6 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base">{pmHero.ctaPrimary}</button>
                 </Link>
                 <a href={`tel:${contactInfo.phone}`}>

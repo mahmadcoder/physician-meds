@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import usePageTitle from '@/hooks/usePageTitle';
+import usePageTitle from "@/hooks/usePageTitle";
+import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Phone, Mail, MapPin, CheckCircle } from 'lucide-react';
 import gsap from 'gsap';
@@ -45,6 +46,7 @@ const InstagramIcon = ({ className }: { className?: string }) => (
 
 const ConsultPage = () => {
   usePageTitle("Free Consultation");
+  const isBack = useIsBackNavigation();
   const pageRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -76,8 +78,6 @@ const ConsultPage = () => {
 
   useEffect(() => {
     // Scroll to top immediately and after a small delay to ensure it works
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    setTimeout(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }), 0);
 
     const ctx = gsap.context(() => {
       // Hero content animation

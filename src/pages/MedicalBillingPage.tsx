@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
+import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -30,11 +31,13 @@ gsap.registerPlugin(ScrollTrigger);
 
 const MedicalBillingPage = () => {
   usePageTitle("Medical Billing");
+  const isBack = useIsBackNavigation();
   const pageRef = useRef<HTMLDivElement>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    // Skip animations on back/forward navigation
+    if (isBack) return;
 
     const ctx = gsap.context(() => {
       // Hero timeline
@@ -199,7 +202,7 @@ const MedicalBillingPage = () => {
               <div className="mb-5 sm:mb-6">
                 <Link
                   to="/services"
-                  onClick={() => window.scrollTo(0, 0)}
+                 
                   className="billing-back inline-flex items-center gap-2 text-gray-600 hover:text-brand-blue transition-colors group text-sm"
                 >
                   <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -245,7 +248,7 @@ const MedicalBillingPage = () => {
               </div>
 
               <div className="billing-cta-buttons flex flex-col sm:flex-row gap-2.5 sm:gap-3">
-                <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
+                <Link to="/consult-now">
                   <button className="w-full sm:w-auto btn-primary px-6 sm:px-8 py-3 text-sm sm:text-base">
                     {billingHero.ctaPrimary}
                   </button>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import usePageTitle from '@/hooks/usePageTitle';
+import usePageTitle from "@/hooks/usePageTitle";
+import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -46,6 +47,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const AboutUsPage = () => {
   usePageTitle("About Us");
+  const isBack = useIsBackNavigation();
   const pageRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const storyRef = useRef<HTMLDivElement>(null);
@@ -93,8 +95,6 @@ const AboutUsPage = () => {
 
   useEffect(() => {
     // Scroll to top immediately and after a small delay to ensure it works
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    setTimeout(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }), 0);
 
     const ctx = gsap.context(() => {
       // Hero animations
@@ -845,13 +845,13 @@ const AboutUsPage = () => {
                 {ctaSection.description}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
+                <Link to="/consult-now">
                   <Button className="w-full sm:w-auto bg-white text-brand-blue hover:bg-gray-100 font-semibold px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base group">
                     {ctaSection.primaryButton}
                     <ArrowRight className="ml-2 w-4 sm:w-5 h-4 sm:h-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
-                <Link to="/services" onClick={() => window.scrollTo(0, 0)}>
+                <Link to="/services">
                   <Button 
                     variant="outline" 
                     className="w-full sm:w-auto border-2 border-white bg-transparent text-white hover:bg-white hover:text-brand-blue font-semibold px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base transition-all"

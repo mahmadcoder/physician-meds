@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import usePageTitle from '@/hooks/usePageTitle';
+import usePageTitle from "@/hooks/usePageTitle";
+import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from 'react-router-dom';
 import { ArrowLeft, FileText, Mail } from 'lucide-react';
 import gsap from 'gsap';
@@ -10,6 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const TermsConditionsPage = () => {
   usePageTitle("Terms & Conditions");
+  const isBack = useIsBackNavigation();
   const pageRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLElement>(null);
@@ -17,8 +19,6 @@ const TermsConditionsPage = () => {
 
   useEffect(() => {
     // Scroll to top
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    setTimeout(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }), 0);
 
     const ctx = gsap.context(() => {
       // Hero animations

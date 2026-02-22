@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
+import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -40,8 +41,6 @@ const RCMSoftwarePage = () => {
   const currentModule = rcmModules.find((m) => m.id === activeModule);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-
     const ctx = gsap.context(() => {
       // Hero timeline
       const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
@@ -181,7 +180,7 @@ const RCMSoftwarePage = () => {
 
         <div className="container-custom relative z-10 pt-24 sm:pt-28 md:pt-36 lg:pt-40 pb-10 sm:pb-14 md:pb-20">
           <div className="mb-5 sm:mb-6">
-            <Link to="/services" onClick={() => window.scrollTo(0, 0)} className="rcm-nav inline-flex items-center gap-2 text-gray-500 hover:text-brand-blue transition-colors group text-sm">
+            <Link to="/services" className="rcm-nav inline-flex items-center gap-2 text-gray-500 hover:text-brand-blue transition-colors group text-sm">
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               Back to Services
             </Link>
@@ -215,7 +214,7 @@ const RCMSoftwarePage = () => {
               </div>
 
               <div className="rcm-hero-cta flex flex-col sm:flex-row gap-2.5 sm:gap-3">
-                <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
+                <Link to="/consult-now">
                   <button className="w-full sm:w-auto btn-primary px-6 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base">
                     {rcmHero.ctaPrimary}
                   </button>
@@ -343,7 +342,7 @@ const RCMSoftwarePage = () => {
                   </div>
 
                   <div className="mt-6">
-                    <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
+                    <Link to="/consult-now">
                       <button className="btn-primary px-6 py-3 text-sm sm:text-base inline-flex items-center gap-2 group">
                         See It in Action
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

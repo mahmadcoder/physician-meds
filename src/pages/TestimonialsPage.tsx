@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
+
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -940,7 +941,7 @@ const BottomCTA = () => {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
                 href="/consult-now"
-                onClick={() => window.scrollTo(0, 0)}
+               
                 className="inline-flex items-center gap-2 bg-white text-brand-blue font-semibold px-8 py-4 rounded-xl hover:shadow-2xl hover:shadow-white/20 hover:-translate-y-1 transition-all duration-300 text-sm sm:text-base group"
               >
                 Schedule Free Consultation
@@ -966,9 +967,6 @@ const BottomCTA = () => {
 
 const TestimonialsPage = () => {
   usePageTitle("Testimonials");
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   return (
     <>

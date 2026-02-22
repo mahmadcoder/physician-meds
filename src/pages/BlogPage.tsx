@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
+import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -25,6 +26,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const BlogPage = () => {
   usePageTitle("Blog");
+  const isBack = useIsBackNavigation();
   const pageRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -74,7 +76,8 @@ const BlogPage = () => {
 
   // Scroll to top & animations
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    // Skip animations on back/forward navigation so content is visible instantly
+    if (isBack) return;
 
     const ctx = gsap.context(() => {
       // --- Hero timeline ---

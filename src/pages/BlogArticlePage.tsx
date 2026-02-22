@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
+import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link, useParams } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -210,6 +211,7 @@ const BlogArticlePage = () => {
   const pageRef = useRef<HTMLDivElement>(null);
   const articleRef = useRef<HTMLElement>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
+  const isBack = useIsBackNavigation();
   const [readProgress, setReadProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -361,7 +363,8 @@ const BlogArticlePage = () => {
 
   // Scroll to top & animations
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    // Skip animations on back/forward navigation so content is visible instantly
+    if (isBack) return;
 
     const ctx = gsap.context(() => {
       // --- Hero image scale reveal ---
@@ -983,7 +986,7 @@ const BlogArticlePage = () => {
                     {/* CTA Button */}
                     <Link
                       to="/consult-now"
-                      onClick={() => window.scrollTo(0, 0)}
+                     
                       className="flex items-center justify-center gap-2 w-full bg-brand-blue text-white font-semibold text-center py-3 sm:py-3.5 rounded-xl hover:bg-brand-blue-dark transition-colors text-xs sm:text-sm shadow-lg shadow-brand-blue/25 mb-4 sm:mb-5 group"
                     >
                       Let's Get Started
@@ -1071,7 +1074,7 @@ const BlogArticlePage = () => {
                 <Link
                   to={`/blogs/${relArticle.slug}`}
                   key={relArticle.id}
-                  onClick={() => window.scrollTo(0, 0)}
+                 
                   className="related-card group"
                 >
                   <article className="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-lg shadow-gray-200/50 border border-gray-100 transition-all duration-500 hover:shadow-xl hover:shadow-brand-blue/10 hover:-translate-y-2 h-full flex flex-col">
@@ -1126,13 +1129,13 @@ const BlogArticlePage = () => {
                 consultation today.
               </p>
               <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 justify-center">
-                <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
+                <Link to="/consult-now">
                   <button className="w-full sm:w-auto bg-white text-brand-blue hover:bg-gray-100 font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-all flex items-center justify-center gap-2 group text-sm sm:text-base">
                     Schedule Consultation
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </Link>
-                <Link to="/blogs" onClick={() => window.scrollTo(0, 0)}>
+                <Link to="/blogs">
                   <button className="w-full sm:w-auto border-2 border-white bg-transparent text-white hover:bg-white hover:text-brand-blue font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-all text-sm sm:text-base">
                     Browse More Articles
                   </button>
@@ -1146,7 +1149,7 @@ const BlogArticlePage = () => {
       {/* Back to Top */}
       {showBackToTop && (
         <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+         
           className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-10 sm:w-12 h-10 sm:h-12 bg-brand-blue text-white rounded-full shadow-xl shadow-brand-blue/30 flex items-center justify-center hover:bg-brand-blue-dark transition-all hover:scale-110"
           aria-label="Back to top"
         >

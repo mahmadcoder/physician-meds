@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
+import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import gsap from "gsap";
@@ -11,18 +12,15 @@ gsap.registerPlugin(ScrollTrigger);
 
 const ServicesPage = () => {
   usePageTitle("Our Services");
+  const isBack = useIsBackNavigation();
   const pageRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Scroll to top immediately and after a small delay to ensure it works
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    setTimeout(
-      () => window.scrollTo({ top: 0, left: 0, behavior: "instant" }),
-      0
-    );
+    // Skip animations on back/forward navigation
+    if (isBack) return;
 
     const ctx = gsap.context(() => {
       // Hero section entrance animation

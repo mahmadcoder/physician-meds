@@ -787,13 +787,59 @@ const BlogArticlePage = () => {
                   {/* Submit status message */}
                   {submitStatus && (
                     <div
-                      className={`mb-5 p-3.5 sm:p-4 rounded-xl text-sm sm:text-base font-medium ${
+                      className={`mb-5 p-4 sm:p-5 rounded-2xl text-sm sm:text-base font-medium flex items-center gap-3 sm:gap-4 ${
                         submitStatus.type === "success"
-                          ? "bg-green-50 text-green-700 border border-green-200"
-                          : "bg-red-50 text-red-700 border border-red-200"
+                          ? "bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200 shadow-sm shadow-green-100"
+                          : "bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border border-red-200 shadow-sm shadow-red-100"
                       }`}
                     >
-                      {submitStatus.message}
+                      {submitStatus.type === "success" ? (
+                        <svg
+                          viewBox="0 0 64 64"
+                          className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 drop-shadow-sm"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          {/* Korean finger heart – thumb & index finger */}
+                          <path
+                            d="M26 52c-1-2-2-6-1-10 1-5 3-8 5-10l2-2c1-1 2-3 2-5 0-3-1-5-2-6s-2-1-3 0c-2 2-3 5-3 8"
+                            stroke="#f9a8d4"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            fill="#fce7f3"
+                          />
+                          <path
+                            d="M38 52c1-2 2-6 1-10-1-5-3-8-5-10l-2-2c-1-1-2-3-2-5 0-3 1-5 2-6s2-1 3 0c2 2 3 5 3 8"
+                            stroke="#f9a8d4"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            fill="#fce7f3"
+                          />
+                          {/* Heart shape */}
+                          <path
+                            d="M32 28c-2-4-6-6-9-5s-5 5-4 9c2 6 8 11 13 14 5-3 11-8 13-14 1-4 0-8-4-9s-7 1-9 5z"
+                            fill="url(#heartGrad)"
+                            stroke="#e11d48"
+                            strokeWidth="1.5"
+                          />
+                          {/* Medical cross inside heart */}
+                          <rect x="30" y="29" width="4" height="12" rx="1" fill="#fff" opacity="0.9" />
+                          <rect x="27" y="32" width="10" height="4" rx="1" fill="#fff" opacity="0.9" />
+                          <defs>
+                            <linearGradient id="heartGrad" x1="23" y1="23" x2="41" y2="46">
+                              <stop offset="0%" stopColor="#f43f5e" />
+                              <stop offset="100%" stopColor="#e11d48" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                      ) : (
+                        <svg viewBox="0 0 24 24" className="w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="12" y1="8" x2="12" y2="12" />
+                          <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                      )}
+                      <span>{submitStatus.message}</span>
                     </div>
                   )}
 

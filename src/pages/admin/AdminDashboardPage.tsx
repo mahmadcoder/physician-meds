@@ -17,6 +17,7 @@ import {
   ChevronUp,
   Clock,
   CheckCircle,
+  Briefcase,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -75,7 +76,21 @@ interface Comment {
   is_read: boolean;
 }
 
-type Tab = "contacts" | "consultations" | "subscribers" | "blogs" | "comments";
+interface CtaInquiry {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  practice_name: string;
+  monthly_collection: string;
+  total_ar: string;
+  message: string;
+  created_at: string;
+  is_read: boolean;
+  status: string;
+}
+
+type Tab = "contacts" | "consultations" | "subscribers" | "blogs" | "comments" | "cta-inquiries";
 
 const AdminDashboardPage = () => {
   usePageTitle("Admin Dashboard");
@@ -86,6 +101,7 @@ const AdminDashboardPage = () => {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
+  const [ctaInquiries, setCtaInquiries] = useState<CtaInquiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -113,6 +129,7 @@ const AdminDashboardPage = () => {
         subscribers: "/api/admin/subscribers",
         blogs: "/api/admin/blogs",
         comments: "/api/admin/comments",
+        "cta-inquiries": "/api/admin/cta-inquiries",
       };
 
       const response = await fetch(endpoints[tab], {
@@ -133,6 +150,7 @@ const AdminDashboardPage = () => {
         case "subscribers": setSubscribers(data); break;
         case "blogs": setBlogs(data); break;
         case "comments": setComments(data); break;
+        case "cta-inquiries": setCtaInquiries(data); break;
       }
     } catch (err) {
       console.error("Fetch error:", err);
@@ -141,13 +159,22 @@ const AdminDashboardPage = () => {
     }
   };
 
-  const markAsRead = async (table: "contacts" | "consultations" | "comments", id: string) => {
+  const markAsRead = async (table: "contacts" | "consultations" | "comments" | "cta-inquiries", id: string) => {
     await fetch(`/api/admin/${table}`, {
       method: "PUT",
       headers: authHeaders(),
       body: JSON.stringify({ id, is_read: true }),
     });
-    fetchData(table);
+    fetchData(table as Tab);
+  };
+
+  const updateCtaStatus = async (id: string, status: string) => {
+    await fetch("/api/admin/cta-inquiries", {
+      method: "PUT",
+      headers: authHeaders(),
+      body: JSON.stringify({ id, status }),
+    });
+    fetchData("cta-inquiries");
   };
 
   const updateStatus = async (id: string, status: string) => {
@@ -209,6 +236,7 @@ const AdminDashboardPage = () => {
     { id: "subscribers" as Tab, label: "Subscribers", icon: Mail, count: subscribers.length },
     { id: "blogs" as Tab, label: "Blog Posts", icon: FileText, count: blogs.length },
     { id: "comments" as Tab, label: "Comments", icon: MessageCircle, count: comments.filter(c => !c.is_read).length },
+    { id: "cta-inquiries" as Tab, label: "CTA Inquiries", icon: Briefcase, count: ctaInquiries.filter(c => !c.is_read).length },
   ];
 
   return (
@@ -533,6 +561,75 @@ const AdminDashboardPage = () => {
                         <div className="mt-4 p-4 bg-gray-50 rounded-xl text-sm">
                           {comment.author_website && <p className="text-gray-500 mb-1"><strong>Website:</strong> <a href={comment.author_website} target="_blank" rel="noreferrer" className="text-brand-blue hover:underline">{comment.author_website}</a></p>}
                           <p className="text-gray-700 whitespace-pre-wrap mt-2">{comment.comment}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* CTA Inquiries Tab */}
+              {activeTab === "cta-inquiries" && (
+                <div className="divide-y divide-gray-100">
+                  {ctaInquiries.length === 0 ? (
+                    <div className="text-center py-16 text-gray-400">
+                      <Briefcase className="w-12 h-12 mx-auto mb-3 opacity-40" />
+                      <p>No CTA inquiries yet</p>
+                    </div>
+                  ) : ctaInquiries.map((inquiry) => (
+                    <div key={inquiry.id} className={`p-5 ${!inquiry.is_read ? "bg-amber-50/30" : ""}`}>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 cursor-pointer" onClick={() => setExpandedId(expandedId === inquiry.id ? null : inquiry.id)}>
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            {!inquiry.is_read && <div className="w-2 h-2 bg-amber-500 rounded-full" />}
+                            <h3 className="font-semibold text-brand-dark">{inquiry.name}</h3>
+                            <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${
+                              inquiry.status === "new" ? "bg-amber-100 text-amber-700" :
+                              inquiry.status === "contacted" ? "bg-yellow-100 text-yellow-700" :
+                              inquiry.status === "converted" ? "bg-green-100 text-green-700" :
+                              "bg-gray-100 text-gray-600"
+                            }`}>
+                              {inquiry.status || "new"}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-500">{inquiry.email}{inquiry.phone ? ` • ${inquiry.phone}` : ""}</p>
+                          {inquiry.practice_name && <p className="text-sm text-gray-600 mt-1">Practice: {inquiry.practice_name}</p>}
+                          <div className="flex items-center gap-3 mt-1 flex-wrap">
+                            {inquiry.monthly_collection && (
+                              <span className="text-xs text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">Collection: {inquiry.monthly_collection}</span>
+                            )}
+                            {inquiry.total_ar && (
+                              <span className="text-xs text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">AR: {inquiry.total_ar}</span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-400 mt-1">
+                            <Clock className="w-3 h-3 inline mr-1" />
+                            {formatDate(inquiry.created_at)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 flex-wrap justify-end">
+                          <select
+                            value={inquiry.status || "new"}
+                            onChange={(e) => updateCtaStatus(inquiry.id, e.target.value)}
+                            className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                          >
+                            <option value="new">New</option>
+                            <option value="contacted">Contacted</option>
+                            <option value="converted">Converted</option>
+                            <option value="closed">Closed</option>
+                          </select>
+                          {!inquiry.is_read && (
+                            <Button size="sm" variant="outline" onClick={() => markAsRead("cta-inquiries", inquiry.id)} className="text-xs">
+                              <CheckCircle className="w-3 h-3 mr-1" /> Read
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                      {expandedId === inquiry.id && (
+                        <div className="mt-4 p-4 bg-gray-50 rounded-xl text-sm space-y-1">
+                          <p className="text-gray-500"><strong>Monthly Collection:</strong> {inquiry.monthly_collection || "N/A"}</p>
+                          <p className="text-gray-500"><strong>Total AR:</strong> {inquiry.total_ar || "N/A"}</p>
+                          {inquiry.message && <p className="text-gray-700 whitespace-pre-wrap mt-2 pt-2 border-t border-gray-200">{inquiry.message}</p>}
                         </div>
                       )}
                     </div>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, Phone, Mail, CheckCircle, Clock } from 'lucide-react';
+import { ArrowRight, Phone, Mail, CheckCircle, Clock, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { contactInfo } from '@/constants';
@@ -19,6 +19,8 @@ const monthlyCollectionOptions = [
 const CTA = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
@@ -153,9 +155,27 @@ const CTA = () => {
     return () => ctx.revert();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const API_BASE = import.meta.env.PROD ? '' : '';
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.name && formData.email) {
+    if (!formData.name || !formData.email) return;
+
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const res = await fetch(`${API_BASE}/api/cta`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || 'Something went wrong. Please try again.');
+      }
+
       setIsSubmitted(true);
       setTimeout(() => {
         setIsSubmitted(false);
@@ -168,7 +188,12 @@ const CTA = () => {
           totalAR: '',
           message: '',
         });
-      }, 4000);
+      }, 5000);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      setSubmitError(message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -458,13 +483,29 @@ const CTA = () => {
                   </div>
 
                   {/* Submit Button */}
+                  {submitError && (
+                    <div className="cta-form-field px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                      {submitError}
+                    </div>
+                  )}
+
                   <div className="cta-form-field pt-1">
                     <Button
                       type="submit"
-                      className="w-full py-4 text-base btn-primary rounded-xl group"
+                      disabled={isSubmitting}
+                      className="w-full py-4 text-base btn-primary rounded-xl group disabled:opacity-70"
                     >
-                      Submit Now
-                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 w-5 h-5 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          Submit Now
+                          <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </>
+                      )}
                     </Button>
                   </div>
 

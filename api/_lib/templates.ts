@@ -388,3 +388,127 @@ export function commentConfirmationTemplate(data: {
     </table>
   </div>`;
 }
+
+// ─── CTA Form (Home Page): notification to team ──────────────────
+export function ctaNotificationTemplate(data: {
+  name: string;
+  email: string;
+  phone: string;
+  practiceName: string;
+  monthlyCollection: string;
+  totalAR: string;
+  message: string;
+}) {
+  return `
+  <div style="max-width: 600px; margin: 0 auto; ${brandStyles}">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+            <tr>
+              <td style="background-color: #fffbeb; border-radius: 10px; padding: 10px 16px;">
+                <span style="font-size: 16px; font-weight: 700; color: #92400e;">&#127970; Practice Assessment Request</span>
+              </td>
+            </tr>
+          </table>
+          <p style="margin: 16px 0 6px 0; color: #64748b; font-size: 14px; line-height: 1.6;">A potential client has submitted the <strong style="color: #92400e;">Tailored Solution</strong> form on the home page.</p>
+          <p style="margin: 0 0 24px 0; color: #94a3b8; font-size: 12px;">Via: Home Page — Get a Tailored Solution Form</p>
+
+          <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-radius: 8px;">
+            ${dataRow("Name", data.name, false, true)}
+            ${dataRow("Email", data.email, true)}
+            ${dataRow("Phone", data.phone || "Not provided", false, true)}
+            ${dataRow("Practice", data.practiceName || "Not provided")}
+            ${dataRow("Monthly Collection", data.monthlyCollection || "Not selected", false, true)}
+            ${dataRow("Total AR", data.totalAR || "Not provided")}
+          </table>
+
+          <div style="margin-top: 24px; padding: 18px; background-color: #fffbeb; border-radius: 10px; border-left: 4px solid #d97706;">
+            <p style="margin: 0 0 8px 0; font-weight: 700; color: #92400e; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Message</p>
+            <p style="margin: 0; color: #334155; line-height: 1.7; font-size: 14px; white-space: pre-wrap;">${data.message || "No additional message provided."}</p>
+          </div>
+        </td>
+      </tr>
+      <tr><td>${footerHtml()}</td></tr>
+    </table>
+  </div>`;
+}
+
+// ─── CTA Form (Home Page): confirmation to client ──────────────────
+export function ctaConfirmationTemplate(data: {
+  name: string;
+  practiceName: string;
+  monthlyCollection: string;
+  totalAR: string;
+}) {
+  const firstName = data.name.split(" ")[0];
+  const detailRows: string[] = [];
+  if (data.practiceName) detailRows.push(`<li style="margin-bottom: 6px;"><strong>Practice:</strong> ${data.practiceName}</li>`);
+  if (data.monthlyCollection) detailRows.push(`<li style="margin-bottom: 6px;"><strong>Monthly Collection:</strong> ${data.monthlyCollection}</li>`);
+  if (data.totalAR) detailRows.push(`<li style="margin-bottom: 6px;"><strong>Total AR:</strong> ${data.totalAR}</li>`);
+
+  const detailsBlock = detailRows.length > 0
+    ? `<div style="margin: 20px 0; padding: 16px 20px; background-color: #fffbeb; border-radius: 10px; border: 1px solid #fde68a;">
+        <p style="margin: 0 0 10px 0; font-weight: 700; color: #92400e; font-size: 13px;">Your details:</p>
+        <ul style="margin: 0; padding-left: 18px; color: #334155; font-size: 14px; line-height: 1.7;">${detailRows.join("")}</ul>
+      </div>`
+    : "";
+
+  return `
+  <div style="max-width: 600px; margin: 0 auto; ${brandStyles}">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #1e293b; font-weight: 700;">Thank you, ${firstName}!</h2>
+          <p style="margin: 0 0 24px 0; color: #475569; line-height: 1.8; font-size: 15px;">
+            We've received your practice details and our revenue management specialists are already reviewing them. You'll hear from us <strong style="color: #1e293b;">within 24 hours</strong> with a personalized assessment.
+          </p>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #fffbeb; border-radius: 12px; border: 1px solid #fde68a;">
+            <tr>
+              <td width="56" valign="top" style="padding: 18px 0 18px 18px;">
+                <div style="width: 44px; height: 44px; background-color: #fde68a; border-radius: 10px; text-align: center; line-height: 44px; font-size: 22px;">&#128202;</div>
+              </td>
+              <td valign="top" style="padding: 18px 18px 18px 14px;">
+                <p style="margin: 0 0 4px 0; font-weight: 700; color: #92400e; font-size: 14px;">What happens next?</p>
+                <p style="margin: 0; color: #475569; font-size: 13px; line-height: 1.6;">Our team will analyze your practice's billing profile, identify revenue opportunities, and prepare a tailored solution designed to maximize your collections.</p>
+              </td>
+            </tr>
+          </table>
+
+          ${detailsBlock}
+
+          <p style="margin: 24px 0; color: #475569; line-height: 1.8; font-size: 15px;">
+            While you wait, explore our <a href="${siteUrl}/services" style="color: #2563eb; text-decoration: none; font-weight: 600;">full range of services</a> or read our <a href="${siteUrl}/blogs" style="color: #2563eb; text-decoration: none; font-weight: 600;">latest insights</a> on healthcare revenue management.
+          </p>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+            <tr>
+              <td align="center" style="padding: 4px 0 28px 0;">
+                <a href="${siteUrl}/services" style="display: inline-block; background-color: #d97706; color: #ffffff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px;">
+                  Explore Our Services &rarr;
+                </a>
+              </td>
+            </tr>
+          </table>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+            <tr>
+              <td align="center" style="padding: 18px;">
+                <p style="margin: 0; color: #475569; font-size: 14px; line-height: 1.6;">
+                  <strong style="color: #1e293b;">Need immediate help?</strong><br/>
+                  Call <a href="tel:+14809189621" style="color: #2563eb; font-weight: 600; text-decoration: none;">+1 (480) 918-9621</a>
+                  &nbsp;&#8226;&nbsp;
+                  Email <a href="mailto:info@physicianmeds.com" style="color: #2563eb; font-weight: 600; text-decoration: none;">info@physicianmeds.com</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr><td>${footerHtml()}</td></tr>
+    </table>
+  </div>`;
+}

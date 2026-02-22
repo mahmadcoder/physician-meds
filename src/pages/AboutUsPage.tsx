@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import usePageTitle from "@/hooks/usePageTitle";
-import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -47,7 +46,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 const AboutUsPage = () => {
   usePageTitle("About Us");
-  const isBack = useIsBackNavigation();
   const pageRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const storyRef = useRef<HTMLDivElement>(null);

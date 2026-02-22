@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import usePageTitle from "@/hooks/usePageTitle";
-import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Shield, Mail } from 'lucide-react';
 import gsap from 'gsap';
@@ -11,7 +10,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 const PrivacyPolicyPage = () => {
   usePageTitle("Privacy Policy");
-  const isBack = useIsBackNavigation();
   const pageRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLElement>(null);

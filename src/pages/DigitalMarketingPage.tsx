@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
-import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,

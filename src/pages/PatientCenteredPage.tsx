@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
-import useIsBackNavigation from "@/hooks/useIsBackNavigation";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";

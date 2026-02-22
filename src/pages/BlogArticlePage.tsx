@@ -301,7 +301,7 @@ const BlogArticlePage = () => {
         // Refresh comments list
         fetchComments();
         // Auto-dismiss success message
-        setTimeout(() => setSubmitStatus(null), 5000);
+        setTimeout(() => setSubmitStatus(null), 30000);
       } else {
         setSubmitStatus({ type: "error", message: data.error || "Failed to post comment." });
       }
@@ -822,9 +822,9 @@ const BlogArticlePage = () => {
                             stroke="#e11d48"
                             strokeWidth="1.5"
                           />
-                          {/* Medical cross inside heart */}
-                          <rect x="30" y="29" width="4" height="12" rx="1" fill="#fff" opacity="0.9" />
-                          <rect x="27" y="32" width="10" height="4" rx="1" fill="#fff" opacity="0.9" />
+                          {/* Medical plus sign inside heart (equal arms) */}
+                          <rect x="30" y="30" width="4" height="10" rx="1" fill="#fff" opacity="0.9" />
+                          <rect x="27" y="33" width="10" height="4" rx="1" fill="#fff" opacity="0.9" />
                           <defs>
                             <linearGradient id="heartGrad" x1="23" y1="23" x2="41" y2="46">
                               <stop offset="0%" stopColor="#f43f5e" />

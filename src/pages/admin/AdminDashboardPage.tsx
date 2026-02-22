@@ -18,6 +18,15 @@ import {
   Clock,
   CheckCircle,
   Briefcase,
+  Phone,
+  Copy,
+  Check,
+  User,
+  Building2,
+  Globe,
+  DollarSign,
+  BarChart3,
+  Tag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -92,6 +101,62 @@ interface CtaInquiry {
 
 type Tab = "contacts" | "consultations" | "subscribers" | "blogs" | "comments" | "cta-inquiries";
 
+// ─── Reusable copy-to-clipboard pill ──────────────────────
+function CopyPill({ icon: Icon, value, label }: { icon: typeof Mail; value: string; label?: string }) {
+  const [copied, setCopied] = useState(false);
+  if (!value) return null;
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(value);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 text-sm text-gray-600 hover:text-gray-900 transition-all group"
+      title={`Copy ${label || value}`}
+    >
+      <Icon className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
+      <span className="truncate max-w-[200px]">{value}</span>
+      {copied ? (
+        <Check className="w-3 h-3 text-green-500 ml-0.5" />
+      ) : (
+        <Copy className="w-3 h-3 text-gray-300 group-hover:text-gray-500 ml-0.5" />
+      )}
+    </button>
+  );
+}
+
+// ─── Status badge helper ─────────────────────────────────
+function StatusBadge({ status }: { status: string }) {
+  const config: Record<string, string> = {
+    new: "bg-blue-100 text-blue-700",
+    contacted: "bg-yellow-100 text-yellow-700",
+    converted: "bg-green-100 text-green-700",
+    closed: "bg-gray-100 text-gray-600",
+  };
+  return (
+    <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold capitalize ${config[status] || config.new}`}>
+      {status || "new"}
+    </span>
+  );
+}
+
+// ─── Info row helper ─────────────────────────────────────
+function InfoRow({ icon: Icon, label, value, className = "" }: { icon: typeof Mail; label: string; value: string; className?: string }) {
+  if (!value) return null;
+  return (
+    <div className={`flex items-center gap-2 text-sm ${className}`}>
+      <Icon className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+      <span className="text-gray-500">{label}:</span>
+      <span className="text-gray-700 font-medium">{value}</span>
+    </div>
+  );
+}
+
 const AdminDashboardPage = () => {
   usePageTitle("Admin Dashboard");
   const navigate = useNavigate();
@@ -160,30 +225,32 @@ const AdminDashboardPage = () => {
   };
 
   const markAsRead = async (table: "contacts" | "consultations" | "comments" | "cta-inquiries", id: string) => {
-    await fetch(`/api/admin/${table}`, {
-      method: "PUT",
-      headers: authHeaders(),
-      body: JSON.stringify({ id, is_read: true }),
-    });
-    fetchData(table as Tab);
+    try {
+      await fetch(`/api/admin/${table}`, {
+        method: "PUT",
+        headers: authHeaders(),
+        body: JSON.stringify({ id, is_read: true }),
+      });
+      fetchData(table as Tab);
+    } catch (err) {
+      console.error("Mark as read error:", err);
+    }
   };
 
-  const updateCtaStatus = async (id: string, status: string) => {
-    await fetch("/api/admin/cta-inquiries", {
-      method: "PUT",
-      headers: authHeaders(),
-      body: JSON.stringify({ id, status }),
-    });
-    fetchData("cta-inquiries");
-  };
-
-  const updateStatus = async (id: string, status: string) => {
-    await fetch("/api/admin/consultations", {
-      method: "PUT",
-      headers: authHeaders(),
-      body: JSON.stringify({ id, status }),
-    });
-    fetchData("consultations");
+  const updateStatus = async (id: string, status: string, table: "consultations" | "cta-inquiries") => {
+    try {
+      const res = await fetch(`/api/admin/${table}`, {
+        method: "PUT",
+        headers: authHeaders(),
+        body: JSON.stringify({ id, status }),
+      });
+      if (!res.ok) {
+        console.error("Status update failed:", await res.text());
+      }
+      fetchData(table);
+    } catch (err) {
+      console.error("Status update error:", err);
+    }
   };
 
   const deleteBlog = async (id: string) => {
@@ -301,7 +368,7 @@ const AdminDashboardPage = () => {
             </div>
           ) : (
             <>
-              {/* Contacts Tab */}
+              {/* ─── Contacts Tab ─────────────────────────── */}
               {activeTab === "contacts" && (
                 <div className="divide-y divide-gray-100">
                   {contacts.length === 0 ? (
@@ -310,22 +377,31 @@ const AdminDashboardPage = () => {
                       <p>No contact submissions yet</p>
                     </div>
                   ) : contacts.map((contact) => (
-                    <div key={contact.id} className={`p-5 ${!contact.is_read ? "bg-blue-50/30" : ""}`}>
+                    <div key={contact.id} className={`p-5 hover:bg-gray-50/50 transition-colors ${!contact.is_read ? "bg-blue-50/30 border-l-4 border-l-brand-blue" : ""}`}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 cursor-pointer" onClick={() => setExpandedId(expandedId === contact.id ? null : contact.id)}>
-                          <div className="flex items-center gap-2 mb-1">
-                            {!contact.is_read && <div className="w-2 h-2 bg-brand-blue rounded-full" />}
-                            <h3 className="font-semibold text-brand-dark">{contact.name}</h3>
-                            <span className="text-xs text-gray-400">•</span>
-                            <span className="text-sm text-gray-500">{contact.email}</span>
+                          {/* Header */}
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                              <User className="w-4 h-4 text-blue-600" />
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-brand-dark">{contact.name}</h3>
+                              <p className="text-xs text-gray-400 flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {formatDate(contact.created_at)}
+                              </p>
+                            </div>
                           </div>
-                          <p className="text-sm font-medium text-gray-700">{contact.subject}</p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            <Clock className="w-3 h-3 inline mr-1" />
-                            {formatDate(contact.created_at)}
-                          </p>
+                          {/* Subject */}
+                          <p className="text-sm font-medium text-gray-700 mb-2 ml-10">{contact.subject}</p>
+                          {/* Contact pills */}
+                          <div className="flex items-center gap-2 flex-wrap ml-10">
+                            <CopyPill icon={Mail} value={contact.email} label="email" />
+                            {contact.phone && <CopyPill icon={Phone} value={contact.phone} label="phone" />}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 shrink-0">
                           {!contact.is_read && (
                             <Button
                               size="sm"
@@ -342,9 +418,9 @@ const AdminDashboardPage = () => {
                         </div>
                       </div>
                       {expandedId === contact.id && (
-                        <div className="mt-4 p-4 bg-gray-50 rounded-xl text-sm">
-                          <p className="text-gray-500 mb-1"><strong>Phone:</strong> {contact.phone || "N/A"}</p>
-                          <p className="text-gray-700 whitespace-pre-wrap mt-2">{contact.message}</p>
+                        <div className="mt-4 ml-10 p-4 bg-gray-50 rounded-xl text-sm">
+                          <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Message</p>
+                          <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{contact.message}</p>
                         </div>
                       )}
                     </div>
@@ -352,7 +428,7 @@ const AdminDashboardPage = () => {
                 </div>
               )}
 
-              {/* Consultations Tab */}
+              {/* ─── Consultations Tab ────────────────────── */}
               {activeTab === "consultations" && (
                 <div className="divide-y divide-gray-100">
                   {consultations.length === 0 ? (
@@ -361,33 +437,43 @@ const AdminDashboardPage = () => {
                       <p>No consultation requests yet</p>
                     </div>
                   ) : consultations.map((consult) => (
-                    <div key={consult.id} className={`p-5 ${!consult.is_read ? "bg-blue-50/30" : ""}`}>
+                    <div key={consult.id} className={`p-5 hover:bg-gray-50/50 transition-colors ${!consult.is_read ? "bg-blue-50/30 border-l-4 border-l-brand-blue" : ""}`}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 cursor-pointer" onClick={() => setExpandedId(expandedId === consult.id ? null : consult.id)}>
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            {!consult.is_read && <div className="w-2 h-2 bg-brand-blue rounded-full" />}
-                            <h3 className="font-semibold text-brand-dark">{consult.name}</h3>
-                            <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${
-                              consult.status === "new" ? "bg-blue-100 text-blue-700" :
-                              consult.status === "contacted" ? "bg-yellow-100 text-yellow-700" :
-                              consult.status === "converted" ? "bg-green-100 text-green-700" :
-                              "bg-gray-100 text-gray-600"
-                            }`}>
-                              {consult.status}
-                            </span>
+                          {/* Header */}
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                              <Users className="w-4 h-4 text-purple-600" />
+                            </div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-semibold text-brand-dark">{consult.name}</h3>
+                              <StatusBadge status={consult.status} />
+                            </div>
                           </div>
-                          <p className="text-sm text-gray-500">{consult.email} • {consult.phone}</p>
-                          {consult.practice_name && <p className="text-sm text-gray-600 mt-1">Practice: {consult.practice_name}</p>}
-                          <p className="text-xs text-gray-400 mt-1">
-                            <Clock className="w-3 h-3 inline mr-1" />
+                          {/* Info */}
+                          <div className="ml-10 space-y-1.5 mb-2">
+                            {consult.practice_name && (
+                              <InfoRow icon={Building2} label="Practice" value={consult.practice_name} />
+                            )}
+                            {consult.specialty && (
+                              <InfoRow icon={Tag} label="Specialty" value={consult.specialty} />
+                            )}
+                          </div>
+                          {/* Contact pills */}
+                          <div className="flex items-center gap-2 flex-wrap ml-10">
+                            <CopyPill icon={Mail} value={consult.email} label="email" />
+                            {consult.phone && <CopyPill icon={Phone} value={consult.phone} label="phone" />}
+                          </div>
+                          <p className="text-xs text-gray-400 mt-2 ml-10 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
                             {formatDate(consult.created_at)}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2 flex-wrap justify-end">
+                        <div className="flex items-center gap-2 flex-wrap justify-end shrink-0">
                           <select
-                            value={consult.status}
-                            onChange={(e) => updateStatus(consult.id, e.target.value)}
-                            className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-blue/20"
+                            value={consult.status || "new"}
+                            onChange={(e) => updateStatus(consult.id, e.target.value, "consultations")}
+                            className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 cursor-pointer"
                           >
                             <option value="new">New</option>
                             <option value="contacted">Contacted</option>
@@ -402,9 +488,9 @@ const AdminDashboardPage = () => {
                         </div>
                       </div>
                       {expandedId === consult.id && consult.message && (
-                        <div className="mt-4 p-4 bg-gray-50 rounded-xl text-sm">
-                          <p className="text-gray-500 mb-1"><strong>Specialty:</strong> {consult.specialty || "N/A"}</p>
-                          <p className="text-gray-700 whitespace-pre-wrap mt-2">{consult.message}</p>
+                        <div className="mt-4 ml-10 p-4 bg-gray-50 rounded-xl text-sm">
+                          <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Message</p>
+                          <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{consult.message}</p>
                         </div>
                       )}
                     </div>
@@ -412,7 +498,7 @@ const AdminDashboardPage = () => {
                 </div>
               )}
 
-              {/* Subscribers Tab */}
+              {/* ─── Subscribers Tab ──────────────────────── */}
               {activeTab === "subscribers" && (
                 <div className="divide-y divide-gray-100">
                   {subscribers.length === 0 ? (
@@ -428,9 +514,17 @@ const AdminDashboardPage = () => {
                         <span className="text-right">Status</span>
                       </div>
                       {subscribers.map((sub) => (
-                        <div key={sub.id} className="px-5 py-3 grid grid-cols-3 items-center">
-                          <span className="text-sm text-gray-700 truncate">{sub.email}</span>
-                          <span className="text-sm text-gray-500">{formatDate(sub.subscribed_at)}</span>
+                        <div key={sub.id} className="px-5 py-3 grid grid-cols-3 items-center hover:bg-gray-50/50 transition-colors">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+                              <Mail className="w-3.5 h-3.5 text-green-600" />
+                            </div>
+                            <CopyPill icon={Mail} value={sub.email} label="email" />
+                          </div>
+                          <span className="text-sm text-gray-500 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {formatDate(sub.subscribed_at)}
+                          </span>
                           <span className="text-right">
                             <span className={`inline-flex px-2 py-0.5 rounded-full text-[11px] font-medium ${
                               sub.is_active ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
@@ -445,7 +539,7 @@ const AdminDashboardPage = () => {
                 </div>
               )}
 
-              {/* Blogs Tab */}
+              {/* ─── Blogs Tab ────────────────────────────── */}
               {activeTab === "blogs" && (
                 <div>
                   <div className="px-5 py-4 border-b border-gray-100">
@@ -463,7 +557,7 @@ const AdminDashboardPage = () => {
                         <p>No blog posts yet</p>
                       </div>
                     ) : blogs.map((post) => (
-                      <div key={post.id} className="p-5 flex items-center justify-between gap-4">
+                      <div key={post.id} className="p-5 flex items-center justify-between gap-4 hover:bg-gray-50/50 transition-colors">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="font-semibold text-brand-dark truncate">{post.title}</h3>
@@ -505,7 +599,7 @@ const AdminDashboardPage = () => {
                 </div>
               )}
 
-              {/* Comments Tab */}
+              {/* ─── Comments Tab ─────────────────────────── */}
               {activeTab === "comments" && (
                 <div className="divide-y divide-gray-100">
                   {comments.length === 0 ? (
@@ -514,28 +608,52 @@ const AdminDashboardPage = () => {
                       <p>No blog comments yet</p>
                     </div>
                   ) : comments.map((comment) => (
-                    <div key={comment.id} className={`p-5 ${!comment.is_read ? "bg-blue-50/30" : ""}`}>
+                    <div key={comment.id} className={`p-5 hover:bg-gray-50/50 transition-colors ${!comment.is_read ? "bg-blue-50/30 border-l-4 border-l-brand-blue" : ""}`}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 cursor-pointer" onClick={() => setExpandedId(expandedId === comment.id ? null : comment.id)}>
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            {!comment.is_read && <div className="w-2 h-2 bg-brand-blue rounded-full" />}
-                            <h3 className="font-semibold text-brand-dark">{comment.author_name}</h3>
-                            <span className="text-xs text-gray-400">•</span>
-                            <span className="text-sm text-gray-500">{comment.author_email}</span>
+                          {/* Header */}
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                              <MessageCircle className="w-4 h-4 text-orange-600" />
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-brand-dark">{comment.author_name}</h3>
+                              <p className="text-xs text-gray-400 flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {formatDate(comment.created_at)}
+                              </p>
+                            </div>
                           </div>
-                          <p className="text-sm text-gray-600">
-                            <span className="font-medium">Article:</span>{" "}
-                            <a href={`/blogs/${comment.post_slug}`} className="text-brand-blue hover:underline" target="_blank" rel="noreferrer">
-                              {comment.post_slug}
-                            </a>
-                          </p>
-                          <p className="text-sm text-gray-700 mt-1 line-clamp-2">{comment.comment}</p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            <Clock className="w-3 h-3 inline mr-1" />
-                            {formatDate(comment.created_at)}
-                          </p>
+                          {/* Article link */}
+                          <div className="ml-10 mb-2">
+                            <p className="text-sm text-gray-600 flex items-center gap-1.5">
+                              <FileText className="w-3.5 h-3.5 text-gray-400" />
+                              <span className="text-gray-500">Article:</span>
+                              <a href={`/blogs/${comment.post_slug}`} className="text-brand-blue hover:underline font-medium" target="_blank" rel="noreferrer">
+                                {comment.post_slug}
+                              </a>
+                            </p>
+                          </div>
+                          {/* Contact pills */}
+                          <div className="flex items-center gap-2 flex-wrap ml-10">
+                            <CopyPill icon={Mail} value={comment.author_email} label="email" />
+                            {comment.author_website && (
+                              <a
+                                href={comment.author_website}
+                                target="_blank"
+                                rel="noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 text-sm text-gray-600 hover:text-brand-blue transition-all"
+                              >
+                                <Globe className="w-3.5 h-3.5" />
+                                Website
+                              </a>
+                            )}
+                          </div>
+                          {/* Preview */}
+                          <p className="text-sm text-gray-600 mt-2 ml-10 line-clamp-2">{comment.comment}</p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 shrink-0">
                           {!comment.is_read && (
                             <Button
                               size="sm"
@@ -558,9 +676,9 @@ const AdminDashboardPage = () => {
                         </div>
                       </div>
                       {expandedId === comment.id && (
-                        <div className="mt-4 p-4 bg-gray-50 rounded-xl text-sm">
-                          {comment.author_website && <p className="text-gray-500 mb-1"><strong>Website:</strong> <a href={comment.author_website} target="_blank" rel="noreferrer" className="text-brand-blue hover:underline">{comment.author_website}</a></p>}
-                          <p className="text-gray-700 whitespace-pre-wrap mt-2">{comment.comment}</p>
+                        <div className="mt-4 ml-10 p-4 bg-gray-50 rounded-xl text-sm">
+                          <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Full Comment</p>
+                          <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{comment.comment}</p>
                         </div>
                       )}
                     </div>
@@ -568,7 +686,7 @@ const AdminDashboardPage = () => {
                 </div>
               )}
 
-              {/* CTA Inquiries Tab */}
+              {/* ─── CTA Inquiries Tab ────────────────────── */}
               {activeTab === "cta-inquiries" && (
                 <div className="divide-y divide-gray-100">
                   {ctaInquiries.length === 0 ? (
@@ -577,41 +695,48 @@ const AdminDashboardPage = () => {
                       <p>No CTA inquiries yet</p>
                     </div>
                   ) : ctaInquiries.map((inquiry) => (
-                    <div key={inquiry.id} className={`p-5 ${!inquiry.is_read ? "bg-amber-50/30" : ""}`}>
+                    <div key={inquiry.id} className={`p-5 hover:bg-gray-50/50 transition-colors ${!inquiry.is_read ? "bg-amber-50/30 border-l-4 border-l-amber-500" : ""}`}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 cursor-pointer" onClick={() => setExpandedId(expandedId === inquiry.id ? null : inquiry.id)}>
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            {!inquiry.is_read && <div className="w-2 h-2 bg-amber-500 rounded-full" />}
-                            <h3 className="font-semibold text-brand-dark">{inquiry.name}</h3>
-                            <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${
-                              inquiry.status === "new" ? "bg-amber-100 text-amber-700" :
-                              inquiry.status === "contacted" ? "bg-yellow-100 text-yellow-700" :
-                              inquiry.status === "converted" ? "bg-green-100 text-green-700" :
-                              "bg-gray-100 text-gray-600"
-                            }`}>
-                              {inquiry.status || "new"}
-                            </span>
+                          {/* Header */}
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                              <Briefcase className="w-4 h-4 text-amber-600" />
+                            </div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-semibold text-brand-dark">{inquiry.name}</h3>
+                              <StatusBadge status={inquiry.status} />
+                            </div>
                           </div>
-                          <p className="text-sm text-gray-500">{inquiry.email}{inquiry.phone ? ` • ${inquiry.phone}` : ""}</p>
-                          {inquiry.practice_name && <p className="text-sm text-gray-600 mt-1">Practice: {inquiry.practice_name}</p>}
-                          <div className="flex items-center gap-3 mt-1 flex-wrap">
-                            {inquiry.monthly_collection && (
-                              <span className="text-xs text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">Collection: {inquiry.monthly_collection}</span>
+                          {/* Info rows */}
+                          <div className="ml-10 space-y-1.5 mb-2">
+                            {inquiry.practice_name && (
+                              <InfoRow icon={Building2} label="Practice" value={inquiry.practice_name} />
                             )}
-                            {inquiry.total_ar && (
-                              <span className="text-xs text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">AR: {inquiry.total_ar}</span>
-                            )}
+                            <div className="flex items-center gap-4 flex-wrap">
+                              {inquiry.monthly_collection && (
+                                <InfoRow icon={DollarSign} label="Collection" value={inquiry.monthly_collection} />
+                              )}
+                              {inquiry.total_ar && (
+                                <InfoRow icon={BarChart3} label="Total AR" value={inquiry.total_ar} />
+                              )}
+                            </div>
                           </div>
-                          <p className="text-xs text-gray-400 mt-1">
-                            <Clock className="w-3 h-3 inline mr-1" />
+                          {/* Contact pills */}
+                          <div className="flex items-center gap-2 flex-wrap ml-10">
+                            <CopyPill icon={Mail} value={inquiry.email} label="email" />
+                            {inquiry.phone && <CopyPill icon={Phone} value={inquiry.phone} label="phone" />}
+                          </div>
+                          <p className="text-xs text-gray-400 mt-2 ml-10 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
                             {formatDate(inquiry.created_at)}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2 flex-wrap justify-end">
+                        <div className="flex items-center gap-2 flex-wrap justify-end shrink-0">
                           <select
                             value={inquiry.status || "new"}
-                            onChange={(e) => updateCtaStatus(inquiry.id, e.target.value)}
-                            className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                            onChange={(e) => updateStatus(inquiry.id, e.target.value, "cta-inquiries")}
+                            className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 cursor-pointer"
                           >
                             <option value="new">New</option>
                             <option value="contacted">Contacted</option>
@@ -626,10 +751,15 @@ const AdminDashboardPage = () => {
                         </div>
                       </div>
                       {expandedId === inquiry.id && (
-                        <div className="mt-4 p-4 bg-gray-50 rounded-xl text-sm space-y-1">
-                          <p className="text-gray-500"><strong>Monthly Collection:</strong> {inquiry.monthly_collection || "N/A"}</p>
-                          <p className="text-gray-500"><strong>Total AR:</strong> {inquiry.total_ar || "N/A"}</p>
-                          {inquiry.message && <p className="text-gray-700 whitespace-pre-wrap mt-2 pt-2 border-t border-gray-200">{inquiry.message}</p>}
+                        <div className="mt-4 ml-10 p-4 bg-gray-50 rounded-xl text-sm space-y-2">
+                          <InfoRow icon={DollarSign} label="Monthly Collection" value={inquiry.monthly_collection || "N/A"} />
+                          <InfoRow icon={BarChart3} label="Total AR" value={inquiry.total_ar || "N/A"} />
+                          {inquiry.message && (
+                            <>
+                              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mt-3 mb-1 pt-2 border-t border-gray-200">Message</p>
+                              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{inquiry.message}</p>
+                            </>
+                          )}
                         </div>
                       )}
                     </div>

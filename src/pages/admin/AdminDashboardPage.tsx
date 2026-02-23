@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
 import { useNavigate, Link } from "react-router-dom";
 import {
@@ -22,17 +22,12 @@ import {
   Copy,
   Check,
   User,
-  Building2,
   Globe,
-  DollarSign,
-  BarChart3,
-  Stethoscope,
-  MessageSquareText,
   Menu,
   X,
   LayoutDashboard,
   ChevronRight,
-  CircleDot,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -166,17 +161,7 @@ function StatusSelect({ value, onChange }: { value: string; onChange: (val: stri
   );
 }
 
-// ─── Detail row ──────────────────────────────────────────
-function DetailRow({ icon: Icon, label, value, iconColor = "text-gray-400" }: { icon: typeof Mail; label: string; value: string; iconColor?: string }) {
-  if (!value) return null;
-  return (
-    <div className="flex items-center gap-2.5">
-      <Icon className={`w-4 h-4 ${iconColor} shrink-0`} />
-      <span className="text-gray-500 text-sm">{label}:</span>
-      <span className="text-gray-900 text-sm font-semibold">{value}</span>
-    </div>
-  );
-}
+
 
 const AdminDashboardPage = () => {
   usePageTitle("Admin Dashboard");
@@ -191,6 +176,8 @@ const AdminDashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
 
   const token = localStorage.getItem("admin_token");
 
@@ -199,13 +186,36 @@ const AdminDashboardPage = () => {
     Authorization: `Bearer ${token}`,
   }), [token]);
 
+  // Session expiry check (1 hour)
+  const checkSessionExpiry = useCallback(() => {
+    const loginTime = localStorage.getItem("admin_login_time");
+    if (loginTime && Date.now() - parseInt(loginTime) > 60 * 60 * 1000) {
+      localStorage.removeItem("admin_token");
+      localStorage.removeItem("admin_login_time");
+      navigate("/pm-portal-x9k2");
+    }
+  }, [navigate]);
+
   useEffect(() => {
     if (!token) {
       navigate("/pm-portal-x9k2");
       return;
     }
+    checkSessionExpiry();
+    const interval = setInterval(checkSessionExpiry, 60 * 1000); // check every minute
     fetchAllData();
-  }, [token, navigate]);
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, navigate, checkSessionExpiry]);
+
+  // Close notification dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   const fetchAllData = async () => {
     setLoading(true);
@@ -332,6 +342,7 @@ const AdminDashboardPage = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_login_time");
     navigate("/pm-portal-x9k2");
   };
 
@@ -388,10 +399,10 @@ const AdminDashboardPage = () => {
 
   // Recent activity for overview
   const recentItems = [
-    ...contacts.map(c => ({ type: "Contact" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: MessageSquare, color: "#2d62ff" })),
-    ...consultations.map(c => ({ type: "Consultation" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: Users, color: "#7c3aed" })),
-    ...ctaInquiries.map(c => ({ type: "CTA Inquiry" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: Briefcase, color: "#d97706" })),
-    ...comments.map(c => ({ type: "Comment" as const, name: c.author_name, date: c.created_at, isRead: c.is_read, icon: MessageCircle, color: "#ea580c" })),
+    ...contacts.map(c => ({ type: "Contact" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: MessageSquare, color: "#2d62ff", tab: "contacts" as Tab })),
+    ...consultations.map(c => ({ type: "Consultation" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: Users, color: "#7c3aed", tab: "consultations" as Tab })),
+    ...ctaInquiries.map(c => ({ type: "CTA Inquiry" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: Briefcase, color: "#d97706", tab: "cta-inquiries" as Tab })),
+    ...comments.map(c => ({ type: "Comment" as const, name: c.author_name, date: c.created_at, isRead: c.is_read, icon: MessageCircle, color: "#ea580c", tab: "comments" as Tab })),
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 8);
 
   return (
@@ -415,7 +426,8 @@ const AdminDashboardPage = () => {
         {/* Logo */}
         <div className="px-5 h-16 flex items-center justify-between border-b border-gray-100">
           <div className="flex items-center gap-2.5">
-            <img src="/logo.png" alt="PhysicianMeds" className="h-9 w-auto" />
+            <img src="/logo.png" alt="PhysicianMeds" className="h-8 w-auto" />
+            <span className="text-[15px] font-bold text-gray-900 font-display">PhysicianMeds</span>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -497,14 +509,52 @@ const AdminDashboardPage = () => {
               <h1 className="text-lg font-bold text-gray-900 font-display">{activeNavLabel}</h1>
             </div>
 
-            {/* Right side — admin info */}
+            {/* Right side — bell + admin info */}
             <div className="flex items-center gap-3">
-              {totalUnread > 0 && (
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 rounded-full text-xs font-bold">
-                  <CircleDot className="w-3 h-3" />
-                  {totalUnread} unread
-                </span>
-              )}
+              {/* Notification Bell */}
+              <div className="relative" ref={notifRef}>
+                <button
+                  onClick={() => setNotifOpen(!notifOpen)}
+                  className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <Bell className="w-5 h-5 text-gray-500" />
+                  {totalUnread > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
+                      {totalUnread}
+                    </span>
+                  )}
+                </button>
+                {notifOpen && (
+                  <div className="absolute right-0 top-12 w-80 bg-white rounded-2xl border border-gray-200 shadow-xl z-50 overflow-hidden">
+                    <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                      <h4 className="text-sm font-bold text-gray-900">Notifications</h4>
+                      <span className="text-[11px] font-bold text-[#2d62ff] bg-blue-50 px-2 py-0.5 rounded-full">{totalUnread} new</span>
+                    </div>
+                    <div className="max-h-80 overflow-y-auto divide-y divide-gray-50">
+                      {recentItems.filter(i => !i.isRead).length === 0 ? (
+                        <div className="px-4 py-8 text-center text-sm text-gray-400">All caught up! 🎉</div>
+                      ) : recentItems.filter(i => !i.isRead).slice(0, 6).map((item, i) => (
+                        <div key={i} className="px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => { setActiveTab(item.tab); setNotifOpen(false); }}>
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: item.color + '12' }}>
+                            <item.icon className="w-4 h-4" style={{ color: item.color }} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-800 truncate">{item.name}</p>
+                            <p className="text-[11px] text-gray-400">{item.type} • {formatDate(item.date)}</p>
+                          </div>
+                          <span className="w-2 h-2 rounded-full bg-[#2d62ff] shrink-0" />
+                        </div>
+                      ))}
+                    </div>
+                    {totalUnread > 6 && (
+                      <div className="px-4 py-2.5 border-t border-gray-100 text-center">
+                        <button onClick={() => { setActiveTab('contacts'); setNotifOpen(false); }} className="text-xs font-semibold text-[#2d62ff] hover:underline">View all notifications</button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <div className="flex items-center gap-2.5 pl-3 border-l border-gray-200">
                 <div className="w-8 h-8 rounded-lg bg-[#2d62ff] flex items-center justify-center">
                   <span className="text-white font-bold text-xs">PM</span>
@@ -680,8 +730,6 @@ const AdminDashboardPage = () => {
                 )}
               </div>
 
-              {/* Content card */}
-              <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
                 {loading ? (
                   <div className="flex flex-col items-center justify-center py-20 gap-3">
                     <div className="w-8 h-8 border-3 border-[#2d62ff]/20 border-t-[#2d62ff] rounded-full animate-spin" />
@@ -691,9 +739,9 @@ const AdminDashboardPage = () => {
                   <>
                     {/* ─── CONTACTS ─── */}
                     {activeTab === "contacts" && (
-                      <div className="divide-y divide-gray-100">
+                      <div className="space-y-4">
                         {contacts.length === 0 ? (
-                          <div className="text-center py-20 text-gray-400">
+                          <div className="bg-white rounded-2xl border border-gray-100 text-center py-20 text-gray-400">
                             <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-30" />
                             <p className="font-medium">No contact submissions yet</p>
                             <p className="text-sm mt-1">They'll appear here when visitors submit the contact form.</p>
@@ -701,53 +749,59 @@ const AdminDashboardPage = () => {
                         ) : contacts.map((contact) => (
                           <div
                             key={contact.id}
-                            className={`p-5 sm:p-6 transition-colors hover:bg-gray-50/50 ${!contact.is_read ? "bg-blue-50/30 border-l-[3px] border-l-[#2d62ff]" : ""}`}
+                            className={`bg-white rounded-2xl border p-5 sm:p-6 transition-all hover:shadow-sm ${!contact.is_read ? "border-[#2d62ff]/30 shadow-sm shadow-blue-100" : "border-gray-100"}`}
                           >
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1 cursor-pointer" onClick={() => setExpandedId(expandedId === contact.id ? null : contact.id)}>
-                                <div className="flex items-center gap-3 mb-2.5">
-                                  <div className="w-9 h-9 bg-[#2d62ff]/10 rounded-lg flex items-center justify-center shrink-0">
-                                    <User className="w-4 h-4 text-[#2d62ff]" />
-                                  </div>
-                                  <div>
-                                    <h3 className="text-sm font-bold text-gray-900">{contact.name}</h3>
-                                    <p className="text-xs text-gray-400 flex items-center gap-1">
-                                      <Clock className="w-3 h-3" /> {formatDate(contact.created_at)}
-                                    </p>
-                                  </div>
+                            {/* Card header */}
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-[#2d62ff]/10 rounded-xl flex items-center justify-center">
+                                  <User className="w-5 h-5 text-[#2d62ff]" />
                                 </div>
-
-                                <div className="ml-12 mb-2.5">
-                                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-100 rounded-md">
-                                    <MessageSquareText className="w-3.5 h-3.5 text-blue-500" />
-                                    <span className="text-xs font-semibold text-blue-800">{contact.subject}</span>
-                                  </div>
-                                </div>
-
-                                <div className="flex items-center gap-2 flex-wrap ml-12">
-                                  <CopyButton icon={Mail} value={contact.email} color="blue" />
-                                  {contact.phone && <CopyButton icon={Phone} value={contact.phone} color="green" />}
+                                <div>
+                                  <h3 className="text-[15px] font-bold text-gray-900">{contact.name}</h3>
+                                  <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                                    <Clock className="w-3 h-3" /> {formatDate(contact.created_at)}
+                                  </p>
                                 </div>
                               </div>
-
-                              <div className="flex items-center gap-1.5 shrink-0">
+                              <div className="flex items-center gap-2">
                                 {!contact.is_read && (
                                   <Button size="sm" variant="outline" onClick={() => markAsRead("contacts", contact.id)} className="text-xs border-blue-200 text-blue-600 hover:bg-blue-50 rounded-lg">
-                                    <CheckCircle className="w-3.5 h-3.5 mr-1" /> Read
+                                    <CheckCircle className="w-3.5 h-3.5 mr-1" /> Mark Read
                                   </Button>
                                 )}
-                                <button onClick={() => setExpandedId(expandedId === contact.id ? null : contact.id)} className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                                  {expandedId === contact.id ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
-                                </button>
                               </div>
                             </div>
 
-                            {expandedId === contact.id && (
-                              <div className="mt-3 ml-12 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Message</p>
-                                <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{contact.message}</p>
+                            {/* Structured fields */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4 pl-[52px]">
+                              <div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Subject</p>
+                                <p className="text-sm font-semibold text-gray-800">{contact.subject}</p>
                               </div>
-                            )}
+                            </div>
+
+                            {/* Contact info */}
+                            <div className="flex items-center gap-2.5 flex-wrap pl-[52px] mb-3">
+                              <CopyButton icon={Mail} value={contact.email} color="blue" />
+                              {contact.phone && <CopyButton icon={Phone} value={contact.phone} color="green" />}
+                            </div>
+
+                            {/* Message preview / expand */}
+                            <div className="pl-[52px]">
+                              <button
+                                onClick={() => setExpandedId(expandedId === contact.id ? null : contact.id)}
+                                className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 hover:text-[#2d62ff] transition-colors"
+                              >
+                                {expandedId === contact.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                                {expandedId === contact.id ? "Hide message" : "Show message"}
+                              </button>
+                              {expandedId === contact.id && (
+                                <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                  <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{contact.message}</p>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -755,56 +809,42 @@ const AdminDashboardPage = () => {
 
                     {/* ─── CONSULTATIONS ─── */}
                     {activeTab === "consultations" && (
-                      <div className="divide-y divide-gray-100">
+                      <div className="space-y-4">
                         {consultations.length === 0 ? (
-                          <div className="text-center py-20 text-gray-400">
+                          <div className="bg-white rounded-2xl border border-gray-100 text-center py-20 text-gray-400">
                             <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
                             <p className="font-medium">No consultation requests yet</p>
                           </div>
                         ) : consultations.map((consult) => (
-                          <div
-                            key={consult.id}
-                            className={`p-5 sm:p-6 transition-colors hover:bg-gray-50/50 ${!consult.is_read ? "bg-purple-50/30 border-l-[3px] border-l-purple-500" : ""}`}
-                          >
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1 cursor-pointer" onClick={() => setExpandedId(expandedId === consult.id ? null : consult.id)}>
-                                <div className="flex items-center gap-3 mb-2.5">
-                                  <div className="w-9 h-9 bg-purple-50 rounded-lg flex items-center justify-center shrink-0">
-                                    <Users className="w-4 h-4 text-purple-600" />
-                                  </div>
-                                  <div>
-                                    <h3 className="text-sm font-bold text-gray-900">{consult.name}</h3>
-                                    <p className="text-xs text-gray-400 flex items-center gap-1">
-                                      <Clock className="w-3 h-3" /> {formatDate(consult.created_at)}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                <div className="ml-12 space-y-1.5 mb-2.5">
-                                  {consult.practice_name && <DetailRow icon={Building2} label="Practice" value={consult.practice_name} iconColor="text-purple-500" />}
-                                  {consult.specialty && <DetailRow icon={Stethoscope} label="Specialty" value={consult.specialty} iconColor="text-indigo-500" />}
-                                </div>
-
-                                <div className="flex items-center gap-2 flex-wrap ml-12">
-                                  <CopyButton icon={Mail} value={consult.email} color="purple" />
-                                  {consult.phone && <CopyButton icon={Phone} value={consult.phone} color="green" />}
+                          <div key={consult.id} className={`bg-white rounded-2xl border p-5 sm:p-6 transition-all hover:shadow-sm ${!consult.is_read ? "border-purple-300/50 shadow-sm shadow-purple-100" : "border-gray-100"}`}>
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center"><Users className="w-5 h-5 text-purple-600" /></div>
+                                <div>
+                                  <h3 className="text-[15px] font-bold text-gray-900">{consult.name}</h3>
+                                  <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" /> {formatDate(consult.created_at)}</p>
                                 </div>
                               </div>
-
-                              <div className="flex flex-col items-end gap-2 shrink-0">
+                              <div className="flex flex-col items-end gap-2">
                                 <StatusSelect value={consult.status} onChange={(val) => updateStatus(consult.id, val, "consultations")} />
-                                {!consult.is_read && (
-                                  <Button size="sm" variant="outline" onClick={() => markAsRead("consultations", consult.id)} className="text-xs border-purple-200 text-purple-600 hover:bg-purple-50 rounded-lg">
-                                    <CheckCircle className="w-3.5 h-3.5 mr-1" /> Read
-                                  </Button>
-                                )}
+                                {!consult.is_read && (<Button size="sm" variant="outline" onClick={() => markAsRead("consultations", consult.id)} className="text-xs border-purple-200 text-purple-600 hover:bg-purple-50 rounded-lg"><CheckCircle className="w-3.5 h-3.5 mr-1" /> Mark Read</Button>)}
                               </div>
                             </div>
-
-                            {expandedId === consult.id && consult.message && (
-                              <div className="mt-3 ml-12 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Message</p>
-                                <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{consult.message}</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4 pl-[52px]">
+                              {consult.practice_name && (<div><p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Practice</p><p className="text-sm font-semibold text-gray-800">{consult.practice_name}</p></div>)}
+                              {consult.specialty && (<div><p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Specialty</p><p className="text-sm font-semibold text-gray-800">{consult.specialty}</p></div>)}
+                            </div>
+                            <div className="flex items-center gap-2.5 flex-wrap pl-[52px] mb-3">
+                              <CopyButton icon={Mail} value={consult.email} color="purple" />
+                              {consult.phone && <CopyButton icon={Phone} value={consult.phone} color="green" />}
+                            </div>
+                            {consult.message && (
+                              <div className="pl-[52px]">
+                                <button onClick={() => setExpandedId(expandedId === consult.id ? null : consult.id)} className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 hover:text-purple-600 transition-colors">
+                                  {expandedId === consult.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                                  {expandedId === consult.id ? "Hide message" : "Show message"}
+                                </button>
+                                {expandedId === consult.id && (<div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100"><p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{consult.message}</p></div>)}
                               </div>
                             )}
                           </div>
@@ -814,9 +854,9 @@ const AdminDashboardPage = () => {
 
                     {/* ─── SUBSCRIBERS ─── */}
                     {activeTab === "subscribers" && (
-                      <div className="divide-y divide-gray-100">
+                      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
                         {subscribers.length === 0 ? (
-                          <div className="text-center py-20 text-gray-400">
+                          <div className="bg-white text-center py-20 text-gray-400">
                             <Mail className="w-12 h-12 mx-auto mb-3 opacity-30" />
                             <p className="font-medium">No subscribers yet</p>
                           </div>
@@ -851,14 +891,14 @@ const AdminDashboardPage = () => {
 
                     {/* ─── BLOGS ─── */}
                     {activeTab === "blogs" && (
-                      <div className="divide-y divide-gray-100">
+                      <div className="space-y-3">
                         {blogs.length === 0 ? (
                           <div className="text-center py-20 text-gray-400">
                             <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" />
                             <p className="font-medium">No blog posts yet</p>
                           </div>
                         ) : blogs.map((post) => (
-                          <div key={post.id} className="p-5 sm:p-6 flex items-center justify-between gap-4 hover:bg-gray-50/50 transition-colors">
+                          <div key={post.id} className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 flex items-center justify-between gap-4 hover:shadow-sm transition-all">
                             <div className="flex items-center gap-3.5 flex-1 min-w-0">
                               <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
                                 post.is_published ? "bg-green-50" : "bg-gray-100"
@@ -906,75 +946,53 @@ const AdminDashboardPage = () => {
 
                     {/* ─── COMMENTS ─── */}
                     {activeTab === "comments" && (
-                      <div className="divide-y divide-gray-100">
+                      <div className="space-y-4">
                         {comments.length === 0 ? (
-                          <div className="text-center py-20 text-gray-400">
+                          <div className="bg-white rounded-2xl border border-gray-100 text-center py-20 text-gray-400">
                             <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-30" />
                             <p className="font-medium">No blog comments yet</p>
                           </div>
                         ) : comments.map((comment) => (
-                          <div
-                            key={comment.id}
-                            className={`p-5 sm:p-6 transition-colors hover:bg-gray-50/50 ${!comment.is_read ? "bg-orange-50/30 border-l-[3px] border-l-orange-500" : ""}`}
-                          >
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1 cursor-pointer" onClick={() => setExpandedId(expandedId === comment.id ? null : comment.id)}>
-                                <div className="flex items-center gap-3 mb-2.5">
-                                  <div className="w-9 h-9 bg-orange-50 rounded-lg flex items-center justify-center shrink-0">
-                                    <MessageCircle className="w-4 h-4 text-orange-600" />
-                                  </div>
-                                  <div>
-                                    <h3 className="text-sm font-bold text-gray-900">{comment.author_name}</h3>
-                                    <p className="text-xs text-gray-400 flex items-center gap-1">
-                                      <Clock className="w-3 h-3" /> {formatDate(comment.created_at)}
-                                    </p>
-                                  </div>
+                          <div key={comment.id} className={`bg-white rounded-2xl border p-5 sm:p-6 transition-all hover:shadow-sm ${!comment.is_read ? "border-orange-300/50 shadow-sm shadow-orange-100" : "border-gray-100"}`}>
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center"><MessageCircle className="w-5 h-5 text-orange-600" /></div>
+                                <div>
+                                  <h3 className="text-[15px] font-bold text-gray-900">{comment.author_name}</h3>
+                                  <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" /> {formatDate(comment.created_at)}</p>
                                 </div>
-
-                                <div className="ml-12 mb-2.5">
-                                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-50 border border-orange-100 rounded-md">
-                                    <FileText className="w-3.5 h-3.5 text-orange-500" />
-                                    <span className="text-xs text-gray-500">on:</span>
-                                    <a href={`/blogs/${comment.post_slug}`} className="text-xs font-semibold text-orange-700 hover:underline" target="_blank" rel="noreferrer">
-                                      {comment.post_slug}
-                                    </a>
-                                  </div>
-                                </div>
-
-                                <div className="flex items-center gap-2 flex-wrap ml-12">
-                                  <CopyButton icon={Mail} value={comment.author_email} color="blue" />
-                                  {comment.author_website && (
-                                    <a href={comment.author_website} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
-                                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 text-[12px] font-medium transition-all">
-                                      <Globe className="w-3.5 h-3.5 text-indigo-500" /> Website ↗
-                                    </a>
-                                  )}
-                                </div>
-
-                                <p className="text-sm text-gray-600 mt-2.5 ml-12 line-clamp-2 leading-relaxed">{comment.comment}</p>
                               </div>
-
-                              <div className="flex items-center gap-1.5 shrink-0">
+                              <div className="flex items-center gap-2">
                                 {!comment.is_read && (
                                   <Button size="sm" variant="outline" onClick={() => markAsRead("comments", comment.id)} className="text-xs border-orange-200 text-orange-600 hover:bg-orange-50 rounded-lg">
-                                    <CheckCircle className="w-3.5 h-3.5 mr-1" /> Read
+                                    <CheckCircle className="w-3.5 h-3.5 mr-1" /> Mark Read
                                   </Button>
                                 )}
-                                <button onClick={() => deleteComment(comment.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                                <button onClick={() => setExpandedId(expandedId === comment.id ? null : comment.id)} className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                                  {expandedId === comment.id ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
-                                </button>
+                                <button onClick={() => deleteComment(comment.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 className="w-4 h-4" /></button>
                               </div>
                             </div>
-
-                            {expandedId === comment.id && (
-                              <div className="mt-3 ml-12 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Full Comment</p>
-                                <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{comment.comment}</p>
+                            <div className="pl-[52px] mb-3">
+                              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-50 border border-orange-100 rounded-lg">
+                                <FileText className="w-3.5 h-3.5 text-orange-500" />
+                                <span className="text-xs text-gray-500">on:</span>
+                                <a href={`/blogs/${comment.post_slug}`} className="text-xs font-semibold text-orange-700 hover:underline" target="_blank" rel="noreferrer">{comment.post_slug}</a>
                               </div>
-                            )}
+                            </div>
+                            <div className="flex items-center gap-2.5 flex-wrap pl-[52px] mb-3">
+                              <CopyButton icon={Mail} value={comment.author_email} color="blue" />
+                              {comment.author_website && (
+                                <a href={comment.author_website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 text-[12px] font-medium transition-all">
+                                  <Globe className="w-3.5 h-3.5 text-indigo-500" /> Website ↗
+                                </a>
+                              )}
+                            </div>
+                            <div className="pl-[52px]">
+                              <button onClick={() => setExpandedId(expandedId === comment.id ? null : comment.id)} className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 hover:text-orange-600 transition-colors">
+                                {expandedId === comment.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                                {expandedId === comment.id ? "Hide comment" : "Show full comment"}
+                              </button>
+                              {expandedId === comment.id && (<div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100"><p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{comment.comment}</p></div>)}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -982,66 +1000,47 @@ const AdminDashboardPage = () => {
 
                     {/* ─── CTA INQUIRIES ─── */}
                     {activeTab === "cta-inquiries" && (
-                      <div className="divide-y divide-gray-100">
+                      <div className="space-y-4">
                         {ctaInquiries.length === 0 ? (
-                          <div className="text-center py-20 text-gray-400">
+                          <div className="bg-white rounded-2xl border border-gray-100 text-center py-20 text-gray-400">
                             <Briefcase className="w-12 h-12 mx-auto mb-3 opacity-30" />
                             <p className="font-medium">No CTA inquiries yet</p>
                           </div>
                         ) : ctaInquiries.map((inquiry) => (
-                          <div
-                            key={inquiry.id}
-                            className={`p-5 sm:p-6 transition-colors hover:bg-gray-50/50 ${!inquiry.is_read ? "bg-amber-50/30 border-l-[3px] border-l-amber-500" : ""}`}
-                          >
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1 cursor-pointer" onClick={() => setExpandedId(expandedId === inquiry.id ? null : inquiry.id)}>
-                                <div className="flex items-center gap-3 mb-2.5">
-                                  <div className="w-9 h-9 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
-                                    <Briefcase className="w-4 h-4 text-amber-600" />
-                                  </div>
-                                  <div>
-                                    <h3 className="text-sm font-bold text-gray-900">{inquiry.name}</h3>
-                                    <p className="text-xs text-gray-400 flex items-center gap-1">
-                                      <Clock className="w-3 h-3" /> {formatDate(inquiry.created_at)}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                <div className="ml-12 space-y-1.5 mb-2.5">
-                                  {inquiry.practice_name && <DetailRow icon={Building2} label="Practice" value={inquiry.practice_name} iconColor="text-amber-500" />}
-                                  <div className="flex items-center gap-5 flex-wrap">
-                                    {inquiry.monthly_collection && <DetailRow icon={DollarSign} label="Collection" value={inquiry.monthly_collection} iconColor="text-green-500" />}
-                                    {inquiry.total_ar && <DetailRow icon={BarChart3} label="Total AR" value={inquiry.total_ar} iconColor="text-blue-500" />}
-                                  </div>
-                                </div>
-
-                                <div className="flex items-center gap-2 flex-wrap ml-12">
-                                  <CopyButton icon={Mail} value={inquiry.email} color="amber" />
-                                  {inquiry.phone && <CopyButton icon={Phone} value={inquiry.phone} color="green" />}
+                          <div key={inquiry.id} className={`bg-white rounded-2xl border p-5 sm:p-6 transition-all hover:shadow-sm ${!inquiry.is_read ? "border-amber-300/50 shadow-sm shadow-amber-100" : "border-gray-100"}`}>
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center"><Briefcase className="w-5 h-5 text-amber-600" /></div>
+                                <div>
+                                  <h3 className="text-[15px] font-bold text-gray-900">{inquiry.name}</h3>
+                                  <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" /> {formatDate(inquiry.created_at)}</p>
                                 </div>
                               </div>
-
-                              <div className="flex flex-col items-end gap-2 shrink-0">
+                              <div className="flex flex-col items-end gap-2">
                                 <StatusSelect value={inquiry.status} onChange={(val) => updateStatus(inquiry.id, val, "cta-inquiries")} />
                                 {!inquiry.is_read && (
                                   <Button size="sm" variant="outline" onClick={() => markAsRead("cta-inquiries", inquiry.id)} className="text-xs border-amber-200 text-amber-600 hover:bg-amber-50 rounded-lg">
-                                    <CheckCircle className="w-3.5 h-3.5 mr-1" /> Read
+                                    <CheckCircle className="w-3.5 h-3.5 mr-1" /> Mark Read
                                   </Button>
                                 )}
                               </div>
                             </div>
-
-                            {expandedId === inquiry.id && (
-                              <div className="mt-3 ml-12 p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-1.5">
-                                <DetailRow icon={DollarSign} label="Monthly Collection" value={inquiry.monthly_collection || "N/A"} iconColor="text-green-500" />
-                                <DetailRow icon={BarChart3} label="Total AR" value={inquiry.total_ar || "N/A"} iconColor="text-blue-500" />
-                                {inquiry.message && (
-                                  <>
-                                    <div className="border-t border-gray-200 my-2" />
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Message</p>
-                                    <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{inquiry.message}</p>
-                                  </>
-                                )}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 pl-[52px]">
+                              {inquiry.practice_name && (<div><p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Practice</p><p className="text-sm font-semibold text-gray-800">{inquiry.practice_name}</p></div>)}
+                              {inquiry.monthly_collection && (<div><p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Collection</p><p className="text-sm font-semibold text-gray-800">{inquiry.monthly_collection}</p></div>)}
+                              {inquiry.total_ar && (<div><p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total AR</p><p className="text-sm font-semibold text-gray-800">{inquiry.total_ar}</p></div>)}
+                            </div>
+                            <div className="flex items-center gap-2.5 flex-wrap pl-[52px] mb-3">
+                              <CopyButton icon={Mail} value={inquiry.email} color="amber" />
+                              {inquiry.phone && <CopyButton icon={Phone} value={inquiry.phone} color="green" />}
+                            </div>
+                            {inquiry.message && (
+                              <div className="pl-[52px]">
+                                <button onClick={() => setExpandedId(expandedId === inquiry.id ? null : inquiry.id)} className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 hover:text-amber-600 transition-colors">
+                                  {expandedId === inquiry.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                                  {expandedId === inquiry.id ? "Hide message" : "Show message"}
+                                </button>
+                                {expandedId === inquiry.id && (<div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100"><p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{inquiry.message}</p></div>)}
                               </div>
                             )}
                           </div>
@@ -1050,7 +1049,6 @@ const AdminDashboardPage = () => {
                     )}
                   </>
                 )}
-              </div>
             </>
           )}
         </main>
@@ -1060,3 +1058,4 @@ const AdminDashboardPage = () => {
 };
 
 export default AdminDashboardPage;
+

@@ -16,10 +16,19 @@ const AdminLoginPage = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Check if already logged in
+  // Check if already logged in (and session not expired)
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
-    if (token) navigate("/pm-portal-x9k2/dashboard");
+    const loginTime = localStorage.getItem("admin_login_time");
+    if (token) {
+      // Check if session has expired (1 hour)
+      if (loginTime && Date.now() - parseInt(loginTime) > 60 * 60 * 1000) {
+        localStorage.removeItem("admin_token");
+        localStorage.removeItem("admin_login_time");
+        return;
+      }
+      navigate("/pm-portal-x9k2/dashboard");
+    }
   }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -41,6 +50,7 @@ const AdminLoginPage = () => {
       }
 
       localStorage.setItem("admin_token", data.token);
+      localStorage.setItem("admin_login_time", Date.now().toString());
       navigate("/pm-portal-x9k2/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed.");

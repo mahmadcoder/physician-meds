@@ -204,14 +204,13 @@ export default function DateFilter({
                     day: "relative w-9 h-9 p-0 text-center",
                     day_button:
                       "w-9 h-9 flex items-center justify-center rounded-lg text-[13px] font-medium text-gray-600 hover:bg-[#2d62ff] hover:text-white transition-all duration-150 disabled:opacity-25 disabled:pointer-events-none cursor-pointer",
-                    selected:
-                      "!bg-[#2d62ff] [&>button]:!text-white !rounded-lg",
+                    selected: "",
                     range_start:
-                      "!bg-[#2d62ff] [&>button]:!text-white !rounded-lg relative z-10",
+                      "[&>button]:!bg-[#2d62ff] [&>button]:!text-white [&>button]:!rounded-lg",
                     range_end:
-                      "!bg-[#2d62ff] [&>button]:!text-white !rounded-lg relative z-10",
+                      "[&>button]:!bg-[#2d62ff] [&>button]:!text-white [&>button]:!rounded-lg",
                     range_middle:
-                      "!bg-gray-50 [&>button]:!text-gray-600 !rounded-none",
+                      "[&>button]:!bg-gray-100 [&>button]:!text-gray-700 [&>button]:!rounded-none",
                     today:
                       "!text-[#2d62ff] !font-bold",
                     outside: "!opacity-25",

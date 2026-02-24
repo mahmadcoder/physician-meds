@@ -44,7 +44,9 @@ interface OverviewTabProps {
   contentRows: ContentRow[];
   totalUnread: number;
   datePeriod: DatePeriod;
+  customDate: Date | undefined;
   onDatePeriodChange: (p: DatePeriod) => void;
+  onCustomDateChange: (d: Date | undefined) => void;
   contacts: Contact[];
   consultations: Consultation[];
   ctaInquiries: CtaInquiry[];
@@ -61,7 +63,9 @@ export default function OverviewTab({
   contentRows,
   totalUnread,
   datePeriod,
+  customDate,
   onDatePeriodChange,
+  onCustomDateChange,
   contacts,
   consultations,
   ctaInquiries,
@@ -70,11 +74,11 @@ export default function OverviewTab({
   onTabChange,
 }: OverviewTabProps) {
   const filteredCounts = {
-    contacts: contacts.filter((c) => isInRange(c.created_at, datePeriod)).length,
-    consultations: consultations.filter((c) => isInRange(c.created_at, datePeriod)).length,
-    ctaInquiries: ctaInquiries.filter((c) => isInRange(c.created_at, datePeriod)).length,
-    comments: comments.filter((c) => isInRange(c.created_at, datePeriod)).length,
-    subscribers: subscribers.filter((s) => isInRange(s.subscribed_at, datePeriod)).length,
+    contacts: contacts.filter((c) => isInRange(c.created_at, datePeriod, customDate)).length,
+    consultations: consultations.filter((c) => isInRange(c.created_at, datePeriod, customDate)).length,
+    ctaInquiries: ctaInquiries.filter((c) => isInRange(c.created_at, datePeriod, customDate)).length,
+    comments: comments.filter((c) => isInRange(c.created_at, datePeriod, customDate)).length,
+    subscribers: subscribers.filter((s) => isInRange(s.subscribed_at, datePeriod, customDate)).length,
   };
 
   const filteredCards: OverviewCard[] = overviewCards.map((card) => {
@@ -103,7 +107,12 @@ export default function OverviewTab({
             Here's what's happening with your website today.
           </p>
         </div>
-        <DateFilter value={datePeriod} onChange={onDatePeriodChange} />
+        <DateFilter
+          value={datePeriod}
+          customDate={customDate}
+          onChange={onDatePeriodChange}
+          onCustomDateChange={onCustomDateChange}
+        />
       </div>
 
       {/* Stat cards */}
@@ -150,6 +159,7 @@ export default function OverviewTab({
       {/* Analytics Chart */}
       <AnalyticsChart
         period={datePeriod}
+        customDate={customDate}
         contacts={contacts}
         consultations={consultations}
         ctaInquiries={ctaInquiries}

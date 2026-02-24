@@ -33,6 +33,7 @@ import CommentsTab from "./components/CommentsTab";
 const AdminDashboardPage = () => {
   usePageTitle("Admin Dashboard");
   const [datePeriod, setDatePeriod] = useState<DatePeriod>("30d");
+  const [customDate, setCustomDate] = useState<Date | undefined>(undefined);
 
   const {
     activeTab,
@@ -255,7 +256,9 @@ const AdminDashboardPage = () => {
               recentItems={recentItems}
               totalUnread={totalUnread}
               datePeriod={datePeriod}
+              customDate={customDate}
               onDatePeriodChange={setDatePeriod}
+              onCustomDateChange={setCustomDate}
               contacts={contacts}
               consultations={consultations}
               ctaInquiries={ctaInquiries}

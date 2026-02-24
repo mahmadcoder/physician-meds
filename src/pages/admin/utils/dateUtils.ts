@@ -1,6 +1,9 @@
 import type { DatePeriod } from "../types";
 
-export function getDateRange(period: DatePeriod): { start: Date; end: Date } {
+export function getDateRange(
+  period: DatePeriod,
+  customDate?: Date
+): { start: Date; end: Date } {
   const now = new Date();
   const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
 
@@ -25,15 +28,25 @@ export function getDateRange(period: DatePeriod): { start: Date; end: Date } {
       const start = new Date(now.getFullYear(), 0, 1);
       return { start, end };
     }
+    case "custom": {
+      if (!customDate) return { start: new Date(2020, 0, 1), end };
+      const start = new Date(customDate.getFullYear(), customDate.getMonth(), customDate.getDate(), 0, 0, 0, 0);
+      const customEnd = new Date(customDate.getFullYear(), customDate.getMonth(), customDate.getDate(), 23, 59, 59, 999);
+      return { start, end: customEnd };
+    }
     case "all":
     default:
       return { start: new Date(2020, 0, 1), end };
   }
 }
 
-export function isInRange(dateStr: string, period: DatePeriod): boolean {
+export function isInRange(
+  dateStr: string,
+  period: DatePeriod,
+  customDate?: Date
+): boolean {
   if (period === "all") return true;
-  const { start, end } = getDateRange(period);
+  const { start, end } = getDateRange(period, customDate);
   const d = new Date(dateStr);
   return d >= start && d <= end;
 }

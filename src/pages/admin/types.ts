@@ -116,7 +116,7 @@ export interface SearchResult {
   icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
 }
 
-export type DatePeriod = "today" | "7d" | "30d" | "this-year" | "all";
+export type DatePeriod = "today" | "7d" | "30d" | "this-year" | "all" | "custom";
 
 export interface ChartDataPoint {
   date: string;

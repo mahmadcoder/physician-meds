@@ -1,5 +1,18 @@
 import { Clock, ChevronRight } from "lucide-react";
-import type { Tab, OverviewCard, RecentItem } from "../types";
+import type {
+  Tab,
+  OverviewCard,
+  RecentItem,
+  DatePeriod,
+  Contact,
+  Consultation,
+  CtaInquiry,
+  Comment,
+  Subscriber,
+} from "../types";
+import DateFilter from "./DateFilter";
+import { isInRange } from "../utils/dateUtils";
+import AnalyticsChart from "./AnalyticsChart";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", {
@@ -30,6 +43,13 @@ interface OverviewTabProps {
   unreadRows: UnreadRow[];
   contentRows: ContentRow[];
   totalUnread: number;
+  datePeriod: DatePeriod;
+  onDatePeriodChange: (p: DatePeriod) => void;
+  contacts: Contact[];
+  consultations: Consultation[];
+  ctaInquiries: CtaInquiry[];
+  comments: Comment[];
+  subscribers: Subscriber[];
   onTabChange: (tab: Tab) => void;
 }
 
@@ -40,23 +60,55 @@ export default function OverviewTab({
   unreadRows,
   contentRows,
   totalUnread,
+  datePeriod,
+  onDatePeriodChange,
+  contacts,
+  consultations,
+  ctaInquiries,
+  comments,
+  subscribers,
   onTabChange,
 }: OverviewTabProps) {
+  const filteredCounts = {
+    contacts: contacts.filter((c) => isInRange(c.created_at, datePeriod)).length,
+    consultations: consultations.filter((c) => isInRange(c.created_at, datePeriod)).length,
+    ctaInquiries: ctaInquiries.filter((c) => isInRange(c.created_at, datePeriod)).length,
+    comments: comments.filter((c) => isInRange(c.created_at, datePeriod)).length,
+    subscribers: subscribers.filter((s) => isInRange(s.subscribed_at, datePeriod)).length,
+  };
+
+  const filteredCards: OverviewCard[] = overviewCards.map((card) => {
+    const keyMap: Record<string, keyof typeof filteredCounts> = {
+      contacts: "contacts",
+      consultations: "consultations",
+      "cta-inquiries": "ctaInquiries",
+      comments: "comments",
+      subscribers: "subscribers",
+    };
+    const countKey = keyMap[card.tab];
+    return countKey
+      ? { ...card, value: filteredCounts[countKey] }
+      : card;
+  });
+
   return (
     <div className="space-y-6">
-      {/* Welcome */}
-      <div>
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 font-display">
-          Welcome back
-        </h2>
-        <p className="text-sm text-gray-500 mt-1">
-          Here's what's happening with your website today.
-        </p>
+      {/* Welcome + date filter */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 font-display">
+            Welcome back
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">
+            Here's what's happening with your website today.
+          </p>
+        </div>
+        <DateFilter value={datePeriod} onChange={onDatePeriodChange} />
       </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
-        {overviewCards.map((card) => {
+        {filteredCards.map((card) => {
           const Icon = card.icon;
           return (
             <button
@@ -94,6 +146,16 @@ export default function OverviewTab({
           );
         })}
       </div>
+
+      {/* Analytics Chart */}
+      <AnalyticsChart
+        period={datePeriod}
+        contacts={contacts}
+        consultations={consultations}
+        ctaInquiries={ctaInquiries}
+        comments={comments}
+        subscribers={subscribers}
+      />
 
       {/* Recent Activity + Quick Stats */}
       <div className="grid lg:grid-cols-5 gap-4 sm:gap-6">

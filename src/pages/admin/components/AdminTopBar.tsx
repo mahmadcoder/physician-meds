@@ -1,5 +1,6 @@
 import { Menu, Bell } from "lucide-react";
-import type { Tab, RecentItem } from "../types";
+import type { Tab, RecentItem, SearchResult } from "../types";
+import GlobalSearch from "./GlobalSearch";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", {
@@ -17,9 +18,11 @@ interface AdminTopBarProps {
   notifOpen: boolean;
   notifRef: React.RefObject<HTMLDivElement | null>;
   recentUnread: RecentItem[];
+  searchResults: SearchResult[];
   onToggleSidebar: () => void;
   onToggleNotif: () => void;
   onNotifClick: (tab: Tab) => void;
+  onSearchSelect: (tab: Tab, id: string) => void;
 }
 
 export default function AdminTopBar({
@@ -28,9 +31,11 @@ export default function AdminTopBar({
   notifOpen,
   notifRef,
   recentUnread,
+  searchResults,
   onToggleSidebar,
   onToggleNotif,
   onNotifClick,
+  onSearchSelect,
 }: AdminTopBarProps) {
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
@@ -48,6 +53,12 @@ export default function AdminTopBar({
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Global search */}
+          <GlobalSearch
+            results={searchResults}
+            onSelect={onSearchSelect}
+          />
+
           {/* Notification bell */}
           <div className="relative" ref={notifRef}>
             <button

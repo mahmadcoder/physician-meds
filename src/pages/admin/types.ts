@@ -105,3 +105,25 @@ export interface RecentItem {
   color: string;
   tab: Tab;
 }
+
+export interface SearchResult {
+  id: string;
+  name: string;
+  detail: string;
+  tab: Tab;
+  tabLabel: string;
+  color: string;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+}
+
+export type DatePeriod = "today" | "7d" | "30d" | "this-year" | "all";
+
+export interface ChartDataPoint {
+  date: string;
+  label: string;
+  contacts: number;
+  consultations: number;
+  ctaInquiries: number;
+  comments: number;
+  subscribers: number;
+}

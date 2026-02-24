@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
 import {
   LayoutDashboard,
@@ -10,7 +11,14 @@ import {
 } from "lucide-react";
 
 import { useAdminData } from "./hooks/useAdminData";
-import type { Tab, NavGroup, OverviewCard, RecentItem } from "./types";
+import type {
+  Tab,
+  NavGroup,
+  OverviewCard,
+  RecentItem,
+  SearchResult,
+  DatePeriod,
+} from "./types";
 
 import AdminSidebar from "./components/AdminSidebar";
 import AdminTopBar from "./components/AdminTopBar";
@@ -24,6 +32,7 @@ import CommentsTab from "./components/CommentsTab";
 
 const AdminDashboardPage = () => {
   usePageTitle("Admin Dashboard");
+  const [datePeriod, setDatePeriod] = useState<DatePeriod>("30d");
 
   const {
     activeTab,
@@ -107,6 +116,86 @@ const AdminDashboardPage = () => {
 
   const recentUnread = recentItems.filter((i) => !i.isRead);
 
+  // ─── Global search data ────────────────────────────
+  const searchResults: SearchResult[] = useMemo(() => {
+    const items: SearchResult[] = [];
+
+    contacts.forEach((c) =>
+      items.push({
+        id: c.id,
+        name: c.name,
+        detail: `${c.email} \u2022 ${c.subject}`,
+        tab: "contacts",
+        tabLabel: "Contact",
+        color: "#2d62ff",
+        icon: MessageSquare,
+      })
+    );
+
+    consultations.forEach((c) =>
+      items.push({
+        id: c.id,
+        name: c.name,
+        detail: `${c.email} \u2022 ${c.practice_name || c.specialty || ""}`,
+        tab: "consultations",
+        tabLabel: "Consultation",
+        color: "#7c3aed",
+        icon: Users,
+      })
+    );
+
+    ctaInquiries.forEach((c) =>
+      items.push({
+        id: c.id,
+        name: c.name,
+        detail: `${c.email} \u2022 ${c.practice_name || ""}`,
+        tab: "cta-inquiries",
+        tabLabel: "CTA Inquiry",
+        color: "#d97706",
+        icon: Briefcase,
+      })
+    );
+
+    blogs.forEach((b) =>
+      items.push({
+        id: b.id,
+        name: b.title,
+        detail: `${b.category} \u2022 ${b.author_name}`,
+        tab: "blogs",
+        tabLabel: "Blog",
+        color: "#4f46e5",
+        icon: FileText,
+      })
+    );
+
+    comments.forEach((c) =>
+      items.push({
+        id: c.id,
+        name: c.author_name,
+        detail: `${c.author_email} \u2022 on ${c.post_slug}`,
+        tab: "comments",
+        tabLabel: "Comment",
+        color: "#ea580c",
+        icon: MessageCircle,
+      })
+    );
+
+    subscribers.forEach((s) =>
+      items.push({
+        id: s.id,
+        name: s.email,
+        detail: s.is_active ? "Active" : "Inactive",
+        tab: "subscribers",
+        tabLabel: "Subscriber",
+        color: "#059669",
+        icon: Mail,
+      })
+    );
+
+    return items;
+  }, [contacts, consultations, ctaInquiries, blogs, comments, subscribers]);
+
+  // ─── Handlers ──────────────────────────────────────
   const handleTabChange = (tab: Tab) => {
     setActiveTab(tab);
     setSidebarOpen(false);
@@ -115,6 +204,11 @@ const AdminDashboardPage = () => {
   const handleNotifClick = (tab: Tab) => {
     setActiveTab(tab);
     setNotifOpen(false);
+  };
+
+  const handleSearchSelect = (tab: Tab, id: string) => {
+    setActiveTab(tab);
+    toggleExpanded(id);
   };
 
   // ─── Section summary text ──────────────────────────
@@ -145,9 +239,11 @@ const AdminDashboardPage = () => {
           notifOpen={notifOpen}
           notifRef={notifRef}
           recentUnread={recentUnread}
+          searchResults={searchResults}
           onToggleSidebar={() => setSidebarOpen(true)}
           onToggleNotif={() => setNotifOpen(!notifOpen)}
           onNotifClick={handleNotifClick}
+          onSearchSelect={handleSearchSelect}
         />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
@@ -158,6 +254,13 @@ const AdminDashboardPage = () => {
               overviewCards={overviewCards}
               recentItems={recentItems}
               totalUnread={totalUnread}
+              datePeriod={datePeriod}
+              onDatePeriodChange={setDatePeriod}
+              contacts={contacts}
+              consultations={consultations}
+              ctaInquiries={ctaInquiries}
+              comments={comments}
+              subscribers={subscribers}
               onTabChange={handleTabChange}
               unreadRows={[
                 { label: "Contacts", count: contacts.filter((c) => !c.is_read).length, color: "#2d62ff" },

@@ -203,17 +203,17 @@ export default function DateFilter({
                     week: "flex",
                     day: "relative w-9 h-9 p-0 text-center",
                     day_button:
-                      "w-9 h-9 flex items-center justify-center rounded-full text-[13px] font-medium text-gray-700 hover:bg-[#2d62ff]/10 hover:text-[#2d62ff] transition-all duration-150 disabled:opacity-25 disabled:pointer-events-none cursor-pointer",
+                      "w-9 h-9 flex items-center justify-center rounded-full text-[13px] font-medium text-gray-600 hover:bg-gray-100 transition-all duration-150 disabled:opacity-25 disabled:pointer-events-none cursor-pointer",
                     selected:
-                      "!bg-[#2d62ff] !text-white !rounded-full !shadow-sm !shadow-blue-300/40 hover:!bg-[#1a4fd9]",
+                      "!bg-[#2d62ff] !text-white !rounded-full hover:!bg-[#1a4fd9]",
                     range_start:
-                      "!bg-[#2d62ff] !text-white !rounded-full !shadow-sm !shadow-blue-300/40 relative z-10",
+                      "!bg-[#2d62ff] !text-white !rounded-full relative z-10",
                     range_end:
-                      "!bg-[#2d62ff] !text-white !rounded-full !shadow-sm !shadow-blue-300/40 relative z-10",
+                      "!bg-[#2d62ff] !text-white !rounded-full relative z-10",
                     range_middle:
-                      "!bg-[#2d62ff]/8 !text-[#2d62ff] !rounded-none !font-semibold",
+                      "!bg-gray-100 !text-gray-700 !rounded-none",
                     today:
-                      "!font-bold ring-2 ring-[#2d62ff]/25 ring-inset !rounded-full",
+                      "!text-[#2d62ff] !font-bold",
                     outside: "!opacity-25",
                     disabled: "!opacity-25 !pointer-events-none",
                     hidden: "invisible",

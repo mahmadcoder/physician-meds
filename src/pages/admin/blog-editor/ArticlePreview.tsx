@@ -155,15 +155,15 @@ function renderHighlighted(text: string) {
 function PreviewBlock({ block }: { block: ContentBlock }) {
   switch (block.type) {
     case "paragraph":
-      if (!block.text) return null;
+      if (!block.content) return null;
       return (
         <p className="text-gray-700 leading-[1.85] text-[14px] mb-4">
-          {renderHighlighted(block.text)}
+          {renderHighlighted(block.content)}
         </p>
       );
 
     case "heading": {
-      const text = block.text || "";
+      const text = block.content || "";
       if (!text) return null;
       if (block.level === 2) {
         return (
@@ -197,12 +197,12 @@ function PreviewBlock({ block }: { block: ContentBlock }) {
     }
 
     case "quote":
-      if (!block.text) return null;
+      if (!block.content) return null;
       return (
         <blockquote className="relative my-6 bg-white rounded-xl p-5 border border-brand-blue/10 shadow-md shadow-brand-blue/5">
           <Quote className="w-7 h-7 text-brand-blue/15 mb-2" />
           <p className="text-gray-800 leading-relaxed text-[14px] font-medium italic">
-            {renderHighlighted(block.text)}
+            {renderHighlighted(block.content)}
           </p>
           <div className="mt-3 w-10 h-1 bg-gradient-to-r from-brand-blue to-brand-accent rounded-full" />
         </blockquote>
@@ -246,7 +246,7 @@ function PreviewBlock({ block }: { block: ContentBlock }) {
         },
       };
       const v = variants[block.variant || "info"] ?? variants.info;
-      if (!block.text) return null;
+      if (!block.content) return null;
       return (
         <div className={`rounded-xl border my-5 overflow-hidden ${v.bg}`}>
           <div className="flex items-center gap-2 px-4 py-2 border-b border-inherit">
@@ -263,7 +263,7 @@ function PreviewBlock({ block }: { block: ContentBlock }) {
           </div>
           <div className="px-4 py-3">
             <p className={`${v.text} text-xs leading-relaxed`}>
-              {renderHighlighted(block.text)}
+              {renderHighlighted(block.content)}
             </p>
           </div>
         </div>

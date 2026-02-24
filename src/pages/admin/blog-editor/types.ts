@@ -1,6 +1,6 @@
 export interface ContentBlock {
   type: "paragraph" | "heading" | "list" | "quote" | "image" | "callout";
-  text?: string;
+  content?: string;
   level?: number;
   items?: string[];
   src?: string;
@@ -10,6 +10,7 @@ export interface ContentBlock {
 }
 
 export interface BlogPostDraft {
+  id?: string;
   slug: string;
   title: string;
   excerpt: string;

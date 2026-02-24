@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import type { BlogPostDraft } from "./types";
+import ImageUpload from "./ImageUpload";
 
 interface PostDetailsFormProps {
   post: BlogPostDraft;
@@ -69,12 +70,10 @@ export default function PostDetailsForm({
             className="border-gray-200 rounded-xl"
           />
         </Field>
-        <Field label="Cover Image URL">
-          <Input
+        <Field label="Cover Image" span={2}>
+          <ImageUpload
             value={post.image}
-            onChange={(e) => onFieldChange("image", e.target.value)}
-            placeholder="https://..."
-            className="border-gray-200 rounded-xl"
+            onChange={(url) => onFieldChange("image", url)}
           />
         </Field>
         <Field label="Read Time">

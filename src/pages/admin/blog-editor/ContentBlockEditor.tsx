@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import type { ContentBlock } from "./types";
 import { BLOCK_TYPES } from "./types";
+import ImageUpload from "./ImageUpload";
 
 const ICONS: Record<ContentBlock["type"], React.ComponentType<{ className?: string }>> = {
   paragraph: AlignLeft,
@@ -85,8 +86,8 @@ export default function ContentBlockEditor({
                 <span className="text-sm font-medium text-gray-700 capitalize flex-1 truncate">
                   {block.type}
                   {block.type === "heading" && ` (H${block.level || 2})`}
-                  {block.type === "paragraph" && block.text
-                    ? ` — ${block.text.slice(0, 40)}${block.text.length > 40 ? "…" : ""}`
+                  {block.type === "paragraph" && block.content
+                    ? ` — ${block.content.slice(0, 40)}${block.content.length > 40 ? "…" : ""}`
                     : ""}
                 </span>
                 <div className="flex items-center gap-0.5 shrink-0">
@@ -168,8 +169,8 @@ function BlockFields({
   if (block.type === "paragraph" || block.type === "quote") {
     return (
       <textarea
-        value={block.text || ""}
-        onChange={(e) => onUpdate(index, { text: e.target.value })}
+        value={block.content || ""}
+        onChange={(e) => onUpdate(index, { content: e.target.value })}
         placeholder={`Enter ${block.type} text...`}
         rows={4}
         className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 text-sm resize-y transition-all"
@@ -196,8 +197,8 @@ function BlockFields({
           ))}
         </div>
         <Input
-          value={block.text || ""}
-          onChange={(e) => onUpdate(index, { text: e.target.value })}
+          value={block.content || ""}
+          onChange={(e) => onUpdate(index, { content: e.target.value })}
           placeholder="Heading text"
           className="border-gray-200 rounded-xl"
         />
@@ -248,11 +249,10 @@ function BlockFields({
   if (block.type === "image") {
     return (
       <div className="space-y-2.5">
-        <Input
+        <ImageUpload
           value={block.src || ""}
-          onChange={(e) => onUpdate(index, { src: e.target.value })}
-          placeholder="Image URL"
-          className="border-gray-200 rounded-xl"
+          onChange={(url) => onUpdate(index, { src: url })}
+          compact
         />
         <Input
           value={block.alt || ""}
@@ -293,8 +293,8 @@ function BlockFields({
           ))}
         </div>
         <textarea
-          value={block.text || ""}
-          onChange={(e) => onUpdate(index, { text: e.target.value })}
+          value={block.content || ""}
+          onChange={(e) => onUpdate(index, { content: e.target.value })}
           placeholder="Callout text..."
           rows={3}
           className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 text-sm resize-y transition-all"

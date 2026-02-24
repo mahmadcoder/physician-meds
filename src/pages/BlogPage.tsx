@@ -17,12 +17,33 @@ import {
   X,
 } from "lucide-react";
 import {
-  blogArticles,
-  blogCategories,
+  blogArticles as staticArticles,
+  blogCategories as staticCategories,
   blogPageMeta,
+  type BlogArticle,
 } from "@/constants/blogData";
 
 gsap.registerPlugin(ScrollTrigger);
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function normalizeApiPost(p: any): BlogArticle {
+  return {
+    id: p.id,
+    slug: p.slug,
+    title: p.title,
+    excerpt: p.excerpt || "",
+    category: p.category || "",
+    date: p.date
+      ? new Date(p.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+      : "",
+    author: { name: p.author_name || "", role: p.author_role || "" },
+    image: p.image || "",
+    readTime: p.read_time || "",
+    tags: Array.isArray(p.tags) ? p.tags : [],
+    featured: p.featured || false,
+    content: p.content || [],
+  };
+}
 
 const BlogPage = () => {
   usePageTitle("Blog");
@@ -31,12 +52,32 @@ const BlogPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [dbArticles, setDbArticles] = useState<BlogArticle[]>([]);
 
   const postsPerPage = blogPageMeta.postsPerPage;
 
-  // Filter articles based on search and category
+  useEffect(() => {
+    fetch("/api/blogs")
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((data: any[]) => setDbArticles(data.map(normalizeApiPost)))
+      .catch(() => {});
+  }, []);
+
+  const allArticles = useMemo(() => {
+    if (dbArticles.length === 0) return staticArticles;
+    const slugSet = new Set(dbArticles.map((a) => a.slug));
+    const extra = staticArticles.filter((a) => !slugSet.has(a.slug));
+    return [...dbArticles, ...extra];
+  }, [dbArticles]);
+
+  const blogCategories = useMemo(() => {
+    const cats = new Set(allArticles.map((a) => a.category).filter(Boolean));
+    const combined = new Set(["All", ...staticCategories.filter((c) => c !== "All"), ...cats]);
+    return Array.from(combined);
+  }, [allArticles]);
+
   const filteredArticles = useMemo(() => {
-    return blogArticles.filter((article) => {
+    return allArticles.filter((article) => {
       const matchesCategory =
         activeCategory === "All" || article.category === activeCategory;
       const matchesSearch =
@@ -48,7 +89,7 @@ const BlogPage = () => {
         );
       return matchesCategory && matchesSearch;
     });
-  }, [searchQuery, activeCategory]);
+  }, [searchQuery, activeCategory, allArticles]);
 
   // Pagination
   const totalPages = Math.ceil(filteredArticles.length / postsPerPage);
@@ -57,9 +98,8 @@ const BlogPage = () => {
     currentPage * postsPerPage
   );
 
-  // Featured article (first featured or first article)
   const featuredArticle =
-    blogArticles.find((a) => a.featured) || blogArticles[0];
+    allArticles.find((a) => a.featured) || allArticles[0];
 
   // Handlers that reset page when filters change
   const handleSearchChange = (value: string) => {

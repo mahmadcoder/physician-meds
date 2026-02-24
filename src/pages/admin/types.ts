@@ -37,8 +37,13 @@ export interface BlogPost {
   category: string;
   date: string;
   author_name: string;
+  author_role: string;
+  image: string;
+  read_time: string;
+  tags: string[];
   featured: boolean;
   is_published: boolean;
+  content: unknown[];
 }
 
 export interface Comment {

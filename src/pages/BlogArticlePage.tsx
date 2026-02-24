@@ -21,7 +21,7 @@ import {
   Loader2,
   User,
 } from "lucide-react";
-import { blogArticles, type ArticleContentBlock } from "@/constants/blogData";
+import { blogArticles, type ArticleContentBlock, type BlogArticle } from "@/constants/blogData";
 import { contactInfo } from "@/constants";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -204,9 +204,42 @@ function slugify(text: string): string {
 
 // --- Main Article Page ---
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function normalizeApiPost(p: any): BlogArticle {
+  return {
+    id: p.id,
+    slug: p.slug,
+    title: p.title,
+    excerpt: p.excerpt || "",
+    category: p.category || "",
+    date: p.date
+      ? new Date(p.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+      : "",
+    author: { name: p.author_name || "", role: p.author_role || "" },
+    image: p.image || "",
+    readTime: p.read_time || "",
+    tags: Array.isArray(p.tags) ? p.tags : [],
+    featured: p.featured || false,
+    content: p.content || [],
+  };
+}
+
 const BlogArticlePage = () => {
   const { slug } = useParams<{ slug: string }>();
-  const article = blogArticles.find((a) => a.slug === slug);
+  const staticArticle = blogArticles.find((a) => a.slug === slug);
+  const [apiArticle, setApiArticle] = useState<BlogArticle | null>(null);
+  const [articleLoading, setArticleLoading] = useState(!staticArticle);
+  const article = staticArticle || apiArticle;
+
+  useEffect(() => {
+    if (staticArticle || !slug) return;
+    fetch(`/api/blogs?slug=${encodeURIComponent(slug)}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((data) => setApiArticle(normalizeApiPost(data)))
+      .catch(() => {})
+      .finally(() => setArticleLoading(false));
+  }, [slug, staticArticle]);
+
   usePageTitle(article?.title || "Blog Article");
   const pageRef = useRef<HTMLDivElement>(null);
   const articleRef = useRef<HTMLElement>(null);
@@ -239,7 +272,7 @@ const BlogArticlePage = () => {
         if (info.website) setAuthorWebsite(info.website);
         setSaveInfo(true);
       }
-    } catch {}
+    } catch { /* localStorage may be unavailable */ }
   }, []);
 
   // Fetch comments for this article
@@ -324,11 +357,10 @@ const BlogArticlePage = () => {
     });
   };
 
-  // Related articles (same category, excluding current)
   const relatedArticles = useMemo(() => {
     if (!article) return [];
     return blogArticles
-      .filter((a) => a.id !== article.id)
+      .filter((a) => a.slug !== article.slug)
       .sort((a, b) => {
         const aMatch = a.category === article.category ? 1 : 0;
         const bMatch = b.category === article.category ? 1 : 0;
@@ -575,7 +607,14 @@ const BlogArticlePage = () => {
     };
   }, [slug]);
 
-  // 404 handling
+  if (articleLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
+      </div>
+    );
+  }
+
   if (!article) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">

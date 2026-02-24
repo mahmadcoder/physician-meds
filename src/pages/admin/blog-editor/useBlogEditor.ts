@@ -46,9 +46,9 @@ export function useBlogEditor() {
   const addBlock = useCallback(
     (type: ContentBlock["type"]) => {
       const block: ContentBlock = { type };
-      if (type === "paragraph" || type === "quote") block.text = "";
+      if (type === "paragraph" || type === "quote") block.content = "";
       if (type === "heading") {
-        block.text = "";
+        block.content = "";
         block.level = 2;
       }
       if (type === "list") block.items = [""];
@@ -58,7 +58,7 @@ export function useBlogEditor() {
         block.caption = "";
       }
       if (type === "callout") {
-        block.text = "";
+        block.content = "";
         block.variant = "info";
       }
       setPost((prev) => ({ ...prev, content: [...prev.content, block] }));

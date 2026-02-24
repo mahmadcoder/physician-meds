@@ -201,17 +201,17 @@ export default function DateFilter({
                     weekday:
                       "w-9 h-8 flex items-center justify-center text-[11px] font-semibold text-gray-400 uppercase tracking-wider",
                     week: "flex",
-                    day: "relative w-9 h-9 p-0 text-center text-gray-600",
+                    day: "relative w-9 h-9 p-0 text-center",
                     day_button:
-                      "w-9 h-9 flex items-center justify-center rounded-lg text-[13px] font-medium text-inherit hover:bg-[#2d62ff] hover:text-white transition-all duration-150 disabled:opacity-25 disabled:pointer-events-none cursor-pointer",
+                      "w-9 h-9 flex items-center justify-center rounded-lg text-[13px] font-medium text-gray-600 hover:bg-[#2d62ff] hover:text-white transition-all duration-150 disabled:opacity-25 disabled:pointer-events-none cursor-pointer",
                     selected:
-                      "!bg-[#2d62ff] !text-white !font-semibold !rounded-lg",
+                      "!bg-[#2d62ff] [&>button]:!text-white !rounded-lg",
                     range_start:
-                      "!bg-[#2d62ff] !text-white !font-semibold !rounded-lg relative z-10",
+                      "!bg-[#2d62ff] [&>button]:!text-white !rounded-lg relative z-10",
                     range_end:
-                      "!bg-[#2d62ff] !text-white !font-semibold !rounded-lg relative z-10",
+                      "!bg-[#2d62ff] [&>button]:!text-white !rounded-lg relative z-10",
                     range_middle:
-                      "!bg-gray-50 !text-gray-600 !rounded-none",
+                      "!bg-gray-50 [&>button]:!text-gray-600 !rounded-none",
                     today:
                       "!text-[#2d62ff] !font-bold",
                     outside: "!opacity-25",

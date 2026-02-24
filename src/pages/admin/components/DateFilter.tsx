@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import type { DatePreset, DateRange } from "../types";
 import { presetToRange, formatRangeLabel } from "../utils/dateUtils";
@@ -132,15 +132,15 @@ export default function DateFilter({
         <div className="absolute right-0 top-full mt-2 z-50 bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150">
           <div className="flex">
             {/* Presets sidebar */}
-            <div className="w-36 border-r border-gray-100 py-2 hidden sm:block">
+            <div className="w-40 border-r border-gray-100 py-1.5 hidden sm:block">
               {PRESETS.map((p) => (
                 <button
                   key={p.value}
                   onClick={() => handlePreset(p.value)}
-                  className={`w-full text-left px-4 py-2 text-[13px] font-medium transition-colors ${
+                  className={`w-full text-left px-4 py-[7px] text-[13px] font-medium transition-all duration-150 relative ${
                     draftPreset === p.value
-                      ? "text-[#2d62ff] bg-blue-50/60"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? "text-[#2d62ff] bg-[#2d62ff]/[0.06] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-5 before:bg-[#2d62ff] before:rounded-r-full"
+                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-800"
                   }`}
                 >
                   {p.label}
@@ -168,7 +168,7 @@ export default function DateFilter({
               </div>
 
               {/* Calendars */}
-              <div className="p-3">
+              <div className="p-3 sm:p-4">
                 <DayPicker
                   mode="range"
                   numberOfMonths={2}
@@ -178,27 +178,44 @@ export default function DateFilter({
                   onDayClick={handleDayClick}
                   disabled={{ after: new Date() }}
                   showOutsideDays
+                  components={{
+                    Chevron: ({ orientation }) =>
+                      orientation === "left" ? (
+                        <ChevronLeft className="w-4 h-4" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4" />
+                      ),
+                  }}
                   classNames={{
-                    root: "flex flex-col",
-                    months: "flex gap-4 flex-col sm:flex-row",
-                    month: "flex flex-col gap-2",
-                    month_caption: "flex items-center justify-center h-8",
-                    caption_label: "text-sm font-semibold text-gray-800",
-                    nav: "flex items-center gap-1 w-full absolute top-0 inset-x-0 justify-between px-1",
-                    button_previous: "size-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors",
-                    button_next: "size-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors",
+                    root: "relative flex flex-col",
+                    months: "flex gap-6 flex-col sm:flex-row",
+                    month: "flex flex-col gap-1",
+                    month_caption: "flex items-center justify-center h-9",
+                    caption_label: "text-[13px] font-semibold text-gray-800 tracking-wide",
+                    nav: "absolute top-0 inset-x-0 flex items-center justify-between px-1 z-10",
+                    button_previous:
+                      "w-8 h-8 inline-flex items-center justify-center rounded-full text-gray-500 hover:text-gray-800 hover:bg-gray-100 active:bg-gray-200 transition-all duration-150",
+                    button_next:
+                      "w-8 h-8 inline-flex items-center justify-center rounded-full text-gray-500 hover:text-gray-800 hover:bg-gray-100 active:bg-gray-200 transition-all duration-150",
                     weekdays: "flex",
-                    weekday: "w-9 h-8 flex items-center justify-center text-[11px] font-medium text-gray-400",
+                    weekday:
+                      "w-9 h-8 flex items-center justify-center text-[11px] font-semibold text-gray-400 uppercase tracking-wider",
                     week: "flex",
                     day: "relative w-9 h-9 p-0 text-center",
-                    day_button: "w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:pointer-events-none",
-                    selected: "!bg-[#2d62ff] !text-white !rounded-lg hover:!bg-[#1a4fd9]",
-                    range_start: "!bg-[#2d62ff] !text-white !rounded-l-lg !rounded-r-none",
-                    range_end: "!bg-[#2d62ff] !text-white !rounded-r-lg !rounded-l-none",
-                    range_middle: "!bg-blue-50 !text-[#2d62ff] !rounded-none",
-                    today: "font-bold text-[#2d62ff]",
-                    outside: "opacity-30",
-                    disabled: "opacity-30 pointer-events-none",
+                    day_button:
+                      "w-9 h-9 flex items-center justify-center rounded-full text-[13px] font-medium text-gray-700 hover:bg-[#2d62ff]/10 hover:text-[#2d62ff] transition-all duration-150 disabled:opacity-25 disabled:pointer-events-none cursor-pointer",
+                    selected:
+                      "!bg-[#2d62ff] !text-white !rounded-full !shadow-sm !shadow-blue-300/40 hover:!bg-[#1a4fd9]",
+                    range_start:
+                      "!bg-[#2d62ff] !text-white !rounded-full !shadow-sm !shadow-blue-300/40 relative z-10",
+                    range_end:
+                      "!bg-[#2d62ff] !text-white !rounded-full !shadow-sm !shadow-blue-300/40 relative z-10",
+                    range_middle:
+                      "!bg-[#2d62ff]/8 !text-[#2d62ff] !rounded-none !font-semibold",
+                    today:
+                      "!font-bold ring-2 ring-[#2d62ff]/25 ring-inset !rounded-full",
+                    outside: "!opacity-25",
+                    disabled: "!opacity-25 !pointer-events-none",
                     hidden: "invisible",
                   }}
                 />

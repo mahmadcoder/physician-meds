@@ -1,1054 +1,249 @@
-import { useState, useEffect, useCallback, useRef } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
-import { useNavigate, Link } from "react-router-dom";
 import {
-  FileText,
-  MessageSquare,
-  MessageCircle,
-  Users,
-  Mail,
-  LogOut,
-  Plus,
-  Eye,
-  EyeOff,
-  Trash2,
-  Edit,
-  ChevronDown,
-  ChevronUp,
-  Clock,
-  CheckCircle,
-  Briefcase,
-  Phone,
-  Copy,
-  Check,
-  User,
-  Globe,
-  Menu,
-  X,
   LayoutDashboard,
-  ChevronRight,
-  Bell,
+  MessageSquare,
+  Users,
+  Briefcase,
+  FileText,
+  MessageCircle,
+  Mail,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
-// ─── Types ──────────────────────────────────────────────
-interface Contact {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  subject: string;
-  message: string;
-  created_at: string;
-  is_read: boolean;
-}
+import { useAdminData } from "./hooks/useAdminData";
+import type { Tab, NavGroup, OverviewCard, RecentItem } from "./types";
 
-interface Consultation {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  practice_name: string;
-  specialty: string;
-  message: string;
-  created_at: string;
-  is_read: boolean;
-  status: string;
-}
-
-interface Subscriber {
-  id: string;
-  email: string;
-  subscribed_at: string;
-  is_active: boolean;
-}
-
-interface BlogPost {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  date: string;
-  author_name: string;
-  featured: boolean;
-  is_published: boolean;
-}
-
-interface Comment {
-  id: string;
-  post_slug: string;
-  author_name: string;
-  author_email: string;
-  author_website: string;
-  comment: string;
-  created_at: string;
-  is_read: boolean;
-}
-
-interface CtaInquiry {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  practice_name: string;
-  monthly_collection: string;
-  total_ar: string;
-  message: string;
-  created_at: string;
-  is_read: boolean;
-  status: string;
-}
-
-type Tab = "overview" | "contacts" | "consultations" | "subscribers" | "blogs" | "comments" | "cta-inquiries";
-
-// ─── Copy-to-clipboard button ────────────────────────────
-function CopyButton({ icon: Icon, value, color = "blue" }: { icon: typeof Mail; value: string; color?: "blue" | "green" | "purple" | "amber" }) {
-  const [copied, setCopied] = useState(false);
-  if (!value) return null;
-
-  const colorMap = {
-    blue:   { bg: "bg-blue-50 hover:bg-blue-100", border: "border-blue-200 hover:border-blue-300", text: "text-blue-700", icon: "text-blue-500" },
-    green:  { bg: "bg-emerald-50 hover:bg-emerald-100", border: "border-emerald-200 hover:border-emerald-300", text: "text-emerald-700", icon: "text-emerald-500" },
-    purple: { bg: "bg-purple-50 hover:bg-purple-100", border: "border-purple-200 hover:border-purple-300", text: "text-purple-700", icon: "text-purple-500" },
-    amber:  { bg: "bg-amber-50 hover:bg-amber-100", border: "border-amber-200 hover:border-amber-300", text: "text-amber-700", icon: "text-amber-500" },
-  };
-  const c = colorMap[color];
-
-  const handleCopy = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(value);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
-
-  return (
-    <button
-      onClick={handleCopy}
-      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${c.bg} border ${c.border} ${c.text} text-[13px] font-medium transition-all cursor-pointer`}
-      title={`Copy ${value}`}
-    >
-      <Icon className={`w-4 h-4 ${c.icon}`} />
-      <span>{value}</span>
-      {copied ? (
-        <Check className="w-3.5 h-3.5 text-green-600" />
-      ) : (
-        <Copy className="w-3.5 h-3.5 opacity-40" />
-      )}
-    </button>
-  );
-}
-
-// ─── Status dropdown ─────────────────────────────────────
-function StatusSelect({ value, onChange }: { value: string; onChange: (val: string) => void }) {
-  const statusColors: Record<string, string> = {
-    new: "text-blue-700 bg-blue-50 border-blue-200",
-    contacted: "text-yellow-700 bg-yellow-50 border-yellow-200",
-    converted: "text-green-700 bg-green-50 border-green-200",
-    closed: "text-gray-600 bg-gray-50 border-gray-200",
-  };
-  return (
-    <select
-      value={value || "new"}
-      onChange={(e) => onChange(e.target.value)}
-      className={`text-sm font-semibold border rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#2d62ff]/20 cursor-pointer ${statusColors[value] || statusColors.new}`}
-    >
-      <option value="new">🆕 New</option>
-      <option value="contacted">📞 Contacted</option>
-      <option value="converted">✅ Converted</option>
-      <option value="closed">🔒 Closed</option>
-    </select>
-  );
-}
-
-
+import AdminSidebar from "./components/AdminSidebar";
+import AdminTopBar from "./components/AdminTopBar";
+import OverviewTab from "./components/OverviewTab";
+import ContactsTab from "./components/ContactsTab";
+import ConsultationsTab from "./components/ConsultationsTab";
+import CtaInquiriesTab from "./components/CtaInquiriesTab";
+import SubscribersTab from "./components/SubscribersTab";
+import BlogsTab from "./components/BlogsTab";
+import CommentsTab from "./components/CommentsTab";
 
 const AdminDashboardPage = () => {
   usePageTitle("Admin Dashboard");
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tab>("overview");
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [consultations, setConsultations] = useState<Consultation[]>([]);
-  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
-  const [blogs, setBlogs] = useState<BlogPost[]>([]);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [ctaInquiries, setCtaInquiries] = useState<CtaInquiry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
-  const notifRef = useRef<HTMLDivElement>(null);
 
-  const token = localStorage.getItem("admin_token");
+  const {
+    activeTab,
+    setActiveTab,
+    contacts,
+    consultations,
+    subscribers,
+    blogs,
+    comments,
+    ctaInquiries,
+    loading,
+    expandedId,
+    toggleExpanded,
+    sidebarOpen,
+    setSidebarOpen,
+    notifOpen,
+    setNotifOpen,
+    notifRef,
+    totalUnread,
+    markAsRead,
+    updateStatus,
+    deleteBlog,
+    togglePublish,
+    deleteComment,
+    handleLogout,
+  } = useAdminData();
 
-  const authHeaders = useCallback(() => ({
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  }), [token]);
-
-  // Session expiry check (1 hour)
-  const checkSessionExpiry = useCallback(() => {
-    const loginTime = localStorage.getItem("admin_login_time");
-    if (loginTime && Date.now() - parseInt(loginTime) > 60 * 60 * 1000) {
-      localStorage.removeItem("admin_token");
-      localStorage.removeItem("admin_login_time");
-      navigate("/pm-portal-x9k2");
-    }
-  }, [navigate]);
-
-  useEffect(() => {
-    if (!token) {
-      navigate("/pm-portal-x9k2");
-      return;
-    }
-    checkSessionExpiry();
-    const interval = setInterval(checkSessionExpiry, 60 * 1000); // check every minute
-    fetchAllData();
-    return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, navigate, checkSessionExpiry]);
-
-  // Close notification dropdown on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  const fetchAllData = async () => {
-    setLoading(true);
-    try {
-      const endpoints = {
-        contacts: "/api/admin/contacts",
-        consultations: "/api/admin/consultations",
-        subscribers: "/api/admin/subscribers",
-        blogs: "/api/admin/blogs",
-        comments: "/api/admin/comments",
-        "cta-inquiries": "/api/admin/cta-inquiries",
-      };
-
-      const results = await Promise.allSettled(
-        Object.entries(endpoints).map(async ([key, url]) => {
-          const response = await fetch(url, { headers: authHeaders() });
-          if (response.status === 401) {
-            localStorage.removeItem("admin_token");
-            navigate("/pm-portal-x9k2");
-            return { key, data: [] };
-          }
-          const data = await response.json();
-          return { key, data };
-        })
-      );
-
-      results.forEach((result) => {
-        if (result.status === "fulfilled") {
-          const { key, data } = result.value;
-          switch (key) {
-            case "contacts": setContacts(data); break;
-            case "consultations": setConsultations(data); break;
-            case "subscribers": setSubscribers(data); break;
-            case "blogs": setBlogs(data); break;
-            case "comments": setComments(data); break;
-            case "cta-inquiries": setCtaInquiries(data); break;
-          }
-        }
-      });
-    } catch (err) {
-      console.error("Fetch all error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchData = async (tab: Tab) => {
-    if (tab === "overview") return;
-    try {
-      const endpoints: Record<string, string> = {
-        contacts: "/api/admin/contacts",
-        consultations: "/api/admin/consultations",
-        subscribers: "/api/admin/subscribers",
-        blogs: "/api/admin/blogs",
-        comments: "/api/admin/comments",
-        "cta-inquiries": "/api/admin/cta-inquiries",
-      };
-
-      const response = await fetch(endpoints[tab], { headers: authHeaders() });
-
-      if (response.status === 401) {
-        localStorage.removeItem("admin_token");
-        navigate("/pm-portal-x9k2");
-        return;
-      }
-
-      const data = await response.json();
-
-      switch (tab) {
-        case "contacts": setContacts(data); break;
-        case "consultations": setConsultations(data); break;
-        case "subscribers": setSubscribers(data); break;
-        case "blogs": setBlogs(data); break;
-        case "comments": setComments(data); break;
-        case "cta-inquiries": setCtaInquiries(data); break;
-      }
-    } catch (err) {
-      console.error("Fetch error:", err);
-    }
-  };
-
-  const markAsRead = async (table: "contacts" | "consultations" | "comments" | "cta-inquiries", id: string) => {
-    try {
-      await fetch(`/api/admin/${table}`, {
-        method: "PUT",
-        headers: authHeaders(),
-        body: JSON.stringify({ id, is_read: true }),
-      });
-      fetchData(table as Tab);
-    } catch (err) {
-      console.error("Mark as read error:", err);
-    }
-  };
-
-  const updateStatus = async (id: string, status: string, table: "consultations" | "cta-inquiries") => {
-    try {
-      await fetch(`/api/admin/${table}`, {
-        method: "PUT",
-        headers: authHeaders(),
-        body: JSON.stringify({ id, status }),
-      });
-      fetchData(table);
-    } catch (err) {
-      console.error("Status update error:", err);
-    }
-  };
-
-  const deleteBlog = async (id: string) => {
-    if (!confirm("Delete this blog post?")) return;
-    await fetch("/api/admin/blogs", { method: "DELETE", headers: authHeaders(), body: JSON.stringify({ id }) });
-    fetchData("blogs");
-  };
-
-  const togglePublish = async (id: string, currentState: boolean) => {
-    await fetch("/api/admin/blogs", { method: "PUT", headers: authHeaders(), body: JSON.stringify({ id, is_published: !currentState }) });
-    fetchData("blogs");
-  };
-
-  const deleteComment = async (id: string) => {
-    if (!confirm("Delete this comment?")) return;
-    await fetch("/api/admin/comments", { method: "DELETE", headers: authHeaders(), body: JSON.stringify({ id }) });
-    fetchData("comments");
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("admin_token");
-    localStorage.removeItem("admin_login_time");
-    navigate("/pm-portal-x9k2");
-  };
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
-
-  const totalUnread = contacts.filter(c => !c.is_read).length
-    + consultations.filter(c => !c.is_read).length
-    + comments.filter(c => !c.is_read).length
-    + ctaInquiries.filter(c => !c.is_read).length;
-
-  // Navigation groups — like the reference image
-  const navGroups = [
+  // ─── Navigation config ─────────────────────────────
+  const navGroups: NavGroup[] = [
     {
-      label: null, // top-level, no group header
+      label: null,
       items: [
-        { id: "overview" as Tab, label: "Dashboard", icon: LayoutDashboard, count: 0 },
+        { id: "overview", label: "Dashboard", icon: LayoutDashboard, count: 0 },
       ],
     },
     {
       label: "INBOX",
       items: [
-        { id: "contacts" as Tab, label: "Contacts", icon: MessageSquare, count: contacts.filter(c => !c.is_read).length },
-        { id: "consultations" as Tab, label: "Consultations", icon: Users, count: consultations.filter(c => !c.is_read).length },
-        { id: "cta-inquiries" as Tab, label: "CTA Inquiries", icon: Briefcase, count: ctaInquiries.filter(c => !c.is_read).length },
+        { id: "contacts", label: "Contacts", icon: MessageSquare, count: contacts.filter((c) => !c.is_read).length },
+        { id: "consultations", label: "Consultations", icon: Users, count: consultations.filter((c) => !c.is_read).length },
+        { id: "cta-inquiries", label: "CTA Inquiries", icon: Briefcase, count: ctaInquiries.filter((c) => !c.is_read).length },
       ],
     },
     {
       label: "CONTENT",
       items: [
-        { id: "blogs" as Tab, label: "Blog Posts", icon: FileText, count: 0 },
-        { id: "comments" as Tab, label: "Comments", icon: MessageCircle, count: comments.filter(c => !c.is_read).length },
+        { id: "blogs", label: "Blog Posts", icon: FileText, count: 0 },
+        { id: "comments", label: "Comments", icon: MessageCircle, count: comments.filter((c) => !c.is_read).length },
       ],
     },
     {
       label: "AUDIENCE",
       items: [
-        { id: "subscribers" as Tab, label: "Subscribers", icon: Mail, count: 0 },
+        { id: "subscribers", label: "Subscribers", icon: Mail, count: 0 },
       ],
     },
   ];
 
-  const activeNavLabel = navGroups.flatMap(g => g.items).find(i => i.id === activeTab)?.label || "Dashboard";
+  const activeNavLabel =
+    navGroups.flatMap((g) => g.items).find((i) => i.id === activeTab)?.label ||
+    "Dashboard";
 
-  // Overview stat cards
-  const overviewCards = [
-    { label: "Total Contacts", value: contacts.length, unread: contacts.filter(c => !c.is_read).length, icon: MessageSquare, color: "#2d62ff", tab: "contacts" as Tab },
-    { label: "Consultations", value: consultations.length, unread: consultations.filter(c => !c.is_read).length, icon: Users, color: "#7c3aed", tab: "consultations" as Tab },
-    { label: "CTA Inquiries", value: ctaInquiries.length, unread: ctaInquiries.filter(c => !c.is_read).length, icon: Briefcase, color: "#d97706", tab: "cta-inquiries" as Tab },
-    { label: "Subscribers", value: subscribers.length, unread: 0, icon: Mail, color: "#059669", tab: "subscribers" as Tab },
-    { label: "Blog Posts", value: blogs.length, unread: 0, icon: FileText, color: "#4f46e5", tab: "blogs" as Tab },
-    { label: "Comments", value: comments.length, unread: comments.filter(c => !c.is_read).length, icon: MessageCircle, color: "#ea580c", tab: "comments" as Tab },
+  // ─── Overview data ─────────────────────────────────
+  const overviewCards: OverviewCard[] = [
+    { label: "Total Contacts", value: contacts.length, unread: contacts.filter((c) => !c.is_read).length, icon: MessageSquare, color: "#2d62ff", tab: "contacts" },
+    { label: "Consultations", value: consultations.length, unread: consultations.filter((c) => !c.is_read).length, icon: Users, color: "#7c3aed", tab: "consultations" },
+    { label: "CTA Inquiries", value: ctaInquiries.length, unread: ctaInquiries.filter((c) => !c.is_read).length, icon: Briefcase, color: "#d97706", tab: "cta-inquiries" },
+    { label: "Subscribers", value: subscribers.length, unread: 0, icon: Mail, color: "#059669", tab: "subscribers" },
+    { label: "Blog Posts", value: blogs.length, unread: 0, icon: FileText, color: "#4f46e5", tab: "blogs" },
+    { label: "Comments", value: comments.length, unread: comments.filter((c) => !c.is_read).length, icon: MessageCircle, color: "#ea580c", tab: "comments" },
   ];
 
-  // Recent activity for overview
-  const recentItems = [
-    ...contacts.map(c => ({ type: "Contact" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: MessageSquare, color: "#2d62ff", tab: "contacts" as Tab })),
-    ...consultations.map(c => ({ type: "Consultation" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: Users, color: "#7c3aed", tab: "consultations" as Tab })),
-    ...ctaInquiries.map(c => ({ type: "CTA Inquiry" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: Briefcase, color: "#d97706", tab: "cta-inquiries" as Tab })),
-    ...comments.map(c => ({ type: "Comment" as const, name: c.author_name, date: c.created_at, isRead: c.is_read, icon: MessageCircle, color: "#ea580c", tab: "comments" as Tab })),
-  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 8);
+  const recentItems: RecentItem[] = [
+    ...contacts.map((c) => ({ type: "Contact" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: MessageSquare, color: "#2d62ff", tab: "contacts" as Tab })),
+    ...consultations.map((c) => ({ type: "Consultation" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: Users, color: "#7c3aed", tab: "consultations" as Tab })),
+    ...ctaInquiries.map((c) => ({ type: "CTA Inquiry" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: Briefcase, color: "#d97706", tab: "cta-inquiries" as Tab })),
+    ...comments.map((c) => ({ type: "Comment" as const, name: c.author_name, date: c.created_at, isRead: c.is_read, icon: MessageCircle, color: "#ea580c", tab: "comments" as Tab })),
+  ]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 8);
+
+  const recentUnread = recentItems.filter((i) => !i.isRead);
+
+  const handleTabChange = (tab: Tab) => {
+    setActiveTab(tab);
+    setSidebarOpen(false);
+  };
+
+  const handleNotifClick = (tab: Tab) => {
+    setActiveTab(tab);
+    setNotifOpen(false);
+  };
+
+  // ─── Section summary text ──────────────────────────
+  const summaryText: Record<Exclude<Tab, "overview">, string> = {
+    contacts: `${contacts.length} total \u2022 ${contacts.filter((c) => !c.is_read).length} unread`,
+    consultations: `${consultations.length} total \u2022 ${consultations.filter((c) => !c.is_read).length} unread`,
+    subscribers: `${subscribers.length} total \u2022 ${subscribers.filter((s) => s.is_active).length} active`,
+    blogs: `${blogs.length} total \u2022 ${blogs.filter((b) => b.is_published).length} published`,
+    comments: `${comments.length} total \u2022 ${comments.filter((c) => !c.is_read).length} unread`,
+    "cta-inquiries": `${ctaInquiries.length} total \u2022 ${ctaInquiries.filter((c) => !c.is_read).length} unread`,
+  };
 
   return (
     <div className="min-h-screen bg-[#f5f6fa] flex">
-      {/* ═══════════ MOBILE OVERLAY ═══════════ */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/30 z-40 lg:hidden backdrop-blur-[2px]"
-          onClick={() => setSidebarOpen(false)}
+      <AdminSidebar
+        navGroups={navGroups}
+        activeTab={activeTab}
+        sidebarOpen={sidebarOpen}
+        onTabChange={handleTabChange}
+        onClose={() => setSidebarOpen(false)}
+        onLogout={handleLogout}
+      />
+
+      <div className="flex-1 flex flex-col min-h-screen min-w-0">
+        <AdminTopBar
+          title={activeNavLabel}
+          totalUnread={totalUnread}
+          notifOpen={notifOpen}
+          notifRef={notifRef}
+          recentUnread={recentUnread}
+          onToggleSidebar={() => setSidebarOpen(true)}
+          onToggleNotif={() => setNotifOpen(!notifOpen)}
+          onNotifClick={handleNotifClick}
         />
-      )}
 
-      {/* ═══════════ SIDEBAR ═══════════ */}
-      <aside className={`
-        fixed top-0 left-0 h-full z-50 w-[260px]
-        bg-white border-r border-gray-200 flex flex-col
-        transition-transform duration-300 ease-out
-        lg:translate-x-0 lg:static lg:z-auto
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-      `}>
-        {/* Logo */}
-        <div className="px-5 h-16 flex items-center justify-between border-b border-gray-100">
-          <div className="flex items-center gap-2.5">
-            <img src="/logo.png" alt="PhysicianMeds" className="h-8 w-auto" />
-            <span className="text-[15px] font-bold text-gray-900 font-display">PhysicianMeds</span>
-          </div>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <X className="w-5 h-5 text-gray-400" />
-          </button>
-        </div>
-
-        {/* Nav Groups */}
-        <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-5">
-          {navGroups.map((group, gi) => (
-            <div key={gi}>
-              {group.label && (
-                <p className="px-3 mb-2 text-[10px] text-gray-400 font-bold uppercase tracking-[0.15em]">
-                  {group.label}
-                </p>
-              )}
-              <div className="space-y-0.5">
-                {group.items.map((item) => {
-                  const isActive = activeTab === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => {
-                        setActiveTab(item.id);
-                        setSidebarOpen(false);
-                      }}
-                      className={`
-                        w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group
-                        ${isActive
-                          ? "bg-[#2d62ff] text-white shadow-md shadow-[#2d62ff]/20"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                        }
-                      `}
-                    >
-                      <item.icon className={`w-[17px] h-[17px] ${isActive ? "text-white" : "text-gray-400 group-hover:text-gray-600"}`} />
-                      <span className="flex-1 text-left">{item.label}</span>
-                      {item.count > 0 && (
-                        <span className={`
-                          min-w-[20px] h-[20px] flex items-center justify-center rounded-full text-[10px] font-bold
-                          ${isActive ? "bg-white/25 text-white" : "bg-red-50 text-red-600"}
-                        `}>
-                          {item.count}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </nav>
-
-        {/* Sidebar footer */}
-        <div className="px-3 py-3 border-t border-gray-100">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
-          >
-            <LogOut className="w-[17px] h-[17px]" />
-            <span>Sign Out</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* ═══════════ MAIN ═══════════ */}
-      <div className="flex-1 flex flex-col min-h-screen">
-        {/* Top Bar */}
-        <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
-          <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <Menu className="w-5 h-5 text-gray-600" />
-              </button>
-              <h1 className="text-lg font-bold text-gray-900 font-display">{activeNavLabel}</h1>
-            </div>
-
-            {/* Right side — bell + admin info */}
-            <div className="flex items-center gap-3">
-              {/* Notification Bell */}
-              <div className="relative" ref={notifRef}>
-                <button
-                  onClick={() => setNotifOpen(!notifOpen)}
-                  className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <Bell className="w-5 h-5 text-gray-500" />
-                  {totalUnread > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
-                      {totalUnread}
-                    </span>
-                  )}
-                </button>
-                {notifOpen && (
-                  <div className="absolute right-0 top-12 w-80 bg-white rounded-2xl border border-gray-200 shadow-xl z-50 overflow-hidden">
-                    <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-                      <h4 className="text-sm font-bold text-gray-900">Notifications</h4>
-                      <span className="text-[11px] font-bold text-[#2d62ff] bg-blue-50 px-2 py-0.5 rounded-full">{totalUnread} new</span>
-                    </div>
-                    <div className="max-h-80 overflow-y-auto divide-y divide-gray-50">
-                      {recentItems.filter(i => !i.isRead).length === 0 ? (
-                        <div className="px-4 py-8 text-center text-sm text-gray-400">All caught up! 🎉</div>
-                      ) : recentItems.filter(i => !i.isRead).slice(0, 6).map((item, i) => (
-                        <div key={i} className="px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => { setActiveTab(item.tab); setNotifOpen(false); }}>
-                          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: item.color + '12' }}>
-                            <item.icon className="w-4 h-4" style={{ color: item.color }} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-gray-800 truncate">{item.name}</p>
-                            <p className="text-[11px] text-gray-400">{item.type} • {formatDate(item.date)}</p>
-                          </div>
-                          <span className="w-2 h-2 rounded-full bg-[#2d62ff] shrink-0" />
-                        </div>
-                      ))}
-                    </div>
-                    {totalUnread > 6 && (
-                      <div className="px-4 py-2.5 border-t border-gray-100 text-center">
-                        <button onClick={() => { setActiveTab('contacts'); setNotifOpen(false); }} className="text-xs font-semibold text-[#2d62ff] hover:underline">View all notifications</button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2.5 pl-3 border-l border-gray-200">
-                <div className="w-8 h-8 rounded-lg bg-[#2d62ff] flex items-center justify-center">
-                  <span className="text-white font-bold text-xs">PM</span>
-                </div>
-                <span className="hidden sm:block text-sm font-semibold text-gray-700">Admin</span>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Scrollable content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-
-          {/* ═══════════ OVERVIEW TAB ═══════════ */}
+          {/* Overview */}
           {activeTab === "overview" && (
-            <div className="space-y-6">
-              {/* Welcome */}
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 font-display">Welcome back 👋</h2>
-                <p className="text-sm text-gray-500 mt-1">Here's what's happening with your website today.</p>
-              </div>
-
-              {/* Stat Cards Grid */}
-              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                {overviewCards.map((card) => (
-                  <button
-                    key={card.tab}
-                    onClick={() => setActiveTab(card.tab)}
-                    className="bg-white rounded-2xl border border-gray-100 p-5 text-left hover:shadow-md hover:border-gray-200 transition-all duration-300 group"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center"
-                        style={{ backgroundColor: card.color + "12" }}
-                      >
-                        <card.icon className="w-5 h-5" style={{ color: card.color }} />
-                      </div>
-                      {card.unread > 0 && (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-600">
-                          +{card.unread}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-2xl font-bold text-gray-900 font-display">{card.value}</p>
-                    <p className="text-xs text-gray-500 mt-1">{card.label}</p>
-                    <div className="flex items-center gap-1 mt-3 text-xs text-gray-400 group-hover:text-[#2d62ff] transition-colors">
-                      <span>View all</span>
-                      <ChevronRight className="w-3 h-3" />
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              {/* Two-column: Recent Activity + Quick Stats */}
-              <div className="grid lg:grid-cols-5 gap-6">
-                {/* Recent Activity */}
-                <div className="lg:col-span-3 bg-white rounded-2xl border border-gray-100 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <h3 className="font-bold text-gray-900 font-display">Recent Activity</h3>
-                    <span className="text-xs text-gray-400">Latest submissions</span>
-                  </div>
-                  {loading ? (
-                    <div className="flex items-center justify-center py-16">
-                      <div className="w-8 h-8 border-3 border-[#2d62ff]/20 border-t-[#2d62ff] rounded-full animate-spin" />
-                    </div>
-                  ) : recentItems.length === 0 ? (
-                    <div className="text-center py-16 text-gray-400">
-                      <Clock className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                      <p className="text-sm font-medium">No recent activity</p>
-                    </div>
-                  ) : (
-                    <div className="divide-y divide-gray-50">
-                      {recentItems.map((item, i) => (
-                        <div key={i} className="px-6 py-3.5 flex items-center gap-4 hover:bg-gray-50/50 transition-colors">
-                          <div
-                            className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                            style={{ backgroundColor: item.color + "12" }}
-                          >
-                            <item.icon className="w-4 h-4" style={{ color: item.color }} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-gray-800 truncate">{item.name}</p>
-                            <p className="text-xs text-gray-400">{item.type}</p>
-                          </div>
-                          <div className="text-right shrink-0">
-                            <p className="text-xs text-gray-400">{formatDate(item.date)}</p>
-                            {!item.isRead && (
-                              <span className="inline-block w-2 h-2 rounded-full bg-[#2d62ff] mt-1" />
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Quick Stats Sidebar */}
-                <div className="lg:col-span-2 space-y-4">
-                  {/* Unread Summary */}
-                  <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                    <h3 className="font-bold text-gray-900 font-display mb-4">Unread Summary</h3>
-                    <div className="space-y-3">
-                      {[
-                        { label: "Contacts", count: contacts.filter(c => !c.is_read).length, color: "#2d62ff" },
-                        { label: "Consultations", count: consultations.filter(c => !c.is_read).length, color: "#7c3aed" },
-                        { label: "Comments", count: comments.filter(c => !c.is_read).length, color: "#ea580c" },
-                        { label: "CTA Inquiries", count: ctaInquiries.filter(c => !c.is_read).length, color: "#d97706" },
-                      ].map((item) => (
-                        <div key={item.label} className="flex items-center justify-between">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                            <span className="text-sm text-gray-600">{item.label}</span>
-                          </div>
-                          <span className={`text-sm font-bold ${item.count > 0 ? "text-gray-900" : "text-gray-300"}`}>
-                            {item.count}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-                      <span className="text-sm font-semibold text-gray-700">Total Unread</span>
-                      <span className="text-lg font-bold text-[#2d62ff]">{totalUnread}</span>
-                    </div>
-                  </div>
-
-                  {/* Blog Stats */}
-                  <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                    <h3 className="font-bold text-gray-900 font-display mb-4">Content Status</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Published Posts</span>
-                        <span className="text-sm font-bold text-green-600">{blogs.filter(b => b.is_published).length}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Draft Posts</span>
-                        <span className="text-sm font-bold text-gray-400">{blogs.filter(b => !b.is_published).length}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Featured Posts</span>
-                        <span className="text-sm font-bold text-amber-600">{blogs.filter(b => b.featured).length}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Active Subscribers</span>
-                        <span className="text-sm font-bold text-emerald-600">{subscribers.filter(s => s.is_active).length}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <OverviewTab
+              loading={loading}
+              overviewCards={overviewCards}
+              recentItems={recentItems}
+              totalUnread={totalUnread}
+              onTabChange={handleTabChange}
+              unreadRows={[
+                { label: "Contacts", count: contacts.filter((c) => !c.is_read).length, color: "#2d62ff" },
+                { label: "Consultations", count: consultations.filter((c) => !c.is_read).length, color: "#7c3aed" },
+                { label: "Comments", count: comments.filter((c) => !c.is_read).length, color: "#ea580c" },
+                { label: "CTA Inquiries", count: ctaInquiries.filter((c) => !c.is_read).length, color: "#d97706" },
+              ]}
+              contentRows={[
+                { label: "Published Posts", value: blogs.filter((b) => b.is_published).length, color: "text-green-600" },
+                { label: "Draft Posts", value: blogs.filter((b) => !b.is_published).length, color: "text-gray-400" },
+                { label: "Featured Posts", value: blogs.filter((b) => b.featured).length, color: "text-amber-600" },
+                { label: "Active Subscribers", value: subscribers.filter((s) => s.is_active).length, color: "text-emerald-600" },
+              ]}
+            />
           )}
 
-          {/* ═══════════ DATA TABS ═══════════ */}
+          {/* Data tabs */}
           {activeTab !== "overview" && (
             <>
-              {/* Section header */}
-              <div className="flex items-center justify-between mb-5">
-                <p className="text-sm text-gray-500">
-                  {activeTab === "contacts" && `${contacts.length} total • ${contacts.filter(c => !c.is_read).length} unread`}
-                  {activeTab === "consultations" && `${consultations.length} total • ${consultations.filter(c => !c.is_read).length} unread`}
-                  {activeTab === "subscribers" && `${subscribers.length} total • ${subscribers.filter(s => s.is_active).length} active`}
-                  {activeTab === "blogs" && `${blogs.length} total • ${blogs.filter(b => b.is_published).length} published`}
-                  {activeTab === "comments" && `${comments.length} total • ${comments.filter(c => !c.is_read).length} unread`}
-                  {activeTab === "cta-inquiries" && `${ctaInquiries.length} total • ${ctaInquiries.filter(c => !c.is_read).length} unread`}
-                </p>
-                {activeTab === "blogs" && (
-                  <Link to="/pm-portal-x9k2/blog/new">
-                    <Button className="bg-[#2d62ff] hover:bg-[#1a4fd9] text-white rounded-xl text-sm shadow-md shadow-[#2d62ff]/20">
-                      <Plus className="w-4 h-4 mr-2" />
-                      New Post
-                    </Button>
-                  </Link>
-                )}
-              </div>
+              {activeTab !== "blogs" && (
+                <div className="mb-5">
+                  <p className="text-sm text-gray-500">
+                    {summaryText[activeTab]}
+                  </p>
+                </div>
+              )}
 
-                {loading ? (
-                  <div className="flex flex-col items-center justify-center py-20 gap-3">
-                    <div className="w-8 h-8 border-3 border-[#2d62ff]/20 border-t-[#2d62ff] rounded-full animate-spin" />
-                    <p className="text-sm text-gray-400">Loading...</p>
-                  </div>
-                ) : (
-                  <>
-                    {/* ─── CONTACTS ─── */}
-                    {activeTab === "contacts" && (
-                      <div className="space-y-4">
-                        {contacts.length === 0 ? (
-                          <div className="bg-white rounded-2xl border border-gray-100 text-center py-20 text-gray-400">
-                            <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                            <p className="font-medium">No contact submissions yet</p>
-                            <p className="text-sm mt-1">They'll appear here when visitors submit the contact form.</p>
-                          </div>
-                        ) : contacts.map((contact) => (
-                          <div
-                            key={contact.id}
-                            className={`bg-white rounded-2xl border p-5 sm:p-6 transition-all hover:shadow-sm ${!contact.is_read ? "border-[#2d62ff]/30 shadow-sm shadow-blue-100" : "border-gray-100"}`}
-                          >
-                            {/* Card header */}
-                            <div className="flex items-center justify-between mb-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-[#2d62ff]/10 rounded-xl flex items-center justify-center">
-                                  <User className="w-5 h-5 text-[#2d62ff]" />
-                                </div>
-                                <div>
-                                  <h3 className="text-[15px] font-bold text-gray-900">{contact.name}</h3>
-                                  <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
-                                    <Clock className="w-3 h-3" /> {formatDate(contact.created_at)}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {!contact.is_read && (
-                                  <Button size="sm" variant="outline" onClick={() => markAsRead("contacts", contact.id)} className="text-xs border-blue-200 text-blue-600 hover:bg-blue-50 rounded-lg">
-                                    <CheckCircle className="w-3.5 h-3.5 mr-1" /> Mark Read
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-20 gap-3">
+                  <div className="w-8 h-8 border-3 border-[#2d62ff]/20 border-t-[#2d62ff] rounded-full animate-spin" />
+                  <p className="text-sm text-gray-400">Loading...</p>
+                </div>
+              ) : (
+                <>
+                  {activeTab === "contacts" && (
+                    <ContactsTab
+                      contacts={contacts}
+                      expandedId={expandedId}
+                      onToggleExpanded={toggleExpanded}
+                      onMarkRead={(id) => markAsRead("contacts", id)}
+                    />
+                  )}
 
-                            {/* Structured fields */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4 pl-[52px]">
-                              <div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Subject</p>
-                                <p className="text-sm font-semibold text-gray-800">{contact.subject}</p>
-                              </div>
-                            </div>
+                  {activeTab === "consultations" && (
+                    <ConsultationsTab
+                      consultations={consultations}
+                      expandedId={expandedId}
+                      onToggleExpanded={toggleExpanded}
+                      onMarkRead={(id) => markAsRead("consultations", id)}
+                      onStatusChange={(id, status) => updateStatus(id, status, "consultations")}
+                    />
+                  )}
 
-                            {/* Contact info */}
-                            <div className="flex items-center gap-2.5 flex-wrap pl-[52px] mb-3">
-                              <CopyButton icon={Mail} value={contact.email} color="blue" />
-                              {contact.phone && <CopyButton icon={Phone} value={contact.phone} color="green" />}
-                            </div>
+                  {activeTab === "cta-inquiries" && (
+                    <CtaInquiriesTab
+                      ctaInquiries={ctaInquiries}
+                      expandedId={expandedId}
+                      onToggleExpanded={toggleExpanded}
+                      onMarkRead={(id) => markAsRead("cta-inquiries", id)}
+                      onStatusChange={(id, status) => updateStatus(id, status, "cta-inquiries")}
+                    />
+                  )}
 
-                            {/* Message preview / expand */}
-                            <div className="pl-[52px]">
-                              <button
-                                onClick={() => setExpandedId(expandedId === contact.id ? null : contact.id)}
-                                className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 hover:text-[#2d62ff] transition-colors"
-                              >
-                                {expandedId === contact.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                                {expandedId === contact.id ? "Hide message" : "Show message"}
-                              </button>
-                              {expandedId === contact.id && (
-                                <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                  <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{contact.message}</p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                  {activeTab === "subscribers" && (
+                    <SubscribersTab subscribers={subscribers} />
+                  )}
 
-                    {/* ─── CONSULTATIONS ─── */}
-                    {activeTab === "consultations" && (
-                      <div className="space-y-4">
-                        {consultations.length === 0 ? (
-                          <div className="bg-white rounded-2xl border border-gray-100 text-center py-20 text-gray-400">
-                            <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                            <p className="font-medium">No consultation requests yet</p>
-                          </div>
-                        ) : consultations.map((consult) => (
-                          <div key={consult.id} className={`bg-white rounded-2xl border p-5 sm:p-6 transition-all hover:shadow-sm ${!consult.is_read ? "border-purple-300/50 shadow-sm shadow-purple-100" : "border-gray-100"}`}>
-                            <div className="flex items-center justify-between mb-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center"><Users className="w-5 h-5 text-purple-600" /></div>
-                                <div>
-                                  <h3 className="text-[15px] font-bold text-gray-900">{consult.name}</h3>
-                                  <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" /> {formatDate(consult.created_at)}</p>
-                                </div>
-                              </div>
-                              <div className="flex flex-col items-end gap-2">
-                                <StatusSelect value={consult.status} onChange={(val) => updateStatus(consult.id, val, "consultations")} />
-                                {!consult.is_read && (<Button size="sm" variant="outline" onClick={() => markAsRead("consultations", consult.id)} className="text-xs border-purple-200 text-purple-600 hover:bg-purple-50 rounded-lg"><CheckCircle className="w-3.5 h-3.5 mr-1" /> Mark Read</Button>)}
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4 pl-[52px]">
-                              {consult.practice_name && (<div><p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Practice</p><p className="text-sm font-semibold text-gray-800">{consult.practice_name}</p></div>)}
-                              {consult.specialty && (<div><p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Specialty</p><p className="text-sm font-semibold text-gray-800">{consult.specialty}</p></div>)}
-                            </div>
-                            <div className="flex items-center gap-2.5 flex-wrap pl-[52px] mb-3">
-                              <CopyButton icon={Mail} value={consult.email} color="purple" />
-                              {consult.phone && <CopyButton icon={Phone} value={consult.phone} color="green" />}
-                            </div>
-                            {consult.message && (
-                              <div className="pl-[52px]">
-                                <button onClick={() => setExpandedId(expandedId === consult.id ? null : consult.id)} className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 hover:text-purple-600 transition-colors">
-                                  {expandedId === consult.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                                  {expandedId === consult.id ? "Hide message" : "Show message"}
-                                </button>
-                                {expandedId === consult.id && (<div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100"><p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{consult.message}</p></div>)}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                  {activeTab === "blogs" && (
+                    <BlogsTab
+                      blogs={blogs}
+                      onTogglePublish={togglePublish}
+                      onDelete={deleteBlog}
+                    />
+                  )}
 
-                    {/* ─── SUBSCRIBERS ─── */}
-                    {activeTab === "subscribers" && (
-                      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-                        {subscribers.length === 0 ? (
-                          <div className="bg-white text-center py-20 text-gray-400">
-                            <Mail className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                            <p className="font-medium">No subscribers yet</p>
-                          </div>
-                        ) : (
-                          <>
-                            <div className="px-6 py-3 bg-gray-50/80 grid grid-cols-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                              <span>Email</span>
-                              <span>Subscribed</span>
-                              <span className="text-right">Status</span>
-                            </div>
-                            {subscribers.map((sub) => (
-                              <div key={sub.id} className="px-6 py-3.5 grid grid-cols-3 items-center hover:bg-gray-50/50 transition-colors">
-                                <CopyButton icon={Mail} value={sub.email} color="green" />
-                                <span className="text-sm text-gray-500 flex items-center gap-1.5">
-                                  <Clock className="w-3.5 h-3.5 text-gray-300" />
-                                  {formatDate(sub.subscribed_at)}
-                                </span>
-                                <span className="text-right">
-                                  <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
-                                    sub.is_active ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-500"
-                                  }`}>
-                                    <span className={`w-1.5 h-1.5 rounded-full ${sub.is_active ? "bg-green-500" : "bg-gray-400"}`} />
-                                    {sub.is_active ? "Active" : "Inactive"}
-                                  </span>
-                                </span>
-                              </div>
-                            ))}
-                          </>
-                        )}
-                      </div>
-                    )}
-
-                    {/* ─── BLOGS ─── */}
-                    {activeTab === "blogs" && (
-                      <div className="space-y-3">
-                        {blogs.length === 0 ? (
-                          <div className="text-center py-20 text-gray-400">
-                            <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                            <p className="font-medium">No blog posts yet</p>
-                          </div>
-                        ) : blogs.map((post) => (
-                          <div key={post.id} className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 flex items-center justify-between gap-4 hover:shadow-sm transition-all">
-                            <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                              <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
-                                post.is_published ? "bg-green-50" : "bg-gray-100"
-                              }`}>
-                                <FileText className={`w-4 h-4 ${post.is_published ? "text-green-600" : "text-gray-400"}`} />
-                              </div>
-                              <div className="min-w-0">
-                                <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                                  <h3 className="text-sm font-bold text-gray-900 truncate">{post.title}</h3>
-                                  {post.featured && (
-                                    <span className="px-2 py-0.5 bg-amber-50 text-amber-700 rounded text-[10px] font-bold">⭐ Featured</span>
-                                  )}
-                                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                                    post.is_published ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-500"
-                                  }`}>
-                                    {post.is_published ? "Published" : "Draft"}
-                                  </span>
-                                </div>
-                                <p className="text-xs text-gray-500">
-                                  {post.category} <span className="text-gray-300 mx-1">•</span>
-                                  {post.author_name} <span className="text-gray-300 mx-1">•</span>
-                                  {formatDate(post.date)}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-0.5 shrink-0">
-                              <button
-                                onClick={() => togglePublish(post.id, post.is_published)}
-                                className={`p-2 rounded-lg transition-all ${post.is_published ? "text-gray-400 hover:text-orange-600 hover:bg-orange-50" : "text-gray-400 hover:text-green-600 hover:bg-green-50"}`}
-                                title={post.is_published ? "Unpublish" : "Publish"}
-                              >
-                                {post.is_published ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                              </button>
-                              <Link to={`/pm-portal-x9k2/blog/edit/${post.id}`} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
-                                <Edit className="w-4 h-4" />
-                              </Link>
-                              <button onClick={() => deleteBlog(post.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* ─── COMMENTS ─── */}
-                    {activeTab === "comments" && (
-                      <div className="space-y-4">
-                        {comments.length === 0 ? (
-                          <div className="bg-white rounded-2xl border border-gray-100 text-center py-20 text-gray-400">
-                            <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                            <p className="font-medium">No blog comments yet</p>
-                          </div>
-                        ) : comments.map((comment) => (
-                          <div key={comment.id} className={`bg-white rounded-2xl border p-5 sm:p-6 transition-all hover:shadow-sm ${!comment.is_read ? "border-orange-300/50 shadow-sm shadow-orange-100" : "border-gray-100"}`}>
-                            <div className="flex items-center justify-between mb-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center"><MessageCircle className="w-5 h-5 text-orange-600" /></div>
-                                <div>
-                                  <h3 className="text-[15px] font-bold text-gray-900">{comment.author_name}</h3>
-                                  <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" /> {formatDate(comment.created_at)}</p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {!comment.is_read && (
-                                  <Button size="sm" variant="outline" onClick={() => markAsRead("comments", comment.id)} className="text-xs border-orange-200 text-orange-600 hover:bg-orange-50 rounded-lg">
-                                    <CheckCircle className="w-3.5 h-3.5 mr-1" /> Mark Read
-                                  </Button>
-                                )}
-                                <button onClick={() => deleteComment(comment.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 className="w-4 h-4" /></button>
-                              </div>
-                            </div>
-                            <div className="pl-[52px] mb-3">
-                              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-50 border border-orange-100 rounded-lg">
-                                <FileText className="w-3.5 h-3.5 text-orange-500" />
-                                <span className="text-xs text-gray-500">on:</span>
-                                <a href={`/blogs/${comment.post_slug}`} className="text-xs font-semibold text-orange-700 hover:underline" target="_blank" rel="noreferrer">{comment.post_slug}</a>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2.5 flex-wrap pl-[52px] mb-3">
-                              <CopyButton icon={Mail} value={comment.author_email} color="blue" />
-                              {comment.author_website && (
-                                <a href={comment.author_website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 text-[12px] font-medium transition-all">
-                                  <Globe className="w-3.5 h-3.5 text-indigo-500" /> Website ↗
-                                </a>
-                              )}
-                            </div>
-                            <div className="pl-[52px]">
-                              <button onClick={() => setExpandedId(expandedId === comment.id ? null : comment.id)} className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 hover:text-orange-600 transition-colors">
-                                {expandedId === comment.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                                {expandedId === comment.id ? "Hide comment" : "Show full comment"}
-                              </button>
-                              {expandedId === comment.id && (<div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100"><p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{comment.comment}</p></div>)}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* ─── CTA INQUIRIES ─── */}
-                    {activeTab === "cta-inquiries" && (
-                      <div className="space-y-4">
-                        {ctaInquiries.length === 0 ? (
-                          <div className="bg-white rounded-2xl border border-gray-100 text-center py-20 text-gray-400">
-                            <Briefcase className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                            <p className="font-medium">No CTA inquiries yet</p>
-                          </div>
-                        ) : ctaInquiries.map((inquiry) => (
-                          <div key={inquiry.id} className={`bg-white rounded-2xl border p-5 sm:p-6 transition-all hover:shadow-sm ${!inquiry.is_read ? "border-amber-300/50 shadow-sm shadow-amber-100" : "border-gray-100"}`}>
-                            <div className="flex items-center justify-between mb-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center"><Briefcase className="w-5 h-5 text-amber-600" /></div>
-                                <div>
-                                  <h3 className="text-[15px] font-bold text-gray-900">{inquiry.name}</h3>
-                                  <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><Clock className="w-3 h-3" /> {formatDate(inquiry.created_at)}</p>
-                                </div>
-                              </div>
-                              <div className="flex flex-col items-end gap-2">
-                                <StatusSelect value={inquiry.status} onChange={(val) => updateStatus(inquiry.id, val, "cta-inquiries")} />
-                                {!inquiry.is_read && (
-                                  <Button size="sm" variant="outline" onClick={() => markAsRead("cta-inquiries", inquiry.id)} className="text-xs border-amber-200 text-amber-600 hover:bg-amber-50 rounded-lg">
-                                    <CheckCircle className="w-3.5 h-3.5 mr-1" /> Mark Read
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 pl-[52px]">
-                              {inquiry.practice_name && (<div><p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Practice</p><p className="text-sm font-semibold text-gray-800">{inquiry.practice_name}</p></div>)}
-                              {inquiry.monthly_collection && (<div><p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Collection</p><p className="text-sm font-semibold text-gray-800">{inquiry.monthly_collection}</p></div>)}
-                              {inquiry.total_ar && (<div><p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total AR</p><p className="text-sm font-semibold text-gray-800">{inquiry.total_ar}</p></div>)}
-                            </div>
-                            <div className="flex items-center gap-2.5 flex-wrap pl-[52px] mb-3">
-                              <CopyButton icon={Mail} value={inquiry.email} color="amber" />
-                              {inquiry.phone && <CopyButton icon={Phone} value={inquiry.phone} color="green" />}
-                            </div>
-                            {inquiry.message && (
-                              <div className="pl-[52px]">
-                                <button onClick={() => setExpandedId(expandedId === inquiry.id ? null : inquiry.id)} className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 hover:text-amber-600 transition-colors">
-                                  {expandedId === inquiry.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                                  {expandedId === inquiry.id ? "Hide message" : "Show message"}
-                                </button>
-                                {expandedId === inquiry.id && (<div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100"><p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{inquiry.message}</p></div>)}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                )}
+                  {activeTab === "comments" && (
+                    <CommentsTab
+                      comments={comments}
+                      expandedId={expandedId}
+                      onToggleExpanded={toggleExpanded}
+                      onMarkRead={(id) => markAsRead("comments", id)}
+                      onDelete={deleteComment}
+                    />
+                  )}
+                </>
+              )}
             </>
           )}
         </main>
@@ -1058,4 +253,3 @@ const AdminDashboardPage = () => {
 };
 
 export default AdminDashboardPage;
-

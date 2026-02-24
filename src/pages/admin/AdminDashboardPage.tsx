@@ -17,8 +17,10 @@ import type {
   OverviewCard,
   RecentItem,
   SearchResult,
-  DatePeriod,
+  DatePreset,
+  DateRange,
 } from "./types";
+import { presetToRange } from "./utils/dateUtils";
 
 import AdminSidebar from "./components/AdminSidebar";
 import AdminTopBar from "./components/AdminTopBar";
@@ -32,8 +34,8 @@ import CommentsTab from "./components/CommentsTab";
 
 const AdminDashboardPage = () => {
   usePageTitle("Admin Dashboard");
-  const [datePeriod, setDatePeriod] = useState<DatePeriod>("30d");
-  const [customDate, setCustomDate] = useState<Date | undefined>(undefined);
+  const [datePreset, setDatePreset] = useState<DatePreset>("this-month");
+  const [dateRange, setDateRange] = useState<DateRange>(() => presetToRange("this-month"));
 
   const {
     activeTab,
@@ -120,79 +122,12 @@ const AdminDashboardPage = () => {
   // ─── Global search data ────────────────────────────
   const searchResults: SearchResult[] = useMemo(() => {
     const items: SearchResult[] = [];
-
-    contacts.forEach((c) =>
-      items.push({
-        id: c.id,
-        name: c.name,
-        detail: `${c.email} \u2022 ${c.subject}`,
-        tab: "contacts",
-        tabLabel: "Contact",
-        color: "#2d62ff",
-        icon: MessageSquare,
-      })
-    );
-
-    consultations.forEach((c) =>
-      items.push({
-        id: c.id,
-        name: c.name,
-        detail: `${c.email} \u2022 ${c.practice_name || c.specialty || ""}`,
-        tab: "consultations",
-        tabLabel: "Consultation",
-        color: "#7c3aed",
-        icon: Users,
-      })
-    );
-
-    ctaInquiries.forEach((c) =>
-      items.push({
-        id: c.id,
-        name: c.name,
-        detail: `${c.email} \u2022 ${c.practice_name || ""}`,
-        tab: "cta-inquiries",
-        tabLabel: "CTA Inquiry",
-        color: "#d97706",
-        icon: Briefcase,
-      })
-    );
-
-    blogs.forEach((b) =>
-      items.push({
-        id: b.id,
-        name: b.title,
-        detail: `${b.category} \u2022 ${b.author_name}`,
-        tab: "blogs",
-        tabLabel: "Blog",
-        color: "#4f46e5",
-        icon: FileText,
-      })
-    );
-
-    comments.forEach((c) =>
-      items.push({
-        id: c.id,
-        name: c.author_name,
-        detail: `${c.author_email} \u2022 on ${c.post_slug}`,
-        tab: "comments",
-        tabLabel: "Comment",
-        color: "#ea580c",
-        icon: MessageCircle,
-      })
-    );
-
-    subscribers.forEach((s) =>
-      items.push({
-        id: s.id,
-        name: s.email,
-        detail: s.is_active ? "Active" : "Inactive",
-        tab: "subscribers",
-        tabLabel: "Subscriber",
-        color: "#059669",
-        icon: Mail,
-      })
-    );
-
+    contacts.forEach((c) => items.push({ id: c.id, name: c.name, detail: `${c.email} \u2022 ${c.subject}`, tab: "contacts", tabLabel: "Contact", color: "#2d62ff", icon: MessageSquare }));
+    consultations.forEach((c) => items.push({ id: c.id, name: c.name, detail: `${c.email} \u2022 ${c.practice_name || c.specialty || ""}`, tab: "consultations", tabLabel: "Consultation", color: "#7c3aed", icon: Users }));
+    ctaInquiries.forEach((c) => items.push({ id: c.id, name: c.name, detail: `${c.email} \u2022 ${c.practice_name || ""}`, tab: "cta-inquiries", tabLabel: "CTA Inquiry", color: "#d97706", icon: Briefcase }));
+    blogs.forEach((b) => items.push({ id: b.id, name: b.title, detail: `${b.category} \u2022 ${b.author_name}`, tab: "blogs", tabLabel: "Blog", color: "#4f46e5", icon: FileText }));
+    comments.forEach((c) => items.push({ id: c.id, name: c.author_name, detail: `${c.author_email} \u2022 on ${c.post_slug}`, tab: "comments", tabLabel: "Comment", color: "#ea580c", icon: MessageCircle }));
+    subscribers.forEach((s) => items.push({ id: s.id, name: s.email, detail: s.is_active ? "Active" : "Inactive", tab: "subscribers", tabLabel: "Subscriber", color: "#059669", icon: Mail }));
     return items;
   }, [contacts, consultations, ctaInquiries, blogs, comments, subscribers]);
 
@@ -210,6 +145,11 @@ const AdminDashboardPage = () => {
   const handleSearchSelect = (tab: Tab, id: string) => {
     setActiveTab(tab);
     toggleExpanded(id);
+  };
+
+  const handleDateApply = (range: DateRange, preset: DatePreset | null) => {
+    setDateRange(range);
+    setDatePreset(preset || "all");
   };
 
   // ─── Section summary text ──────────────────────────
@@ -248,17 +188,15 @@ const AdminDashboardPage = () => {
         />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-          {/* Overview */}
           {activeTab === "overview" && (
             <OverviewTab
               loading={loading}
               overviewCards={overviewCards}
               recentItems={recentItems}
               totalUnread={totalUnread}
-              datePeriod={datePeriod}
-              customDate={customDate}
-              onDatePeriodChange={setDatePeriod}
-              onCustomDateChange={setCustomDate}
+              dateRange={dateRange}
+              datePreset={datePreset}
+              onDateApply={handleDateApply}
               contacts={contacts}
               consultations={consultations}
               ctaInquiries={ctaInquiries}
@@ -280,7 +218,6 @@ const AdminDashboardPage = () => {
             />
           )}
 
-          {/* Data tabs */}
           {activeTab !== "overview" && (
             <>
               {activeTab !== "blogs" && (
@@ -299,54 +236,18 @@ const AdminDashboardPage = () => {
               ) : (
                 <>
                   {activeTab === "contacts" && (
-                    <ContactsTab
-                      contacts={contacts}
-                      expandedId={expandedId}
-                      onToggleExpanded={toggleExpanded}
-                      onMarkRead={(id) => markAsRead("contacts", id)}
-                    />
+                    <ContactsTab contacts={contacts} expandedId={expandedId} onToggleExpanded={toggleExpanded} onMarkRead={(id) => markAsRead("contacts", id)} />
                   )}
-
                   {activeTab === "consultations" && (
-                    <ConsultationsTab
-                      consultations={consultations}
-                      expandedId={expandedId}
-                      onToggleExpanded={toggleExpanded}
-                      onMarkRead={(id) => markAsRead("consultations", id)}
-                      onStatusChange={(id, status) => updateStatus(id, status, "consultations")}
-                    />
+                    <ConsultationsTab consultations={consultations} expandedId={expandedId} onToggleExpanded={toggleExpanded} onMarkRead={(id) => markAsRead("consultations", id)} onStatusChange={(id, status) => updateStatus(id, status, "consultations")} />
                   )}
-
                   {activeTab === "cta-inquiries" && (
-                    <CtaInquiriesTab
-                      ctaInquiries={ctaInquiries}
-                      expandedId={expandedId}
-                      onToggleExpanded={toggleExpanded}
-                      onMarkRead={(id) => markAsRead("cta-inquiries", id)}
-                      onStatusChange={(id, status) => updateStatus(id, status, "cta-inquiries")}
-                    />
+                    <CtaInquiriesTab ctaInquiries={ctaInquiries} expandedId={expandedId} onToggleExpanded={toggleExpanded} onMarkRead={(id) => markAsRead("cta-inquiries", id)} onStatusChange={(id, status) => updateStatus(id, status, "cta-inquiries")} />
                   )}
-
-                  {activeTab === "subscribers" && (
-                    <SubscribersTab subscribers={subscribers} />
-                  )}
-
-                  {activeTab === "blogs" && (
-                    <BlogsTab
-                      blogs={blogs}
-                      onTogglePublish={togglePublish}
-                      onDelete={deleteBlog}
-                    />
-                  )}
-
+                  {activeTab === "subscribers" && <SubscribersTab subscribers={subscribers} />}
+                  {activeTab === "blogs" && <BlogsTab blogs={blogs} onTogglePublish={togglePublish} onDelete={deleteBlog} />}
                   {activeTab === "comments" && (
-                    <CommentsTab
-                      comments={comments}
-                      expandedId={expandedId}
-                      onToggleExpanded={toggleExpanded}
-                      onMarkRead={(id) => markAsRead("comments", id)}
-                      onDelete={deleteComment}
-                    />
+                    <CommentsTab comments={comments} expandedId={expandedId} onToggleExpanded={toggleExpanded} onMarkRead={(id) => markAsRead("comments", id)} onDelete={deleteComment} />
                   )}
                 </>
               )}

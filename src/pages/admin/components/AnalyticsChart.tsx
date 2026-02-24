@@ -7,10 +7,9 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
 import type {
-  DatePeriod,
+  DateRange,
   ChartDataPoint,
   Contact,
   Consultation,
@@ -18,11 +17,9 @@ import type {
   Comment,
   Subscriber,
 } from "../types";
-import { getDateRange } from "../utils/dateUtils";
 
 interface AnalyticsChartProps {
-  period: DatePeriod;
-  customDate?: Date;
+  dateRange: DateRange;
   contacts: Contact[];
   consultations: Consultation[];
   ctaInquiries: CtaInquiry[];
@@ -38,53 +35,31 @@ const SERIES = [
   { key: "subscribers" as const, label: "Subscribers", color: "#059669" },
 ];
 
-function getDateKey(d: Date, period: DatePeriod): string {
-  if (period === "this-year") {
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-  }
+function daysBetween(a: Date, b: Date): number {
+  return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function toDayKey(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-function formatLabel(key: string, period: DatePeriod): string {
-  if (period === "this-year") {
-    const [, m] = key.split("-");
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    return months[parseInt(m) - 1] || key;
-  }
+function toMonthKey(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function dayLabel(key: string): string {
   const d = new Date(key + "T00:00:00");
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-function bucketDate(dateStr: string, period: DatePeriod, customDate?: Date): string | null {
-  const { start, end } = getDateRange(period, customDate);
-  const d = new Date(dateStr);
-  if (d < start || d > end) return null;
-  return getDateKey(d, period);
-}
-
-function generateBuckets(period: DatePeriod, customDate?: Date): string[] {
-  const { start, end } = getDateRange(period, customDate);
-  const buckets: string[] = [];
-
-  if (period === "this-year") {
-    const cur = new Date(start);
-    while (cur <= end) {
-      buckets.push(getDateKey(cur, period));
-      cur.setMonth(cur.getMonth() + 1);
-    }
-  } else {
-    const cur = new Date(start);
-    while (cur <= end) {
-      buckets.push(getDateKey(cur, period));
-      cur.setDate(cur.getDate() + 1);
-    }
-  }
-  return buckets;
+function monthLabel(key: string): string {
+  const [y, m] = key.split("-");
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${months[parseInt(m) - 1]} ${y}`;
 }
 
 export default function AnalyticsChart({
-  period,
-  customDate,
+  dateRange,
   contacts,
   consultations,
   ctaInquiries,
@@ -92,74 +67,44 @@ export default function AnalyticsChart({
   subscribers,
 }: AnalyticsChartProps) {
   const chartData: ChartDataPoint[] = useMemo(() => {
-    if (period === "all") {
-      const months = new Map<string, ChartDataPoint>();
-      const allDates = [
-        ...contacts.map((c) => c.created_at),
-        ...consultations.map((c) => c.created_at),
-        ...ctaInquiries.map((c) => c.created_at),
-        ...comments.map((c) => c.created_at),
-        ...subscribers.map((s) => s.subscribed_at),
-      ];
+    const span = daysBetween(dateRange.from, dateRange.to);
+    const useMonthly = span > 62;
 
-      let minDate = new Date();
-      allDates.forEach((d) => {
-        const dt = new Date(d);
-        if (dt < minDate) minDate = dt;
-      });
+    const map = new Map<string, ChartDataPoint>();
 
-      const cur = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
-      const end = new Date();
+    if (useMonthly) {
+      const cur = new Date(dateRange.from.getFullYear(), dateRange.from.getMonth(), 1);
+      const end = new Date(dateRange.to);
       while (cur <= end) {
-        const key = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, "0")}`;
-        const mNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        months.set(key, {
-          date: key,
-          label: `${mNames[cur.getMonth()]} ${cur.getFullYear()}`,
-          contacts: 0,
-          consultations: 0,
-          ctaInquiries: 0,
-          comments: 0,
-          subscribers: 0,
-        });
+        const key = toMonthKey(cur);
+        map.set(key, { date: key, label: monthLabel(key), contacts: 0, consultations: 0, ctaInquiries: 0, comments: 0, subscribers: 0 });
         cur.setMonth(cur.getMonth() + 1);
       }
-
-      const toKey = (ds: string) => {
-        const d = new Date(ds);
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      };
-      contacts.forEach((c) => { const k = toKey(c.created_at); if (months.has(k)) months.get(k)!.contacts++; });
-      consultations.forEach((c) => { const k = toKey(c.created_at); if (months.has(k)) months.get(k)!.consultations++; });
-      ctaInquiries.forEach((c) => { const k = toKey(c.created_at); if (months.has(k)) months.get(k)!.ctaInquiries++; });
-      comments.forEach((c) => { const k = toKey(c.created_at); if (months.has(k)) months.get(k)!.comments++; });
-      subscribers.forEach((s) => { const k = toKey(s.subscribed_at); if (months.has(k)) months.get(k)!.subscribers++; });
-
-      return Array.from(months.values());
+    } else {
+      const cur = new Date(dateRange.from);
+      cur.setHours(0, 0, 0, 0);
+      const end = new Date(dateRange.to);
+      while (cur <= end) {
+        const key = toDayKey(cur);
+        map.set(key, { date: key, label: dayLabel(key), contacts: 0, consultations: 0, ctaInquiries: 0, comments: 0, subscribers: 0 });
+        cur.setDate(cur.getDate() + 1);
+      }
     }
 
-    const buckets = generateBuckets(period, customDate);
-    const map = new Map<string, ChartDataPoint>();
-    buckets.forEach((b) =>
-      map.set(b, {
-        date: b,
-        label: formatLabel(b, period),
-        contacts: 0,
-        consultations: 0,
-        ctaInquiries: 0,
-        comments: 0,
-        subscribers: 0,
-      })
-    );
+    const bucket = (dateStr: string): string | null => {
+      const d = new Date(dateStr);
+      if (d < dateRange.from || d > dateRange.to) return null;
+      return useMonthly ? toMonthKey(d) : toDayKey(d);
+    };
 
-    contacts.forEach((c) => { const k = bucketDate(c.created_at, period, customDate); if (k && map.has(k)) map.get(k)!.contacts++; });
-    consultations.forEach((c) => { const k = bucketDate(c.created_at, period, customDate); if (k && map.has(k)) map.get(k)!.consultations++; });
-    ctaInquiries.forEach((c) => { const k = bucketDate(c.created_at, period, customDate); if (k && map.has(k)) map.get(k)!.ctaInquiries++; });
-    comments.forEach((c) => { const k = bucketDate(c.created_at, period, customDate); if (k && map.has(k)) map.get(k)!.comments++; });
-    subscribers.forEach((s) => { const k = bucketDate(s.subscribed_at, period, customDate); if (k && map.has(k)) map.get(k)!.subscribers++; });
+    contacts.forEach((c) => { const k = bucket(c.created_at); if (k && map.has(k)) map.get(k)!.contacts++; });
+    consultations.forEach((c) => { const k = bucket(c.created_at); if (k && map.has(k)) map.get(k)!.consultations++; });
+    ctaInquiries.forEach((c) => { const k = bucket(c.created_at); if (k && map.has(k)) map.get(k)!.ctaInquiries++; });
+    comments.forEach((c) => { const k = bucket(c.created_at); if (k && map.has(k)) map.get(k)!.comments++; });
+    subscribers.forEach((s) => { const k = bucket(s.subscribed_at); if (k && map.has(k)) map.get(k)!.subscribers++; });
 
     return Array.from(map.values());
-  }, [period, customDate, contacts, consultations, ctaInquiries, comments, subscribers]);
+  }, [dateRange, contacts, consultations, ctaInquiries, comments, subscribers]);
 
   const hasData = chartData.some(
     (d) => d.contacts + d.consultations + d.ctaInquiries + d.comments + d.subscribers > 0
@@ -237,9 +182,6 @@ export default function AnalyticsChart({
                   boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
                   fontSize: 13,
                 }}
-              />
-              <Legend
-                wrapperStyle={{ display: "none" }}
               />
               {SERIES.map((s) => (
                 <Area

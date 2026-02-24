@@ -116,7 +116,21 @@ export interface SearchResult {
   icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
 }
 
-export type DatePeriod = "today" | "7d" | "30d" | "this-year" | "all" | "custom";
+export type DatePreset =
+  | "today"
+  | "yesterday"
+  | "this-week"
+  | "last-week"
+  | "this-month"
+  | "last-month"
+  | "this-year"
+  | "last-year"
+  | "all";
+
+export interface DateRange {
+  from: Date;
+  to: Date;
+}
 
 export interface ChartDataPoint {
   date: string;

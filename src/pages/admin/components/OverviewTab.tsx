@@ -3,7 +3,8 @@ import type {
   Tab,
   OverviewCard,
   RecentItem,
-  DatePeriod,
+  DatePreset,
+  DateRange,
   Contact,
   Consultation,
   CtaInquiry,
@@ -43,10 +44,9 @@ interface OverviewTabProps {
   unreadRows: UnreadRow[];
   contentRows: ContentRow[];
   totalUnread: number;
-  datePeriod: DatePeriod;
-  customDate: Date | undefined;
-  onDatePeriodChange: (p: DatePeriod) => void;
-  onCustomDateChange: (d: Date | undefined) => void;
+  dateRange: DateRange;
+  datePreset: DatePreset;
+  onDateApply: (range: DateRange, preset: DatePreset | null) => void;
   contacts: Contact[];
   consultations: Consultation[];
   ctaInquiries: CtaInquiry[];
@@ -62,10 +62,9 @@ export default function OverviewTab({
   unreadRows,
   contentRows,
   totalUnread,
-  datePeriod,
-  customDate,
-  onDatePeriodChange,
-  onCustomDateChange,
+  dateRange,
+  datePreset,
+  onDateApply,
   contacts,
   consultations,
   ctaInquiries,
@@ -74,11 +73,11 @@ export default function OverviewTab({
   onTabChange,
 }: OverviewTabProps) {
   const filteredCounts = {
-    contacts: contacts.filter((c) => isInRange(c.created_at, datePeriod, customDate)).length,
-    consultations: consultations.filter((c) => isInRange(c.created_at, datePeriod, customDate)).length,
-    ctaInquiries: ctaInquiries.filter((c) => isInRange(c.created_at, datePeriod, customDate)).length,
-    comments: comments.filter((c) => isInRange(c.created_at, datePeriod, customDate)).length,
-    subscribers: subscribers.filter((s) => isInRange(s.subscribed_at, datePeriod, customDate)).length,
+    contacts: contacts.filter((c) => isInRange(c.created_at, dateRange)).length,
+    consultations: consultations.filter((c) => isInRange(c.created_at, dateRange)).length,
+    ctaInquiries: ctaInquiries.filter((c) => isInRange(c.created_at, dateRange)).length,
+    comments: comments.filter((c) => isInRange(c.created_at, dateRange)).length,
+    subscribers: subscribers.filter((s) => isInRange(s.subscribed_at, dateRange)).length,
   };
 
   const filteredCards: OverviewCard[] = overviewCards.map((card) => {
@@ -90,9 +89,7 @@ export default function OverviewTab({
       subscribers: "subscribers",
     };
     const countKey = keyMap[card.tab];
-    return countKey
-      ? { ...card, value: filteredCounts[countKey] }
-      : card;
+    return countKey ? { ...card, value: filteredCounts[countKey] } : card;
   });
 
   return (
@@ -108,10 +105,9 @@ export default function OverviewTab({
           </p>
         </div>
         <DateFilter
-          value={datePeriod}
-          customDate={customDate}
-          onChange={onDatePeriodChange}
-          onCustomDateChange={onCustomDateChange}
+          activeRange={dateRange}
+          activePreset={datePreset}
+          onApply={onDateApply}
         />
       </div>
 
@@ -158,8 +154,7 @@ export default function OverviewTab({
 
       {/* Analytics Chart */}
       <AnalyticsChart
-        period={datePeriod}
-        customDate={customDate}
+        dateRange={dateRange}
         contacts={contacts}
         consultations={consultations}
         ctaInquiries={ctaInquiries}
@@ -227,7 +222,6 @@ export default function OverviewTab({
 
         {/* Sidebar stats */}
         <div className="lg:col-span-2 space-y-4">
-          {/* Unread summary */}
           <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6">
             <h3 className="font-bold text-gray-900 font-display mb-4">
               Unread Summary
@@ -263,7 +257,6 @@ export default function OverviewTab({
             </div>
           </div>
 
-          {/* Content status */}
           <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6">
             <h3 className="font-bold text-gray-900 font-display mb-4">
               Content Status

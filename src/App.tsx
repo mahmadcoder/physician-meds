@@ -39,6 +39,7 @@ import TermsConditionsPage from "./pages/TermsConditionsPage";
 import BlogPage from "./pages/BlogPage";
 import BlogArticlePage from "./pages/BlogArticlePage";
 import CookieConsent from "./components/CookieConsent";
+import { ChatWidget } from "./components/Chatbot";
 import TestimonialsPage from "./pages/TestimonialsPage";
 import SitemapPage from "./pages/SitemapPage";
 import ContactUsPage from "./pages/ContactUsPage";
@@ -127,6 +128,7 @@ function AppContent() {
         </main>
         {!isAdmin && <Footer />}
         {!isAdmin && <CookieConsent />}
+        {!isAdmin && <ChatWidget />}
       </div>
     </>
   );

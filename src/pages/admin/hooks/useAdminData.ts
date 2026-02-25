@@ -8,6 +8,7 @@ import type {
   BlogPost,
   Comment,
   CtaInquiry,
+  ChatSession,
 } from "../types";
 
 const ADMIN_LOGIN_PATH = "/pm-portal-x9k2";
@@ -21,6 +22,7 @@ const API_ENDPOINTS: Record<Exclude<Tab, "overview">, string> = {
   blogs: "/api/admin/blogs",
   comments: "/api/admin/comments",
   "cta-inquiries": "/api/admin/cta-inquiries",
+  "chat-sessions": "/api/admin/chat-sessions",
 };
 
 export function useAdminData() {
@@ -32,6 +34,7 @@ export function useAdminData() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [ctaInquiries, setCtaInquiries] = useState<CtaInquiry[]>([]);
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -80,6 +83,7 @@ export function useAdminData() {
           blogs: setBlogs,
           comments: setComments,
           "cta-inquiries": setCtaInquiries,
+          "chat-sessions": setChatSessions,
         };
         setters[tab]?.(data);
       } catch (err) {
@@ -114,6 +118,7 @@ export function useAdminData() {
             blogs: setBlogs,
             comments: setComments,
             "cta-inquiries": setCtaInquiries,
+            "chat-sessions": setChatSessions,
           };
           setters[key]?.(data);
         }
@@ -150,7 +155,7 @@ export function useAdminData() {
   }, []);
 
   const markAsRead = async (
-    table: "contacts" | "consultations" | "comments" | "cta-inquiries",
+    table: "contacts" | "consultations" | "comments" | "cta-inquiries" | "chat-sessions",
     id: string
   ) => {
     try {
@@ -211,6 +216,25 @@ export function useAdminData() {
     fetchData("comments");
   };
 
+  const deleteChatSession = async (id: string) => {
+    if (!confirm("Delete this chat session?")) return;
+    await fetch("/api/admin/chat-sessions", {
+      method: "DELETE",
+      headers: authHeaders(),
+      body: JSON.stringify({ id }),
+    });
+    fetchData("chat-sessions");
+  };
+
+  const updateChatSessionStatus = async (id: string, status: string) => {
+    await fetch("/api/admin/chat-sessions", {
+      method: "PUT",
+      headers: authHeaders(),
+      body: JSON.stringify({ id, status }),
+    });
+    fetchData("chat-sessions");
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
     localStorage.removeItem("admin_login_time");
@@ -225,7 +249,8 @@ export function useAdminData() {
     contacts.filter((c) => !c.is_read).length +
     consultations.filter((c) => !c.is_read).length +
     comments.filter((c) => !c.is_read).length +
-    ctaInquiries.filter((c) => !c.is_read).length;
+    ctaInquiries.filter((c) => !c.is_read).length +
+    chatSessions.filter((c) => !c.is_read).length;
 
   return {
     activeTab,
@@ -236,6 +261,7 @@ export function useAdminData() {
     blogs,
     comments,
     ctaInquiries,
+    chatSessions,
     loading,
     expandedId,
     toggleExpanded,
@@ -250,6 +276,8 @@ export function useAdminData() {
     deleteBlog,
     togglePublish,
     deleteComment,
+    deleteChatSession,
+    updateChatSessionStatus,
     handleLogout,
   };
 }

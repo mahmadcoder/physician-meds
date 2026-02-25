@@ -435,6 +435,121 @@ export function ctaNotificationTemplate(data: {
   </div>`;
 }
 
+// ─── Chat: notification to team with full transcript ──────────────────
+export function chatTeamNotificationTemplate(data: {
+  name: string;
+  email: string;
+  phone: string;
+  messages: { role: string; content: string; created_at: string }[];
+  startedAt: string;
+}) {
+  const transcript = data.messages
+    .map((m) => {
+      const time = new Date(m.created_at).toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "America/New_York",
+      });
+      const label = m.role === "user" ? data.name : "PhysicianMeds Bot";
+      const bg = m.role === "user" ? "#f1f5f9" : "#eff6ff";
+      const color = m.role === "user" ? "#334155" : "#1e40af";
+      return `
+        <div style="margin-bottom: 12px; padding: 12px 16px; background-color: ${bg}; border-radius: 10px;">
+          <p style="margin: 0 0 4px 0; font-size: 11px; font-weight: 700; color: ${color}; text-transform: uppercase; letter-spacing: 0.5px;">${label} &nbsp;&#8226;&nbsp; ${time}</p>
+          <p style="margin: 0; color: #334155; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${m.content}</p>
+        </div>`;
+    })
+    .join("");
+
+  return `
+  <div style="max-width: 600px; margin: 0 auto; ${brandStyles}">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+            <tr>
+              <td style="background-color: #ecfdf5; border-radius: 10px; padding: 10px 16px;">
+                <span style="font-size: 16px; font-weight: 700; color: #065f46;">&#128172; New Chat Conversation</span>
+              </td>
+            </tr>
+          </table>
+          <p style="margin: 16px 0 24px 0; color: #64748b; font-size: 14px; line-height: 1.6;">A visitor chatted with the PhysicianMeds bot on the website.</p>
+
+          <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-radius: 8px;">
+            ${dataRow("Name", data.name, false, true)}
+            ${dataRow("Email", data.email, true)}
+            ${dataRow("Phone", data.phone || "Not provided", false, true)}
+            ${dataRow("Started", new Date(data.startedAt).toLocaleString("en-US", { timeZone: "America/New_York" }))}
+            ${dataRow("Messages", String(data.messages.length), false, true)}
+          </table>
+
+          <div style="margin-top: 24px;">
+            <p style="margin: 0 0 12px 0; font-weight: 700; color: #065f46; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Chat Transcript</p>
+            ${transcript}
+          </div>
+        </td>
+      </tr>
+      <tr><td>${footerHtml()}</td></tr>
+    </table>
+  </div>`;
+}
+
+// ─── Chat: follow-up email to client ──────────────────
+export function chatClientFollowUpTemplate(data: { name: string }) {
+  const firstName = data.name.split(" ")[0];
+  return `
+  <div style="max-width: 600px; margin: 0 auto; ${brandStyles}">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #1e293b; font-weight: 700;">Great chatting with you, ${firstName}!</h2>
+          <p style="margin: 0 0 24px 0; color: #475569; line-height: 1.8; font-size: 15px;">
+            Thank you for chatting with us on PhysicianMeds. Based on our conversation, it looks like we can really help your practice. Our team is ready to dive deeper into your needs.
+          </p>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ecfdf5; border-radius: 12px; border: 1px solid #d1fae5;">
+            <tr>
+              <td width="56" valign="top" style="padding: 18px 0 18px 18px;">
+                <div style="width: 44px; height: 44px; background-color: #d1fae5; border-radius: 10px; text-align: center; line-height: 44px; font-size: 22px;">&#128640;</div>
+              </td>
+              <td valign="top" style="padding: 18px 18px 18px 14px;">
+                <p style="margin: 0 0 4px 0; font-weight: 700; color: #065f46; font-size: 14px;">Ready for the next step?</p>
+                <p style="margin: 0; color: #475569; font-size: 13px; line-height: 1.6;">Schedule a free consultation and our billing specialists will create a tailored solution for your practice.</p>
+              </td>
+            </tr>
+          </table>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin-top: 24px;">
+            <tr>
+              <td align="center" style="padding: 4px 0 28px 0;">
+                <a href="${siteUrl}/consult-now" style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px;">
+                  Book Free Consultation &rarr;
+                </a>
+              </td>
+            </tr>
+          </table>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+            <tr>
+              <td align="center" style="padding: 18px;">
+                <p style="margin: 0; color: #475569; font-size: 14px; line-height: 1.6;">
+                  <strong style="color: #1e293b;">Questions?</strong><br/>
+                  Call <a href="tel:+14809189621" style="color: #2563eb; font-weight: 600; text-decoration: none;">+1 (480) 918-9621</a>
+                  &nbsp;&#8226;&nbsp;
+                  Email <a href="mailto:info@physicianmeds.com" style="color: #2563eb; font-weight: 600; text-decoration: none;">info@physicianmeds.com</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr><td>${footerHtml()}</td></tr>
+    </table>
+  </div>`;
+}
+
 // ─── CTA Form (Home Page): confirmation to client ──────────────────
 export function ctaConfirmationTemplate(data: {
   name: string;

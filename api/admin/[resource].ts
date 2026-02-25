@@ -5,7 +5,7 @@ import { verifyToken, verifyAdminPassword, generateToken } from "../_lib/auth.js
 // ─── All admin endpoints in one dynamic route ───────────────────
 // /api/admin/login, /api/admin/contacts, /api/admin/consultations,
 // /api/admin/subscribers, /api/admin/blogs, /api/admin/comments,
-// /api/admin/cta-inquiries
+// /api/admin/cta-inquiries, /api/admin/chat-sessions, /api/admin/chat-messages
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -209,6 +209,52 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           const { error } = await supabase.from("cta_inquiries").update(updates).eq("id", id);
           if (error) throw error;
           return res.status(200).json({ success: true });
+        }
+        return res.status(405).json({ error: "Method not allowed" });
+      }
+
+      // ─── Chat Sessions ────────────────────────────────
+      case "chat-sessions": {
+        if (req.method === "GET") {
+          const { data, error } = await supabase
+            .from("chat_sessions")
+            .select("*")
+            .order("started_at", { ascending: false });
+          if (error) throw error;
+          return res.status(200).json(data || []);
+        }
+        if (req.method === "PUT") {
+          const { id, is_read, status } = req.body;
+          if (!id) return res.status(400).json({ error: "ID is required." });
+          const updates: Record<string, unknown> = {};
+          if (is_read !== undefined) updates.is_read = is_read;
+          if (status) updates.status = status;
+          const { error } = await supabase.from("chat_sessions").update(updates).eq("id", id);
+          if (error) throw error;
+          return res.status(200).json({ success: true });
+        }
+        if (req.method === "DELETE") {
+          const { id } = req.body;
+          if (!id) return res.status(400).json({ error: "ID is required." });
+          const { error } = await supabase.from("chat_sessions").delete().eq("id", id);
+          if (error) throw error;
+          return res.status(200).json({ success: true });
+        }
+        return res.status(405).json({ error: "Method not allowed" });
+      }
+
+      // ─── Chat Messages (read-only for admin) ──────────
+      case "chat-messages": {
+        if (req.method === "GET") {
+          const sessionId = req.query.session_id as string;
+          if (!sessionId) return res.status(400).json({ error: "session_id query param required." });
+          const { data, error } = await supabase
+            .from("chat_messages")
+            .select("*")
+            .eq("session_id", sessionId)
+            .order("created_at", { ascending: true });
+          if (error) throw error;
+          return res.status(200).json(data || []);
         }
         return res.status(405).json({ error: "Method not allowed" });
       }

@@ -8,6 +8,7 @@ import {
   FileText,
   MessageCircle,
   Mail,
+  Bot,
 } from "lucide-react";
 
 import { useAdminData } from "./hooks/useAdminData";
@@ -31,6 +32,7 @@ import CtaInquiriesTab from "./components/CtaInquiriesTab";
 import SubscribersTab from "./components/SubscribersTab";
 import BlogsTab from "./components/BlogsTab";
 import CommentsTab from "./components/CommentsTab";
+import ChatSessionsTab from "./components/ChatSessionsTab";
 
 const AdminDashboardPage = () => {
   usePageTitle("Admin Dashboard");
@@ -46,6 +48,7 @@ const AdminDashboardPage = () => {
     blogs,
     comments,
     ctaInquiries,
+    chatSessions,
     loading,
     expandedId,
     toggleExpanded,
@@ -60,6 +63,8 @@ const AdminDashboardPage = () => {
     deleteBlog,
     togglePublish,
     deleteComment,
+    deleteChatSession,
+    updateChatSessionStatus,
     handleLogout,
   } = useAdminData();
 
@@ -87,6 +92,12 @@ const AdminDashboardPage = () => {
       ],
     },
     {
+      label: "SUPPORT",
+      items: [
+        { id: "chat-sessions", label: "Chat Sessions", icon: Bot, count: chatSessions.filter((c) => !c.is_read).length },
+      ],
+    },
+    {
       label: "AUDIENCE",
       items: [
         { id: "subscribers", label: "Subscribers", icon: Mail, count: 0 },
@@ -106,6 +117,7 @@ const AdminDashboardPage = () => {
     { label: "Subscribers", value: subscribers.length, unread: 0, icon: Mail, color: "#059669", tab: "subscribers" },
     { label: "Blog Posts", value: blogs.length, unread: 0, icon: FileText, color: "#4f46e5", tab: "blogs" },
     { label: "Comments", value: comments.length, unread: comments.filter((c) => !c.is_read).length, icon: MessageCircle, color: "#ea580c", tab: "comments" },
+    { label: "Chat Sessions", value: chatSessions.length, unread: chatSessions.filter((c) => !c.is_read).length, icon: Bot, color: "#059669", tab: "chat-sessions" },
   ];
 
   const recentItems: RecentItem[] = [
@@ -113,6 +125,7 @@ const AdminDashboardPage = () => {
     ...consultations.map((c) => ({ type: "Consultation" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: Users, color: "#7c3aed", tab: "consultations" as Tab })),
     ...ctaInquiries.map((c) => ({ type: "CTA Inquiry" as const, name: c.name, date: c.created_at, isRead: c.is_read, icon: Briefcase, color: "#d97706", tab: "cta-inquiries" as Tab })),
     ...comments.map((c) => ({ type: "Comment" as const, name: c.author_name, date: c.created_at, isRead: c.is_read, icon: MessageCircle, color: "#ea580c", tab: "comments" as Tab })),
+    ...chatSessions.map((c) => ({ type: "Chat Session" as const, name: c.name, date: c.started_at, isRead: c.is_read, icon: Bot, color: "#059669", tab: "chat-sessions" as Tab })),
   ]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 8);
@@ -128,8 +141,9 @@ const AdminDashboardPage = () => {
     blogs.forEach((b) => items.push({ id: b.id, name: b.title, detail: `${b.category} \u2022 ${b.author_name}`, tab: "blogs", tabLabel: "Blog", color: "#4f46e5", icon: FileText }));
     comments.forEach((c) => items.push({ id: c.id, name: c.author_name, detail: `${c.author_email} \u2022 on ${c.post_slug}`, tab: "comments", tabLabel: "Comment", color: "#ea580c", icon: MessageCircle }));
     subscribers.forEach((s) => items.push({ id: s.id, name: s.email, detail: s.is_active ? "Active" : "Inactive", tab: "subscribers", tabLabel: "Subscriber", color: "#059669", icon: Mail }));
+    chatSessions.forEach((c) => items.push({ id: c.id, name: c.name, detail: `${c.email} \u2022 ${c.message_count} messages`, tab: "chat-sessions", tabLabel: "Chat", color: "#059669", icon: Bot }));
     return items;
-  }, [contacts, consultations, ctaInquiries, blogs, comments, subscribers]);
+  }, [contacts, consultations, ctaInquiries, blogs, comments, subscribers, chatSessions]);
 
   // ─── Handlers ──────────────────────────────────────
   const handleTabChange = (tab: Tab) => {
@@ -160,6 +174,7 @@ const AdminDashboardPage = () => {
     blogs: `${blogs.length} total \u2022 ${blogs.filter((b) => b.is_published).length} published`,
     comments: `${comments.length} total \u2022 ${comments.filter((c) => !c.is_read).length} unread`,
     "cta-inquiries": `${ctaInquiries.length} total \u2022 ${ctaInquiries.filter((c) => !c.is_read).length} unread`,
+    "chat-sessions": `${chatSessions.length} total \u2022 ${chatSessions.filter((c) => !c.is_read).length} unread`,
   };
 
   return (
@@ -208,6 +223,7 @@ const AdminDashboardPage = () => {
                 { label: "Consultations", count: consultations.filter((c) => !c.is_read).length, color: "#7c3aed" },
                 { label: "Comments", count: comments.filter((c) => !c.is_read).length, color: "#ea580c" },
                 { label: "CTA Inquiries", count: ctaInquiries.filter((c) => !c.is_read).length, color: "#d97706" },
+                { label: "Chat Sessions", count: chatSessions.filter((c) => !c.is_read).length, color: "#059669" },
               ]}
               contentRows={[
                 { label: "Published Posts", value: blogs.filter((b) => b.is_published).length, color: "text-green-600" },
@@ -248,6 +264,9 @@ const AdminDashboardPage = () => {
                   {activeTab === "blogs" && <BlogsTab blogs={blogs} onTogglePublish={togglePublish} onDelete={deleteBlog} />}
                   {activeTab === "comments" && (
                     <CommentsTab comments={comments} expandedId={expandedId} onToggleExpanded={toggleExpanded} onMarkRead={(id) => markAsRead("comments", id)} onDelete={deleteComment} />
+                  )}
+                  {activeTab === "chat-sessions" && (
+                    <ChatSessionsTab sessions={chatSessions} expandedId={expandedId} onToggleExpanded={toggleExpanded} onMarkRead={(id) => markAsRead("chat-sessions", id)} onStatusChange={updateChatSessionStatus} onDelete={deleteChatSession} />
                   )}
                 </>
               )}

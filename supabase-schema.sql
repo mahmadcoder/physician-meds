@@ -70,6 +70,45 @@ CREATE TABLE IF NOT EXISTS blog_comments (
     is_read BOOLEAN DEFAULT FALSE
 );
 
+-- CTA Inquiries (home page tailored solution form)
+CREATE TABLE IF NOT EXISTS cta_inquiries (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+    practice_name TEXT,
+    monthly_collection TEXT,
+    total_ar TEXT,
+    message TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    is_read BOOLEAN DEFAULT FALSE,
+    status TEXT DEFAULT 'new'
+);
+
+-- Chat sessions (chatbot conversations)
+CREATE TABLE IF NOT EXISTS chat_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+    started_at TIMESTAMPTZ DEFAULT NOW(),
+    ended_at TIMESTAMPTZ,
+    is_read BOOLEAN DEFAULT FALSE,
+    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'ended', 'resolved')),
+    message_count INT DEFAULT 0,
+    email_sent_to_client BOOLEAN DEFAULT FALSE,
+    email_sent_to_team BOOLEAN DEFAULT FALSE
+);
+
+-- Chat messages (individual messages within a session)
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    session_id UUID NOT NULL REFERENCES chat_sessions(id) ON DELETE CASCADE,
+    role TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+    content TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Enable Row Level Security (blocks direct client access)
 -- Our backend uses service_role key which bypasses RLS
 ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
@@ -77,6 +116,9 @@ ALTER TABLE consultations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE subscribers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blog_comments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cta_inquiries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chat_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_contacts_created ON contacts(created_at DESC);
@@ -85,3 +127,7 @@ CREATE INDEX IF NOT EXISTS idx_subscribers_email ON subscribers(email);
 CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts(slug);
 CREATE INDEX IF NOT EXISTS idx_blog_posts_published ON blog_posts(is_published, date DESC);
 CREATE INDEX IF NOT EXISTS idx_blog_comments_slug ON blog_comments(post_slug, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_cta_inquiries_created ON cta_inquiries(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_started ON chat_sessions(started_at DESC);
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_status ON chat_sessions(status);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_session ON chat_messages(session_id);

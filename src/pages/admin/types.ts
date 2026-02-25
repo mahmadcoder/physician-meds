@@ -71,6 +71,28 @@ export interface CtaInquiry {
   status: string;
 }
 
+export interface ChatSession {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  started_at: string;
+  ended_at: string | null;
+  is_read: boolean;
+  status: "active" | "ended" | "resolved";
+  message_count: number;
+  email_sent_to_client: boolean;
+  email_sent_to_team: boolean;
+}
+
+export interface ChatMessage {
+  id: string;
+  session_id: string;
+  role: "user" | "assistant";
+  content: string;
+  created_at: string;
+}
+
 export type Tab =
   | "overview"
   | "contacts"
@@ -78,7 +100,8 @@ export type Tab =
   | "subscribers"
   | "blogs"
   | "comments"
-  | "cta-inquiries";
+  | "cta-inquiries"
+  | "chat-sessions";
 
 export interface NavItem {
   id: Tab;
@@ -102,7 +125,7 @@ export interface OverviewCard {
 }
 
 export interface RecentItem {
-  type: "Contact" | "Consultation" | "CTA Inquiry" | "Comment";
+  type: "Contact" | "Consultation" | "CTA Inquiry" | "Comment" | "Chat Session";
   name: string;
   date: string;
   isRead: boolean;

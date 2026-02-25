@@ -11,7 +11,6 @@ import {
   Bot,
   Trash2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import CopyButton from "./CopyButton";
 import StatusSelect from "./StatusSelect";
 import EmptyState from "./EmptyState";
@@ -162,23 +161,19 @@ function SessionCard({
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
           <StatusSelect value={session.status} onChange={onStatusChange} />
           {!session.is_read && (
-            <Button
-              size="sm"
-              variant="outline"
+            <button
               onClick={onMarkRead}
-              className="text-xs border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg"
+              className="inline-flex items-center gap-1.5 px-3 h-8 rounded-lg border border-gray-200 bg-white text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-colors"
             >
-              <CheckCircle className="w-3.5 h-3.5 mr-1" /> Mark Read
-            </Button>
+              <CheckCircle className="w-3.5 h-3.5" /> Mark Read
+            </button>
           )}
-          <Button
-            size="sm"
-            variant="outline"
+          <button
             onClick={onDelete}
-            className="text-xs border-gray-200 text-red-500 hover:bg-red-50 hover:border-red-200 rounded-lg"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 bg-white text-red-500 hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors"
           >
             <Trash2 className="w-3.5 h-3.5" />
-          </Button>
+          </button>
         </div>
       </div>
 

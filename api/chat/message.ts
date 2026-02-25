@@ -40,8 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     // Generate rule-based reply (no API key needed)
-    const isFirstMessage = (session.message_count || 0) === 0;
-    const reply = generateReply(message, session.name, isFirstMessage);
+    const reply = generateReply(message, session.name);
 
     // Store assistant response
     await supabase.from("chat_messages").insert({

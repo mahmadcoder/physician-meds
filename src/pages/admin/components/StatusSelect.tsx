@@ -3,9 +3,12 @@ import { ChevronDown, Check } from "lucide-react";
 
 const STATUS_OPTIONS = [
   { value: "new", label: "New", dot: "bg-[#2d62ff]" },
+  { value: "active", label: "Active", dot: "bg-emerald-400" },
   { value: "contacted", label: "Contacted", dot: "bg-amber-500" },
   { value: "converted", label: "Converted", dot: "bg-emerald-500" },
   { value: "closed", label: "Closed", dot: "bg-gray-400" },
+  { value: "ended", label: "Ended", dot: "bg-red-400" },
+  { value: "resolved", label: "Resolved", dot: "bg-teal-500" },
 ] as const;
 
 interface StatusSelectProps {

@@ -229,8 +229,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           const updates: Record<string, unknown> = {};
           if (is_read !== undefined) updates.is_read = is_read;
           if (status) updates.status = status;
+          console.log("Chat session update:", { id, updates });
           const { error } = await supabase.from("chat_sessions").update(updates).eq("id", id);
-          if (error) throw error;
+          if (error) {
+            console.error("Chat session update error:", error);
+            throw error;
+          }
           return res.status(200).json({ success: true });
         }
         if (req.method === "DELETE") {

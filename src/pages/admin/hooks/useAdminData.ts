@@ -227,12 +227,23 @@ export function useAdminData() {
   };
 
   const updateChatSessionStatus = async (id: string, status: string) => {
-    await fetch("/api/admin/chat-sessions", {
-      method: "PUT",
-      headers: authHeaders(),
-      body: JSON.stringify({ id, status }),
-    });
-    fetchData("chat-sessions");
+    try {
+      const res = await fetch("/api/admin/chat-sessions", {
+        method: "PUT",
+        headers: authHeaders(),
+        body: JSON.stringify({ id, status }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        console.error("Status update failed:", res.status, err);
+        alert(`Status update failed: ${err.error || res.statusText}`);
+        return;
+      }
+      fetchData("chat-sessions");
+    } catch (err) {
+      console.error("Status update error:", err);
+      alert("Failed to update status. Check console for details.");
+    }
   };
 
   const handleLogout = () => {

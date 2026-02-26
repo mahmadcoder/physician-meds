@@ -33,7 +33,7 @@ export default function AdminSidebar({
           fixed top-0 left-0 h-full z-50 w-[260px]
           bg-white border-r border-gray-200 flex flex-col
           transition-transform duration-300 ease-out
-          lg:translate-x-0 lg:static lg:z-auto
+          lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:z-auto
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >

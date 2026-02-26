@@ -33,6 +33,7 @@ import SubscribersTab from "./components/SubscribersTab";
 import BlogsTab from "./components/BlogsTab";
 import CommentsTab from "./components/CommentsTab";
 import ChatSessionsTab from "./components/ChatSessionsTab";
+import ConfirmModal from "./components/ConfirmModal";
 
 const AdminDashboardPage = () => {
   usePageTitle("Admin Dashboard");
@@ -66,6 +67,9 @@ const AdminDashboardPage = () => {
     deleteChatSession,
     updateChatSessionStatus,
     handleLogout,
+    pendingDelete,
+    confirmDelete,
+    cancelDelete,
   } = useAdminData();
 
   // ─── Navigation config ─────────────────────────────
@@ -274,6 +278,13 @@ const AdminDashboardPage = () => {
           )}
         </main>
       </div>
+
+      <ConfirmModal
+        open={!!pendingDelete}
+        message={pendingDelete?.message || ""}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 };

@@ -40,6 +40,11 @@ export function useAdminData() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
+  const [pendingDelete, setPendingDelete] = useState<{
+    type: "blog" | "comment" | "chat-session";
+    id: string;
+    message: string;
+  } | null>(null);
 
   const token = localStorage.getItem("admin_token");
 
@@ -187,15 +192,42 @@ export function useAdminData() {
     }
   };
 
-  const deleteBlog = async (id: string) => {
-    if (!confirm("Delete this blog post?")) return;
-    await fetch("/api/admin/blogs", {
+  const requestDelete = (type: "blog" | "comment" | "chat-session", id: string) => {
+    const messages: Record<string, string> = {
+      blog: "Are you sure you want to delete this blog post? This action cannot be undone.",
+      comment: "Are you sure you want to delete this comment? This action cannot be undone.",
+      "chat-session": "Are you sure you want to delete this chat session? This action cannot be undone.",
+    };
+    setPendingDelete({ type, id, message: messages[type] });
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    const { type, id } = pendingDelete;
+    const endpoints: Record<string, string> = {
+      blog: "/api/admin/blogs",
+      comment: "/api/admin/comments",
+      "chat-session": "/api/admin/chat-sessions",
+    };
+    const tabs: Record<string, Tab> = {
+      blog: "blogs",
+      comment: "comments",
+      "chat-session": "chat-sessions",
+    };
+    await fetch(endpoints[type], {
       method: "DELETE",
       headers: authHeaders(),
       body: JSON.stringify({ id }),
     });
-    fetchData("blogs");
+    setPendingDelete(null);
+    fetchData(tabs[type]);
   };
+
+  const cancelDelete = () => setPendingDelete(null);
+
+  const deleteBlog = (id: string) => requestDelete("blog", id);
+  const deleteComment = (id: string) => requestDelete("comment", id);
+  const deleteChatSession = (id: string) => requestDelete("chat-session", id);
 
   const togglePublish = async (id: string, currentState: boolean) => {
     await fetch("/api/admin/blogs", {
@@ -204,26 +236,6 @@ export function useAdminData() {
       body: JSON.stringify({ id, is_published: !currentState }),
     });
     fetchData("blogs");
-  };
-
-  const deleteComment = async (id: string) => {
-    if (!confirm("Delete this comment?")) return;
-    await fetch("/api/admin/comments", {
-      method: "DELETE",
-      headers: authHeaders(),
-      body: JSON.stringify({ id }),
-    });
-    fetchData("comments");
-  };
-
-  const deleteChatSession = async (id: string) => {
-    if (!confirm("Delete this chat session?")) return;
-    await fetch("/api/admin/chat-sessions", {
-      method: "DELETE",
-      headers: authHeaders(),
-      body: JSON.stringify({ id }),
-    });
-    fetchData("chat-sessions");
   };
 
   const updateChatSessionStatus = async (id: string, status: string) => {
@@ -290,5 +302,8 @@ export function useAdminData() {
     deleteChatSession,
     updateChatSessionStatus,
     handleLogout,
+    pendingDelete,
+    confirmDelete,
+    cancelDelete,
   };
 }

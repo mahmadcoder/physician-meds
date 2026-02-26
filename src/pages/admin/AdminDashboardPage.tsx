@@ -39,6 +39,7 @@ const AdminDashboardPage = () => {
   usePageTitle("Admin Dashboard");
   const [datePreset, setDatePreset] = useState<DatePreset>("this-month");
   const [dateRange, setDateRange] = useState<DateRange>(() => presetToRange("this-month"));
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const {
     activeTab,
@@ -189,7 +190,7 @@ const AdminDashboardPage = () => {
         sidebarOpen={sidebarOpen}
         onTabChange={handleTabChange}
         onClose={() => setSidebarOpen(false)}
-        onLogout={handleLogout}
+        onLogout={() => setShowLogoutConfirm(true)}
       />
 
       <div className="flex-1 flex flex-col min-h-screen min-w-0">
@@ -284,6 +285,18 @@ const AdminDashboardPage = () => {
         message={pendingDelete?.message || ""}
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
+      />
+
+      <ConfirmModal
+        open={showLogoutConfirm}
+        title="Sign Out"
+        message="Are you sure you want to sign out? You'll need to enter your password again to access the admin panel."
+        confirmLabel="Sign Out"
+        onConfirm={() => {
+          setShowLogoutConfirm(false);
+          handleLogout();
+        }}
+        onCancel={() => setShowLogoutConfirm(false)}
       />
     </div>
   );

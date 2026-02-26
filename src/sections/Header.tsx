@@ -86,8 +86,8 @@ const Header = () => {
 
   // Check if on home page
   const isOnHomePage = location.pathname === "/";
-  // Check if on services page
-  const isOnServicesPage = location.pathname === "/services";
+  // Check if on services page or any service sub-page
+  const isOnServicesPage = location.pathname === "/services" || location.pathname.startsWith("/services/");
   // Check if on company pages
   const isOnCompanyPage = [
     "/about-us",
@@ -209,6 +209,13 @@ const Header = () => {
                 >
                   {link.hasDropdown ? (
                     <button
+                      onClick={() => {
+                        if (link.dropdownType === "services") {
+                          navigate("/services");
+                          window.scrollTo(0, 0);
+                          setIsServicesOpen(false);
+                        }
+                      }}
                       className={`relative text-[15px] font-semibold transition-colors duration-300 flex items-center gap-1.5 ${
                         (link.dropdownType === "services" &&
                           isOnServicesPage) ||

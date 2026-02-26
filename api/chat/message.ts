@@ -32,6 +32,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: "Chat session has ended." });
     }
 
+    // Fetch conversation history for context
+    const { data: previousMessages } = await supabase
+      .from("chat_messages")
+      .select("role, content")
+      .eq("session_id", session_id)
+      .order("created_at", { ascending: true })
+      .limit(10); // Retrieve last 10 messages for context
+
     // Store user message
     await supabase.from("chat_messages").insert({
       session_id,
@@ -39,8 +47,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       content: message,
     });
 
-    // Generate rule-based reply (no API key needed)
-    const reply = generateReply(message, session.name);
+    // Generate intelligent AI reply using Gemini
+    const reply = await generateReply(message, session.name, previousMessages || []);
 
     // Store assistant response
     await supabase.from("chat_messages").insert({

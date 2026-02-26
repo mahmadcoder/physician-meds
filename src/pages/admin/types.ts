@@ -79,7 +79,7 @@ export interface ChatSession {
   started_at: string;
   ended_at: string | null;
   is_read: boolean;
-  status: "active" | "ended" | "resolved";
+  status: "new" | "active" | "contacted" | "converted" | "closed" | "ended" | "resolved";
   message_count: number;
   email_sent_to_client: boolean;
   email_sent_to_team: boolean;

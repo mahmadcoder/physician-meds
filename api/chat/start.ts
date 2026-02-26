@@ -18,7 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { data, error } = await supabase
       .from("chat_sessions")
-      .insert({ name, email, phone: phone || null })
+      .insert({ name, email, phone: phone || null, status: 'active' })
       .select()
       .single();
 

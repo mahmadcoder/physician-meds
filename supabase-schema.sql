@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS chat_sessions (
     started_at TIMESTAMPTZ DEFAULT NOW(),
     ended_at TIMESTAMPTZ,
     is_read BOOLEAN DEFAULT FALSE,
-    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'ended', 'resolved')),
+    status TEXT DEFAULT 'new' CHECK (status IN ('new', 'active', 'contacted', 'converted', 'closed', 'ended', 'resolved')),
     message_count INT DEFAULT 0,
     email_sent_to_client BOOLEAN DEFAULT FALSE,
     email_sent_to_team BOOLEAN DEFAULT FALSE

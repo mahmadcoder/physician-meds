@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { X, Send, Minus, MessageCircle } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import type { ChatMessage } from "./types";
 
 interface ChatWindowProps {
@@ -42,7 +43,18 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
               : "bg-gray-100 text-gray-800 rounded-bl-md"
           }`}
         >
-          {msg.content}
+          <ReactMarkdown
+            components={{
+              p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+              ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-2 space-y-1" {...props} />,
+              ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-2 space-y-1" {...props} />,
+              li: ({ node, ...props }) => <li className="" {...props} />,
+              a: ({ node, ...props }) => <a className="underline hover:opacity-80 transition-opacity" target="_blank" rel="noopener noreferrer" {...props} />,
+              strong: ({ node, ...props }) => <strong className="font-semibold" {...props} />,
+            }}
+          >
+            {msg.content}
+          </ReactMarkdown>
         </div>
         <p
           className={`text-[10px] text-gray-400 mt-1 ${

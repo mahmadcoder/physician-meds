@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import {
   MessageCircle,
   Clock,
@@ -109,9 +110,20 @@ function ChatTranscript({ sessionId, authHeaders }: { sessionId: string; authHea
               </span>
               <span className="text-[10px] text-gray-400">{formatTime(msg.created_at)}</span>
             </div>
-            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-              {msg.content}
-            </p>
+            <div className="text-sm text-gray-700 leading-relaxed">
+              <ReactMarkdown
+                components={{
+                  p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                  ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-2 space-y-1" {...props} />,
+                  ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-2 space-y-1" {...props} />,
+                  li: ({ node, ...props }) => <li className="" {...props} />,
+                  a: ({ node, ...props }) => <a className="text-[#2d62ff] underline hover:opacity-80 transition-opacity" target="_blank" rel="noopener noreferrer" {...props} />,
+                  strong: ({ node, ...props }) => <strong className="font-semibold" {...props} />,
+                }}
+              >
+                {msg.content}
+              </ReactMarkdown>
+            </div>
           </div>
         </div>
       ))}

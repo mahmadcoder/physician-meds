@@ -47,11 +47,17 @@ Pricing:
 - No hidden fees, no long-term contracts.
 - High ROI. Book consultation for exact pricing.
 
-Guidelines for conversation:
-1. Answer questions concisely. Use lists when appropriate.
-2. Do not hallucinate services or stats. Stick to the facts provided.
-3. Be friendly and address the user by their first name if provided.
-4. If a user asks for a specific price or has a very complex question, direct them to book a free consultation.
+CRITICAL FORMATTING GUIDELINES:
+1. ALWAYS use neat bullet points (-) or numbered lists (1., 2.) when listing items, services, or contact details.
+2. NEVER use excessive bolding, italics, or excessive asterisks (like ***) that clutter the text. Keep formatting clean and professional.
+3. When providing contact information or next steps, present them clearly, preferably in a bulleted list.
+4. Separate paragraphs cleanly. Keep them short, airy, and highly readable.
+
+BEHAVIORAL GUIDELINES:
+1. Answer questions concisely and directly.
+2. Do not hallucinate services or stats. Stick directly to the facts provided above.
+3. Be warm, friendly, and address the user by their first name if provided.
+4. For specific pricing requests or highly complex questions, politely direct the user to book a free consultation.
 5. If someone talks about their revenue (e.g. $100k), congratulate them and explain how you can increase their collections by 10-25%.
 6. If users ask about specialties, tell them we work with virtually every medical specialty (Primary Care, Cardiology, Orthopedics, etc.).
 `;
@@ -77,36 +83,38 @@ export async function generateReply(
       parts: [{ text: msg.content }]
     }));
 
-    // Start a chat session
-    const chat = ai.chats.create({
-      model: "gemini-2.5-flash",
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION + `\n\nThe user's name is ${userName}.`,
-        temperature: 0.3, // keep it relatively deterministic/professional
-      }
-    });
-
-    // Send the conversational history (if any) by passing it directly to the model
-    // Note: The @google/genai SDK might not support passing history directly into chats.create cleanly,
-    // so we'll just send a single generateContent request with the history.
-
     const contents = [
       ...formattedHistory,
       { role: "user", parts: [{ text: message }] }
     ];
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: contents,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION + `\n\nThe user's name is ${userName}.`,
-        temperature: 0.3,
-      }
-    });
-
-    return response.text || "I apologize, I wasn't able to generate a response. Please try again.";
+    try {
+      // Primary Attempt: Gemini 2.5 Pro (Smarter, but strict rate limits)
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-pro",
+        contents: contents,
+        config: {
+          systemInstruction: SYSTEM_INSTRUCTION + `\n\nThe user's name is ${userName}.`,
+          temperature: 0.3,
+        }
+      });
+      return response.text || "I apologize, I wasn't able to generate a response. Please try again.";
+    } catch (proError: any) {
+      console.warn("Gemini Pro failed (likely rate limit), falling back to Flash:", proError.message);
+      
+      // Fallback Attempt: Gemini 2.5 Flash (Faster, much higher rate limits)
+      const fallbackResponse = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: contents,
+        config: {
+          systemInstruction: SYSTEM_INSTRUCTION + `\n\nThe user's name is ${userName}.`,
+          temperature: 0.3,
+        }
+      });
+      return fallbackResponse.text || "I apologize, I wasn't able to generate a response. Please try again.";
+    }
   } catch (error) {
-    console.error("Gemini API Error:", error);
+    console.error("Gemini API Error (Both models failed):", error);
     return "I'm having a little trouble connecting to my network right now. You can reach us at info@physicianmeds.com or call +1 (480) 918-9621.";
   }
 }

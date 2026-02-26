@@ -78,7 +78,7 @@ const AdminBlogEditorPage = () => {
 
           {/* Preview column */}
           {showPreview && (
-            <div className="flex-1 min-w-0 lg:sticky lg:top-[72px] lg:self-start lg:max-h-[calc(100vh-96px)]">
+            <div className="flex-1 min-w-0 lg:sticky lg:top-[72px] lg:self-start lg:max-h-[calc(100vh-96px)] overflow-hidden">
               <ArticlePreview post={post} tagsInput={tagsInput} />
             </div>
           )}

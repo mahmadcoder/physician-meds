@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -10,6 +11,7 @@ import {
   Image,
   AlertCircle,
   GripVertical,
+  Highlighter,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import type { ContentBlock } from "./types";
@@ -157,6 +159,82 @@ export default function ContentBlockEditor({
   );
 }
 
+/* ─── Highlight helper ──────────────────────────────────────────────── */
+
+function toggleHighlight(
+  ref: React.RefObject<HTMLTextAreaElement | HTMLInputElement | null>,
+  currentValue: string,
+  onChangeValue: (newVal: string) => void
+) {
+  const el = ref.current;
+  if (!el) return;
+
+  const start = el.selectionStart ?? 0;
+  const end = el.selectionEnd ?? 0;
+  const selected = currentValue.slice(start, end);
+
+  if (selected) {
+    // If already highlighted, un-highlight; otherwise wrap with **
+    let newVal: string;
+    if (selected.startsWith("**") && selected.endsWith("**")) {
+      newVal =
+        currentValue.slice(0, start) +
+        selected.slice(2, -2) +
+        currentValue.slice(end);
+    } else {
+      newVal =
+        currentValue.slice(0, start) +
+        `**${selected}**` +
+        currentValue.slice(end);
+    }
+    onChangeValue(newVal);
+  } else {
+    // No selection: insert **** placeholder at cursor
+    const newVal =
+      currentValue.slice(0, start) + "****" + currentValue.slice(end);
+    onChangeValue(newVal);
+    // Place cursor between the asterisks
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(start + 2, start + 2);
+    });
+  }
+}
+
+function HighlightButton({
+  textRef,
+  value,
+  onChange,
+}: {
+  textRef: React.RefObject<HTMLTextAreaElement | HTMLInputElement | null>;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => toggleHighlight(textRef, value, onChange)}
+      title="Highlight selected text"
+      className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold text-brand-blue bg-brand-blue/5 hover:bg-brand-blue/10 border border-brand-blue/15 rounded-lg transition-all"
+    >
+      <Highlighter className="w-3 h-3" />
+      Highlight
+    </button>
+  );
+}
+
+function HighlightHint() {
+  return (
+    <p className="text-[10px] text-gray-400 mt-1">
+      Select text and click <strong>Highlight</strong> — or wrap words in{" "}
+      <code className="bg-gray-100 px-1 rounded text-[10px]">**double asterisks**</code>{" "}
+      to emphasize them.
+    </p>
+  );
+}
+
+/* ─── Block fields ──────────────────────────────────────────────────── */
+
 function BlockFields({
   block,
   index,
@@ -166,15 +244,28 @@ function BlockFields({
   index: number;
   onUpdate: (i: number, u: Partial<ContentBlock>) => void;
 }) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   if (block.type === "paragraph" || block.type === "quote") {
     return (
-      <textarea
-        value={block.content || ""}
-        onChange={(e) => onUpdate(index, { content: e.target.value })}
-        placeholder={`Enter ${block.type} text...`}
-        rows={4}
-        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 text-sm resize-y transition-all"
-      />
+      <div>
+        <div className="flex items-center gap-2 mb-1.5">
+          <HighlightButton
+            textRef={textareaRef}
+            value={block.content || ""}
+            onChange={(v) => onUpdate(index, { content: v })}
+          />
+        </div>
+        <textarea
+          ref={textareaRef}
+          value={block.content || ""}
+          onChange={(e) => onUpdate(index, { content: e.target.value })}
+          placeholder={`Enter ${block.type} text...`}
+          rows={4}
+          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 text-sm resize-y transition-all"
+        />
+        <HighlightHint />
+      </div>
     );
   }
 
@@ -211,30 +302,14 @@ function BlockFields({
     return (
       <div className="space-y-2">
         {items.map((item, j) => (
-          <div key={j} className="flex gap-2 items-center">
-            <span className="text-gray-300 text-sm font-bold w-4 text-center shrink-0">
-              •
-            </span>
-            <Input
-              value={item}
-              onChange={(e) => {
-                const arr = [...items];
-                arr[j] = e.target.value;
-                onUpdate(index, { items: arr });
-              }}
-              placeholder={`Item ${j + 1}`}
-              className="border-gray-200 rounded-xl flex-1"
-            />
-            <button
-              onClick={() => {
-                const arr = items.filter((_, k) => k !== j);
-                onUpdate(index, { items: arr.length ? arr : [""] });
-              }}
-              className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          <ListItemWithHighlight
+            key={j}
+            item={item}
+            itemIndex={j}
+            items={items}
+            blockIndex={index}
+            onUpdate={onUpdate}
+          />
         ))}
         <button
           onClick={() => onUpdate(index, { items: [...items, ""] })}
@@ -292,16 +367,87 @@ function BlockFields({
             </button>
           ))}
         </div>
-        <textarea
-          value={block.content || ""}
-          onChange={(e) => onUpdate(index, { content: e.target.value })}
-          placeholder="Callout text..."
-          rows={3}
-          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 text-sm resize-y transition-all"
-        />
+        <div>
+          <div className="flex items-center gap-2 mb-1.5">
+            <HighlightButton
+              textRef={textareaRef}
+              value={block.content || ""}
+              onChange={(v) => onUpdate(index, { content: v })}
+            />
+          </div>
+          <textarea
+            ref={textareaRef}
+            value={block.content || ""}
+            onChange={(e) => onUpdate(index, { content: e.target.value })}
+            placeholder="Callout text..."
+            rows={3}
+            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 text-sm resize-y transition-all"
+          />
+          <HighlightHint />
+        </div>
       </>
     );
   }
 
   return null;
+}
+
+/* ─── List item with highlight support ──────────────────────────────── */
+
+function ListItemWithHighlight({
+  item,
+  itemIndex,
+  items,
+  blockIndex,
+  onUpdate,
+}: {
+  item: string;
+  itemIndex: number;
+  items: string[];
+  blockIndex: number;
+  onUpdate: (i: number, u: Partial<ContentBlock>) => void;
+}) {
+  const ref = useRef<HTMLInputElement>(null);
+
+  return (
+    <div className="flex gap-2 items-center">
+      <span className="text-gray-300 text-sm font-bold w-4 text-center shrink-0">
+        •
+      </span>
+      <Input
+        ref={ref}
+        value={item}
+        onChange={(e) => {
+          const arr = [...items];
+          arr[itemIndex] = e.target.value;
+          onUpdate(blockIndex, { items: arr });
+        }}
+        placeholder={`Item ${itemIndex + 1}`}
+        className="border-gray-200 rounded-xl flex-1"
+      />
+      <button
+        type="button"
+        onClick={() =>
+          toggleHighlight(ref, item, (v) => {
+            const arr = [...items];
+            arr[itemIndex] = v;
+            onUpdate(blockIndex, { items: arr });
+          })
+        }
+        title="Highlight selected text"
+        className="p-1.5 text-brand-blue hover:bg-brand-blue/5 rounded-lg transition-colors shrink-0"
+      >
+        <Highlighter className="w-3.5 h-3.5" />
+      </button>
+      <button
+        onClick={() => {
+          const arr = items.filter((_, k) => k !== itemIndex);
+          onUpdate(blockIndex, { items: arr.length ? arr : [""] });
+        }}
+        className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+      >
+        <Trash2 className="w-3.5 h-3.5" />
+      </button>
+    </div>
+  );
 }

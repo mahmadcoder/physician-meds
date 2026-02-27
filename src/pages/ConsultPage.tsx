@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import usePageTitle from "@/hooks/usePageTitle";
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Phone, Mail, MapPin, CheckCircle } from 'lucide-react';
@@ -6,23 +6,10 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { contactInfo } from '@/constants';
+import { contactInfo, SPECIALTIES } from '@/constants';
 import Newsletter from '@/sections/Newsletter';
 
 gsap.registerPlugin(ScrollTrigger);
-
-const specialties = [
-  'Primary Care',
-  'Cardiology',
-  'Dermatology',
-  'Orthopedics',
-  'Pediatrics',
-  'Internal Medicine',
-  'Family Medicine',
-  'Urgent Care',
-  'Mental Health',
-  'Other',
-];
 
 // Social Icons
 const LinkedInIcon = ({ className }: { className?: string }) => (
@@ -53,7 +40,11 @@ const ConsultPage = () => {
   const [submitError, setSubmitError] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isOtherSelected, setIsOtherSelected] = useState(false);
+  const [customSpecialty, setCustomSpecialty] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -63,16 +54,28 @@ const ConsultPage = () => {
     message: '',
   });
 
-  // Close dropdown when clicking outside
+  const filteredSpecialties = useMemo(() => {
+    if (!searchQuery.trim()) return [...SPECIALTIES];
+    const q = searchQuery.toLowerCase();
+    return [...SPECIALTIES].filter((s) => s.toLowerCase().includes(q));
+  }, [searchQuery]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+        setSearchQuery('');
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (isDropdownOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isDropdownOpen]);
 
   useEffect(() => {
     // Scroll to top immediately and after a small delay to ensure it works
@@ -357,31 +360,79 @@ const ConsultPage = () => {
                           </svg>
                         </button>
                         
-                        {/* Dropdown Menu */}
                         {isDropdownOpen && (
                           <div className="absolute left-0 right-0 z-[100] w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl shadow-gray-300/50 overflow-hidden">
-                            <div className="max-h-60 overflow-y-auto py-1">
-                              {specialties.map((specialty) => (
+                            <div className="p-2 border-b border-gray-100">
+                              <input
+                                ref={searchInputRef}
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Type to search specialties..."
+                                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 focus:outline-none transition-all"
+                              />
+                            </div>
+                            <div className="max-h-52 overflow-y-auto py-1">
+                              {filteredSpecialties.map((specialty) => (
                                 <button
                                   key={specialty}
                                   type="button"
                                   onClick={() => {
                                     setFormData({ ...formData, specialty });
                                     setIsDropdownOpen(false);
+                                    setSearchQuery('');
+                                    setIsOtherSelected(false);
+                                    setCustomSpecialty('');
                                   }}
-                                  className={`w-full px-4 py-3 text-left transition-colors duration-150 ${
+                                  className={`w-full px-4 py-2.5 text-left text-sm transition-colors duration-150 ${
                                     formData.specialty === specialty
                                       ? 'bg-brand-blue/10 text-brand-blue font-medium'
-                                      : 'text-gray-700 hover:bg-gray-100'
+                                      : 'text-gray-700 hover:bg-gray-50'
                                   }`}
                                 >
                                   {specialty}
                                 </button>
                               ))}
+                              {filteredSpecialties.length === 0 && (
+                                <div className="px-4 py-2.5 text-sm text-gray-400">No specialties match your search</div>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setFormData({ ...formData, specialty: '' });
+                                  setIsOtherSelected(true);
+                                  setIsDropdownOpen(false);
+                                  setSearchQuery('');
+                                  setCustomSpecialty('');
+                                }}
+                                className={`w-full px-4 py-2.5 text-left text-sm border-t border-gray-100 transition-colors duration-150 ${
+                                  isOtherSelected
+                                    ? 'bg-brand-blue/10 text-brand-blue font-medium'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                }`}
+                              >
+                                Other
+                              </button>
                             </div>
                           </div>
                         )}
                       </div>
+
+                      {isOtherSelected && (
+                        <div className="mt-3">
+                          <Input
+                            type="text"
+                            value={customSpecialty}
+                            onChange={(e) => {
+                              setCustomSpecialty(e.target.value);
+                              setFormData({ ...formData, specialty: e.target.value });
+                            }}
+                            placeholder="Enter your specialty"
+                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all"
+                            autoFocus
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div className="form-field">

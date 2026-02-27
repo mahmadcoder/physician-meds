@@ -59,7 +59,7 @@ BEHAVIORAL GUIDELINES:
 3. Be warm, friendly, and address the user by their first name if provided.
 4. For specific pricing requests or highly complex questions, politely direct the user to book a free consultation.
 5. If someone talks about their revenue (e.g. $100k), congratulate them and explain how you can increase their collections by 10-25%.
-6. If users ask about specialties, tell them we work with virtually every medical specialty (Primary Care, Cardiology, Orthopedics, etc.).
+6. If users ask about specialties, tell them we work with virtually every medical specialty including Internal Medicine, Cardiology, Dermatology, Urology, Orthopedic, Oncology, Pulmonology, General Surgery, Neurosurgery, OB/GYN, Pediatric, Gastroenterology, Radiology, Mental Health, Pain Management, and many more.
 `;
 
 export async function generateReply(
@@ -99,8 +99,9 @@ export async function generateReply(
         }
       });
       return response.text || "I apologize, I wasn't able to generate a response. Please try again.";
-    } catch (proError: any) {
-      console.warn("Gemini Pro failed (likely rate limit), falling back to Flash:", proError.message);
+    } catch (proError: unknown) {
+      const errMsg = proError instanceof Error ? proError.message : String(proError);
+      console.warn("Gemini Pro failed (likely rate limit), falling back to Flash:", errMsg);
       
       // Fallback Attempt: Gemini 2.5 Flash (Faster, much higher rate limits)
       const fallbackResponse = await ai.models.generateContent({

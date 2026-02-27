@@ -452,28 +452,7 @@ export const codingWhyChoose = [
 
 // --- Specialties ---
 
-export const codingSpecialties = [
-  "Cardiology",
-  "Orthopedics",
-  "Dermatology",
-  "Radiology",
-  "Gastroenterology",
-  "Anesthesiology",
-  "Internal Medicine",
-  "Neurology",
-  "Plastic Surgery",
-  "Urology",
-  "Pediatrics",
-  "Primary Care",
-  "General Surgery",
-  "Ophthalmology",
-  "ENT",
-  "Psychiatry",
-  "Family Medicine",
-  "Behavioral Health",
-  "Pulmonology",
-  "Rheumatology",
-];
+export { SPECIALTIES as codingSpecialties } from "./specialties";
 
 // --- FAQ ---
 

@@ -231,24 +231,7 @@ export const billingProcess: BillingProcessStep[] = [
 
 // --- Specialties ---
 
-export const billingSpecialties = [
-  "Cardiology",
-  "Orthopedics",
-  "Dermatology",
-  "Radiology",
-  "Gastroenterology",
-  "Anesthesiology",
-  "Internal Medicine",
-  "Neurology",
-  "Plastic Surgery",
-  "Urology",
-  "Pediatrics",
-  "Primary Care",
-  "General Surgery",
-  "Ophthalmology",
-  "ENT",
-  "Psychiatry",
-];
+export { SPECIALTIES as billingSpecialties } from "./specialties";
 
 // --- FAQ ---
 

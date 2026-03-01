@@ -7,6 +7,14 @@ const brandBlue = "#2563eb";
 const brandDark = "#1a1a2e";
 const brandGray = "#64748b";
 
+export const NEWSLETTER_TEMPLATES = [
+  { id: "general-update", name: "General Update", description: "Monthly updates, tips, and company news", color: "#2563eb", icon: "📬" },
+  { id: "blog-highlight", name: "Blog Highlight", description: "Feature a new blog post or article", color: "#7c3aed", icon: "📝" },
+  { id: "service-spotlight", name: "Service Spotlight", description: "Highlight a specific medical billing service", color: "#059669", icon: "⭐" },
+  { id: "industry-news", name: "Industry News", description: "Regulatory updates and industry changes", color: "#d97706", icon: "📰" },
+  { id: "special-announcement", name: "Special Announcement", description: "Important updates and announcements", color: "#dc2626", icon: "📢" },
+] as const;
+
 function headerHtml() {
   return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
@@ -49,6 +57,37 @@ function footerHtml() {
           <a href="mailto:info@physicianmeds.com" style="color: #2563eb; text-decoration: none;">info@physicianmeds.com</a>
         </p>
         <p style="margin: 0; color: #94a3b8; font-size: 11px;">
+          &copy; 2026 PhysicianMeds. All rights reserved.
+        </p>
+      </td>
+    </tr>
+  </table>`;
+}
+
+function subscriberFooterHtml(unsubscribeToken: string) {
+  const unsubscribeUrl = `${siteUrl}/unsubscribe?token=${unsubscribeToken}`;
+  return `
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+    <tr>
+      <td style="background-color: #f1f5f9; padding: 24px 32px; text-align: center; border-radius: 0 0 12px 12px; border-top: 1px solid #e2e8f0;">
+        <p style="margin: 0 0 6px 0; color: #475569; font-size: 13px; font-weight: 600;">PhysicianMeds</p>
+        <p style="margin: 0 0 4px 0; color: #64748b; font-size: 12px; line-height: 1.5;">
+          3044 Breckenridge Ln STE102-404, Louisville, KY 40220
+        </p>
+        <p style="margin: 0 0 12px 0; color: #64748b; font-size: 12px;">
+          <a href="tel:+14809189621" style="color: #2563eb; text-decoration: none;">+1 (480) 918-9621</a>
+          &nbsp;&#8226;&nbsp;
+          <a href="mailto:info@physicianmeds.com" style="color: #2563eb; text-decoration: none;">info@physicianmeds.com</a>
+        </p>
+        <div style="margin: 12px 0; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+          <p style="margin: 0; color: #94a3b8; font-size: 11px; line-height: 1.6;">
+            You received this email because you subscribed to PhysicianMeds newsletter.<br/>
+            <a href="${unsubscribeUrl}" style="color: #94a3b8; text-decoration: underline;">Unsubscribe</a>
+            &nbsp;&#8226;&nbsp;
+            <a href="${siteUrl}/privacy-policy" style="color: #94a3b8; text-decoration: underline;">Privacy Policy</a>
+          </p>
+        </div>
+        <p style="margin: 8px 0 0 0; color: #94a3b8; font-size: 11px;">
           &copy; 2026 PhysicianMeds. All rights reserved.
         </p>
       </td>
@@ -212,7 +251,7 @@ export function consultConfirmationTemplate(data: { name: string }) {
 }
 
 // ─── Newsletter: welcome email ──────────────────
-export function welcomeSubscriberTemplate() {
+export function welcomeSubscriberTemplate(unsubscribeToken: string) {
   return `
   <div style="max-width: 600px; margin: 0 auto; ${brandStyles}">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
@@ -238,7 +277,7 @@ export function welcomeSubscriberTemplate() {
           <p style="margin: 0; color: #94a3b8; font-size: 12px;">No spam, ever. Unsubscribe anytime.</p>
         </td>
       </tr>
-      <tr><td>${footerHtml()}</td></tr>
+      <tr><td>${subscriberFooterHtml(unsubscribeToken)}</td></tr>
     </table>
   </div>`;
 }
@@ -542,6 +581,177 @@ export function chatClientFollowUpTemplate(data: { name: string }) {
                 </p>
               </td>
             </tr>
+          </table>
+        </td>
+      </tr>
+      <tr><td>${footerHtml()}</td></tr>
+    </table>
+  </div>`;
+}
+
+// ─── Unsubscribe: confirmation to user ──────────────────
+export function unsubscribeConfirmationTemplate() {
+  return `
+  <div style="max-width: 600px; margin: 0 auto; ${brandStyles}">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px; text-align: center;">
+          <div style="width: 64px; height: 64px; background-color: #fef2f2; border-radius: 50%; margin: 0 auto 16px auto; line-height: 64px; font-size: 32px;">&#128075;</div>
+          <h2 style="margin: 0 0 8px 0; font-size: 24px; color: #1e293b; font-weight: 700;">You've Been Unsubscribed</h2>
+          <p style="margin: 0 0 24px 0; color: #475569; line-height: 1.8; font-size: 15px;">
+            We're sorry to see you go. You've been successfully removed from the PhysicianMeds newsletter and will no longer receive our emails.
+          </p>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #f0f9ff; border-radius: 12px; border: 1px solid #dbeafe;">
+            <tr>
+              <td align="center" style="padding: 20px;">
+                <p style="margin: 0 0 4px 0; font-weight: 700; color: #1e40af; font-size: 14px;">Changed your mind?</p>
+                <p style="margin: 0; color: #475569; font-size: 13px; line-height: 1.6;">You can always resubscribe on our website anytime.</p>
+              </td>
+            </tr>
+          </table>
+
+          <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin: 24px auto 0 auto;">
+            <tr>
+              <td align="center">
+                <a href="${siteUrl}" style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px;">
+                  Visit PhysicianMeds &rarr;
+                </a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr><td>${footerHtml()}</td></tr>
+    </table>
+  </div>`;
+}
+
+// ─── Unsubscribe: notification to team ──────────────────
+export function unsubscribeTeamNotificationTemplate(email: string) {
+  return `
+  <div style="max-width: 600px; margin: 0 auto; ${brandStyles}">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+            <tr>
+              <td style="background-color: #fef2f2; border-radius: 10px; padding: 10px 16px;">
+                <span style="font-size: 16px; font-weight: 700; color: #991b1b;">&#128244; Subscriber Unsubscribed</span>
+              </td>
+            </tr>
+          </table>
+          <p style="margin: 16px 0 24px 0; color: #64748b; font-size: 14px; line-height: 1.6;">A user has unsubscribed from the newsletter.</p>
+
+          <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-radius: 8px;">
+            ${dataRow("Email", email, true)}
+            ${dataRow("Time", new Date().toLocaleString("en-US", { timeZone: "America/New_York" }), false, true)}
+          </table>
+        </td>
+      </tr>
+      <tr><td>${footerHtml()}</td></tr>
+    </table>
+  </div>`;
+}
+
+// ─── Newsletter Campaign: email to subscribers ──────────────────
+export function newsletterCampaignTemplate(data: {
+  templateId: string;
+  heading: string;
+  body: string;
+  ctaText?: string | null;
+  ctaUrl?: string | null;
+  unsubscribeToken: string;
+}) {
+  const templateConfig: Record<string, { badge: string; badgeBg: string; badgeColor: string; accent: string }> = {
+    "general-update": { badge: "📬 Newsletter Update", badgeBg: "#eff6ff", badgeColor: "#1e40af", accent: brandBlue },
+    "blog-highlight": { badge: "📝 New on Our Blog", badgeBg: "#f5f3ff", badgeColor: "#6d28d9", accent: "#7c3aed" },
+    "service-spotlight": { badge: "⭐ Service Spotlight", badgeBg: "#ecfdf5", badgeColor: "#065f46", accent: "#059669" },
+    "industry-news": { badge: "📰 Industry Update", badgeBg: "#fffbeb", badgeColor: "#92400e", accent: "#d97706" },
+    "special-announcement": { badge: "📢 Important Update", badgeBg: "#fef2f2", badgeColor: "#991b1b", accent: "#dc2626" },
+  };
+
+  const cfg = templateConfig[data.templateId] || templateConfig["general-update"];
+  const bodyHtml = data.body.replace(/\n/g, "<br/>");
+
+  const ctaBlock = data.ctaText && data.ctaUrl ? `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin-top: 28px;">
+      <tr>
+        <td align="center">
+          <a href="${data.ctaUrl}" style="display: inline-block; background-color: ${cfg.accent}; color: #ffffff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px;">
+            ${data.ctaText} &rarr;
+          </a>
+        </td>
+      </tr>
+    </table>` : "";
+
+  return `
+  <div style="max-width: 600px; margin: 0 auto; ${brandStyles}">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+            <tr>
+              <td style="background-color: ${cfg.badgeBg}; border-radius: 10px; padding: 10px 16px;">
+                <span style="font-size: 15px; font-weight: 700; color: ${cfg.badgeColor};">${cfg.badge}</span>
+              </td>
+            </tr>
+          </table>
+
+          <h2 style="margin: 20px 0 16px 0; font-size: 22px; color: #1e293b; font-weight: 700; line-height: 1.35;">${data.heading}</h2>
+
+          <div style="color: #475569; line-height: 1.8; font-size: 15px;">${bodyHtml}</div>
+
+          ${ctaBlock}
+        </td>
+      </tr>
+      <tr><td>${subscriberFooterHtml(data.unsubscribeToken)}</td></tr>
+    </table>
+  </div>`;
+}
+
+// ─── Newsletter Campaign: team notification when sent ──────────────────
+export function campaignSentTeamNotificationTemplate(data: {
+  subject: string;
+  templateId: string;
+  recipientCount: number;
+  sentCount: number;
+  failedCount: number;
+  scheduledTime?: string | null;
+}) {
+  const templateNames: Record<string, string> = {
+    "general-update": "General Update",
+    "blog-highlight": "Blog Highlight",
+    "service-spotlight": "Service Spotlight",
+    "industry-news": "Industry News",
+    "special-announcement": "Special Announcement",
+  };
+
+  return `
+  <div style="max-width: 600px; margin: 0 auto; ${brandStyles}">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+            <tr>
+              <td style="background-color: #f0fdf4; border-radius: 10px; padding: 10px 16px;">
+                <span style="font-size: 16px; font-weight: 700; color: #166534;">&#9989; Newsletter Campaign Sent</span>
+              </td>
+            </tr>
+          </table>
+          <p style="margin: 16px 0 24px 0; color: #64748b; font-size: 14px; line-height: 1.6;">A newsletter campaign has been successfully delivered.</p>
+
+          <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-radius: 8px;">
+            ${dataRow("Subject", data.subject, false, true)}
+            ${dataRow("Template", templateNames[data.templateId] || data.templateId)}
+            ${dataRow("Recipients", String(data.recipientCount), false, true)}
+            ${dataRow("Sent", String(data.sentCount))}
+            ${data.failedCount > 0 ? dataRow("Failed", String(data.failedCount), false, true) : ""}
+            ${dataRow("Time", new Date().toLocaleString("en-US", { timeZone: "America/New_York" }), false, !data.failedCount)}
           </table>
         </td>
       </tr>

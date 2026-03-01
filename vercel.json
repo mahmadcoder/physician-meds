@@ -5,6 +5,12 @@
       "destination": "/index.html"
     }
   ],
+  "crons": [
+    {
+      "path": "/api/cron/send-scheduled",
+      "schedule": "0 * * * *"
+    }
+  ],
   "devCommand": "vite",
   "framework": "vite"
 }

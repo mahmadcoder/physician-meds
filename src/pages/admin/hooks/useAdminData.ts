@@ -9,6 +9,7 @@ import type {
   Comment,
   CtaInquiry,
   ChatSession,
+  NewsletterCampaign,
 } from "../types";
 
 const ADMIN_LOGIN_PATH = "/pm-portal-x9k2";
@@ -23,6 +24,7 @@ const API_ENDPOINTS: Record<Exclude<Tab, "overview">, string> = {
   comments: "/api/admin/comments",
   "cta-inquiries": "/api/admin/cta-inquiries",
   "chat-sessions": "/api/admin/chat-sessions",
+  newsletter: "/api/admin/newsletter",
 };
 
 export function useAdminData() {
@@ -35,6 +37,7 @@ export function useAdminData() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [ctaInquiries, setCtaInquiries] = useState<CtaInquiry[]>([]);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [newsletterCampaigns, setNewsletterCampaigns] = useState<NewsletterCampaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -89,6 +92,7 @@ export function useAdminData() {
           comments: setComments,
           "cta-inquiries": setCtaInquiries,
           "chat-sessions": setChatSessions,
+          newsletter: setNewsletterCampaigns,
         };
         setters[tab]?.(data);
       } catch (err) {
@@ -124,6 +128,7 @@ export function useAdminData() {
             comments: setComments,
             "cta-inquiries": setCtaInquiries,
             "chat-sessions": setChatSessions,
+            newsletter: setNewsletterCampaigns,
           };
           setters[key]?.(data);
         }
@@ -275,6 +280,8 @@ export function useAdminData() {
     ctaInquiries.filter((c) => !c.is_read).length +
     chatSessions.filter((c) => !c.is_read).length;
 
+  const refreshNewsletter = () => fetchData("newsletter");
+
   return {
     activeTab,
     setActiveTab,
@@ -285,6 +292,7 @@ export function useAdminData() {
     comments,
     ctaInquiries,
     chatSessions,
+    newsletterCampaigns,
     loading,
     expandedId,
     toggleExpanded,
@@ -305,5 +313,6 @@ export function useAdminData() {
     pendingDelete,
     confirmDelete,
     cancelDelete,
+    refreshNewsletter,
   };
 }

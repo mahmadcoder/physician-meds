@@ -35,7 +35,29 @@ CREATE TABLE IF NOT EXISTS subscribers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email TEXT UNIQUE NOT NULL,
     subscribed_at TIMESTAMPTZ DEFAULT NOW(),
-    is_active BOOLEAN DEFAULT TRUE
+    is_active BOOLEAN DEFAULT TRUE,
+    unsubscribe_token TEXT UNIQUE DEFAULT gen_random_uuid()
+);
+
+-- Newsletter campaigns (admin-sent emails)
+CREATE TABLE IF NOT EXISTS newsletter_campaigns (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    subject TEXT NOT NULL,
+    template_id TEXT NOT NULL,
+    heading TEXT NOT NULL,
+    body TEXT NOT NULL,
+    cta_text TEXT,
+    cta_url TEXT,
+    status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'scheduled', 'sending', 'sent', 'failed')),
+    recipient_type TEXT DEFAULT 'all' CHECK (recipient_type IN ('all', 'selected')),
+    recipient_ids UUID[] DEFAULT '{}',
+    recipient_count INT DEFAULT 0,
+    sent_count INT DEFAULT 0,
+    failed_count INT DEFAULT 0,
+    scheduled_at TIMESTAMPTZ,
+    sent_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Blog posts (CMS)
@@ -119,6 +141,7 @@ ALTER TABLE blog_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cta_inquiries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chat_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE newsletter_campaigns ENABLE ROW LEVEL SECURITY;
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_contacts_created ON contacts(created_at DESC);
@@ -131,3 +154,13 @@ CREATE INDEX IF NOT EXISTS idx_cta_inquiries_created ON cta_inquiries(created_at
 CREATE INDEX IF NOT EXISTS idx_chat_sessions_started ON chat_sessions(started_at DESC);
 CREATE INDEX IF NOT EXISTS idx_chat_sessions_status ON chat_sessions(status);
 CREATE INDEX IF NOT EXISTS idx_chat_messages_session ON chat_messages(session_id);
+CREATE INDEX IF NOT EXISTS idx_subscribers_token ON subscribers(unsubscribe_token);
+CREATE INDEX IF NOT EXISTS idx_campaigns_status ON newsletter_campaigns(status);
+CREATE INDEX IF NOT EXISTS idx_campaigns_scheduled ON newsletter_campaigns(status, scheduled_at);
+CREATE INDEX IF NOT EXISTS idx_campaigns_created ON newsletter_campaigns(created_at DESC);
+
+-- ================================================
+-- Migration: Run these if tables already exist
+-- ================================================
+-- ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS unsubscribe_token TEXT UNIQUE DEFAULT gen_random_uuid();
+-- UPDATE subscribers SET unsubscribe_token = gen_random_uuid() WHERE unsubscribe_token IS NULL;

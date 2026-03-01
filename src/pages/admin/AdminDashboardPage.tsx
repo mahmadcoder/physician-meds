@@ -9,6 +9,7 @@ import {
   MessageCircle,
   Mail,
   Bot,
+  Newspaper,
 } from "lucide-react";
 
 import { useAdminData } from "./hooks/useAdminData";
@@ -33,6 +34,7 @@ import SubscribersTab from "./components/SubscribersTab";
 import BlogsTab from "./components/BlogsTab";
 import CommentsTab from "./components/CommentsTab";
 import ChatSessionsTab from "./components/ChatSessionsTab";
+import NewsletterTab from "./components/NewsletterTab";
 import ConfirmModal from "./components/ConfirmModal";
 
 const AdminDashboardPage = () => {
@@ -51,6 +53,7 @@ const AdminDashboardPage = () => {
     comments,
     ctaInquiries,
     chatSessions,
+    newsletterCampaigns,
     loading,
     expandedId,
     toggleExpanded,
@@ -71,6 +74,7 @@ const AdminDashboardPage = () => {
     pendingDelete,
     confirmDelete,
     cancelDelete,
+    refreshNewsletter,
   } = useAdminData();
 
   // ─── Navigation config ─────────────────────────────
@@ -106,6 +110,7 @@ const AdminDashboardPage = () => {
       label: "AUDIENCE",
       items: [
         { id: "subscribers", label: "Subscribers", icon: Mail, count: 0 },
+        { id: "newsletter", label: "Newsletter", icon: Newspaper, count: newsletterCampaigns.filter((c) => c.status === "scheduled").length },
       ],
     },
   ];
@@ -172,7 +177,7 @@ const AdminDashboardPage = () => {
   };
 
   // ─── Section summary text ──────────────────────────
-  const summaryText: Record<Exclude<Tab, "overview">, string> = {
+  const summaryText: Record<Exclude<Tab, "overview" | "newsletter">, string> = {
     contacts: `${contacts.length} total \u2022 ${contacts.filter((c) => !c.is_read).length} unread`,
     consultations: `${consultations.length} total \u2022 ${consultations.filter((c) => !c.is_read).length} unread`,
     subscribers: `${subscribers.length} total \u2022 ${subscribers.filter((s) => s.is_active).length} active`,
@@ -241,7 +246,7 @@ const AdminDashboardPage = () => {
 
           {activeTab !== "overview" && (
             <>
-              {activeTab !== "blogs" && (
+              {activeTab !== "blogs" && activeTab !== "newsletter" && (
                 <div className="mb-5">
                   <p className="text-sm text-gray-500">
                     {summaryText[activeTab]}
@@ -272,6 +277,9 @@ const AdminDashboardPage = () => {
                   )}
                   {activeTab === "chat-sessions" && (
                     <ChatSessionsTab sessions={chatSessions} expandedId={expandedId} onToggleExpanded={toggleExpanded} onMarkRead={(id) => markAsRead("chat-sessions", id)} onStatusChange={updateChatSessionStatus} onDelete={deleteChatSession} />
+                  )}
+                  {activeTab === "newsletter" && (
+                    <NewsletterTab campaigns={newsletterCampaigns} subscribers={subscribers} onRefresh={refreshNewsletter} />
                   )}
                 </>
               )}

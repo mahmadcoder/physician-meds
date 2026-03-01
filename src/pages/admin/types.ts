@@ -93,6 +93,26 @@ export interface ChatMessage {
   created_at: string;
 }
 
+export interface NewsletterCampaign {
+  id: string;
+  subject: string;
+  template_id: string;
+  heading: string;
+  body: string;
+  cta_text: string | null;
+  cta_url: string | null;
+  status: "draft" | "scheduled" | "sending" | "sent" | "failed";
+  recipient_type: "all" | "selected";
+  recipient_ids: string[];
+  recipient_count: number;
+  sent_count: number;
+  failed_count: number;
+  scheduled_at: string | null;
+  sent_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type Tab =
   | "overview"
   | "contacts"
@@ -101,7 +121,8 @@ export type Tab =
   | "blogs"
   | "comments"
   | "cta-inquiries"
-  | "chat-sessions";
+  | "chat-sessions"
+  | "newsletter";
 
 export interface NavItem {
   id: Tab;

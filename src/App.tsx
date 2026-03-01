@@ -43,6 +43,7 @@ import { ChatWidget } from "./components/Chatbot";
 import TestimonialsPage from "./pages/TestimonialsPage";
 import SitemapPage from "./pages/SitemapPage";
 import ContactUsPage from "./pages/ContactUsPage";
+import UnsubscribePage from "./pages/UnsubscribePage";
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminBlogEditorPage from "./pages/admin/AdminBlogEditorPage";
@@ -118,6 +119,7 @@ function AppContent() {
             <Route path="/blogs/:slug" element={<BlogArticlePage />} />
             <Route path="/testimonials" element={<TestimonialsPage />} />
             <Route path="/sitemap" element={<SitemapPage />} />
+            <Route path="/unsubscribe" element={<UnsubscribePage />} />
 
             {/* Admin Routes */}
             <Route path="/pm-portal-x9k2" element={<AdminLoginPage />} />

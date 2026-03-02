@@ -72,7 +72,6 @@ const LOGO_URL = "https://www.physicianmeds.com/logo.png";
 
 // ─── Email Preview Component ─────────────────────────────
 function EmailPreview({ form }: { form: CampaignForm }) {
-  const tpl = TEMPLATES.find((t) => t.id === form.template_id);
   const templateStyles: Record<string, { badge: string; badgeBg: string; badgeColor: string; accent: string; accentBg: string }> = {
     "general-update": { badge: "📬 Newsletter Update", badgeBg: "#eff6ff", badgeColor: "#1e40af", accent: "#2563eb", accentBg: "#eff6ff" },
     "blog-highlight": { badge: "📝 New on Our Blog", badgeBg: "#f5f3ff", badgeColor: "#6d28d9", accent: "#7c3aed", accentBg: "#f5f3ff" },

@@ -18,7 +18,7 @@ function sleep(ms: number) {
 function rewriteNewsletterImageUrls(html: string, siteUrl: string): string {
   const supabaseStorageRegex = /https:\/\/[a-z0-9]+\.supabase\.co\/storage\/v1\/object\/public\/[^"'\s]+/gi;
   return html.replace(supabaseStorageRegex, (url) => {
-    return `${siteUrl}/api/image-proxy?url=${encodeURIComponent(url)}`;
+    return `${siteUrl}/api/newsletter?url=${encodeURIComponent(url)}`;
   });
 }
 

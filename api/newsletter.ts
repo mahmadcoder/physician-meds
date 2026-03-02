@@ -4,12 +4,46 @@ import { sendEmail } from "./_lib/email.js";
 import { welcomeSubscriberTemplate, newsletterNotificationTemplate } from "./_lib/templates.js";
 import crypto from "crypto";
 
+const ALLOWED_IMAGE_HOST = "vjfzreaqjiztfmmlsskc.supabase.co";
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.method === "OPTIONS") return res.status(200).end();
+
+  // GET with url = image proxy for newsletter emails (avoids extra serverless function)
+  if (req.method === "GET" && req.query.url) {
+    const url = req.query.url as string;
+    let decoded: string;
+    try {
+      decoded = decodeURIComponent(url);
+    } catch {
+      return res.status(400).json({ error: "Invalid url" });
+    }
+    if (!decoded.startsWith("https://")) return res.status(400).json({ error: "Invalid url" });
+    let parsed: URL;
+    try {
+      parsed = new URL(decoded);
+    } catch {
+      return res.status(400).json({ error: "Invalid url" });
+    }
+    if (parsed.hostname !== ALLOWED_IMAGE_HOST || !parsed.pathname.includes("/storage/")) {
+      return res.status(403).json({ error: "URL not allowed" });
+    }
+    try {
+      const imgRes = await fetch(decoded, { headers: { "User-Agent": "PhysicianMeds/1.0" } });
+      if (!imgRes.ok) return res.status(imgRes.status).json({ error: "Failed to fetch image" });
+      res.setHeader("Cache-Control", "public, max-age=86400");
+      res.setHeader("Content-Type", imgRes.headers.get("content-type") || "image/jpeg");
+      return res.send(Buffer.from(await imgRes.arrayBuffer()));
+    } catch (err) {
+      console.error("Image proxy error:", err);
+      return res.status(502).json({ error: "Failed to fetch image" });
+    }
+  }
+
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   try {

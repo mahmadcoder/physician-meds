@@ -5,8 +5,10 @@ import {
   Loader2, Users, UserCheck, Search, ChevronDown,
 } from "lucide-react";
 import type { Subscriber, NewsletterCampaign } from "../types";
+import DOMPurify from "dompurify";
 import EmptyState from "./EmptyState";
 import ConfirmModal from "./ConfirmModal";
+import NewsletterRichEditor from "./NewsletterRichEditor";
 
 const TEMPLATES = [
   { id: "general-update", name: "General Update", description: "Monthly updates, tips, and company news", color: "#2563eb", icon: "📬" },
@@ -143,9 +145,14 @@ function EmailPreview({ form }: { form: CampaignForm }) {
             {form.heading || "Your headline here..."}
           </h2>
 
-          <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
-            {form.body || "Your newsletter content will appear here. Start typing to see a live preview of how your email will look to subscribers."}
-          </div>
+          <div
+            className="text-sm text-gray-600 leading-relaxed prose prose-sm max-w-none [&_img]:max-w-full [&_img]:rounded-lg"
+            dangerouslySetInnerHTML={{
+              __html: form.body
+                ? DOMPurify.sanitize(form.body, { ADD_ATTR: ["target"] })
+                : "<p class='text-gray-400'>Your newsletter content will appear here. Start typing to see a live preview of how your email will look to subscribers.</p>",
+            }}
+          />
 
           {form.cta_text && (
             <div className="text-center mt-6">
@@ -216,7 +223,8 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
     [activeSubscribers, subscriberSearch]
   );
 
-  const isFormValid = form.template_id && form.subject.trim() && form.heading.trim() && form.body.trim();
+  const bodyText = form.body.replace(/<[^>]*>/g, "").trim();
+  const isFormValid = form.template_id && form.subject.trim() && form.heading.trim() && bodyText.length > 0;
 
   const updateForm = useCallback((partial: Partial<CampaignForm>) => {
     setForm((prev) => ({ ...prev, ...partial }));
@@ -584,12 +592,10 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
 
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Body</label>
-              <textarea
+              <NewsletterRichEditor
                 value={form.body}
-                onChange={(e) => updateForm({ body: e.target.value })}
+                onChange={(html) => updateForm({ body: html })}
                 placeholder="Write your newsletter content here..."
-                rows={8}
-                className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all resize-y"
               />
             </div>
 
@@ -785,7 +791,7 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
                 <ul className="list-disc ml-3 space-y-0.5">
                   {!form.subject.trim() && <li>Subject line</li>}
                   {!form.heading.trim() && <li>Heading</li>}
-                  {!form.body.trim() && <li>Body content</li>}
+                  {!bodyText && <li>Body content</li>}
                 </ul>
               </div>
             </div>

@@ -666,7 +666,9 @@ export function newsletterCampaignTemplate(data: {
   ctaUrl?: string | null;
   unsubscribeToken: string;
 }) {
-  const bodyHtml = data.body.replace(/\n/g, "<br/>");
+  const bodyHtml = /<[a-z][\s\S]*>/i.test(data.body)
+    ? data.body
+    : data.body.replace(/\n/g, "<br/>");
 
   const ctaBlock = data.ctaText && data.ctaUrl ? (accent: string) => `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin-top: 28px;">

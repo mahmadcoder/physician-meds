@@ -204,3 +204,41 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #1a4fd9;
 }
+
+/* TipTap / Newsletter Rich Editor */
+.tiptap {
+  outline: none;
+  min-height: 200px;
+}
+.tiptap p {
+  margin: 0 0 0.75em 0;
+}
+.tiptap h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 1em 0 0.5em 0;
+}
+.tiptap h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.75em 0 0.5em 0;
+}
+.tiptap ul, .tiptap ol {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+.tiptap li {
+  margin: 0.25em 0;
+}
+.tiptap img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #9ca3af;
+  pointer-events: none;
+  height: 0;
+}

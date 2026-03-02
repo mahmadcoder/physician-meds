@@ -15,7 +15,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!verifyToken(req)) return res.status(401).json({ error: "Unauthorized" });
 
   try {
-    const { fileName, contentType, data } = req.body;
+    const { fileName, contentType, data, folder } = req.body;
 
     if (!fileName || !contentType || !data) {
       return res.status(400).json({ error: "fileName, contentType, and data (base64) are required." });
@@ -29,6 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const ext = fileName.split(".").pop() || "jpg";
     const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const storagePath = folder === "newsletter" ? `newsletter/${safeName}` : safeName;
 
     const { data: existing } = await supabase.storage.getBucket(BUCKET);
     if (!existing) {
@@ -37,7 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from(BUCKET)
-      .upload(safeName, buffer, {
+      .upload(storagePath, buffer, {
         contentType,
         cacheControl: "3600",
         upsert: false,

@@ -75,6 +75,9 @@ const AdminDashboardPage = () => {
     confirmDelete,
     cancelDelete,
     refreshNewsletter,
+    adminNotifications,
+    refreshNotifications,
+    dismissNotification,
   } = useAdminData();
 
   // ─── Navigation config ─────────────────────────────
@@ -141,6 +144,7 @@ const AdminDashboardPage = () => {
     .slice(0, 8);
 
   const recentUnread = recentItems.filter((i) => !i.isRead);
+  const unreadAdminNotifs = adminNotifications.filter((n) => !n.is_read);
 
   // ─── Global search data ────────────────────────────
   const searchResults: SearchResult[] = useMemo(() => {
@@ -205,6 +209,8 @@ const AdminDashboardPage = () => {
           notifOpen={notifOpen}
           notifRef={notifRef}
           recentUnread={recentUnread}
+          adminNotifications={unreadAdminNotifs}
+          onDismissNotification={dismissNotification}
           searchResults={searchResults}
           onToggleSidebar={() => setSidebarOpen(true)}
           onToggleNotif={() => setNotifOpen(!notifOpen)}
@@ -270,7 +276,7 @@ const AdminDashboardPage = () => {
                   {activeTab === "cta-inquiries" && (
                     <CtaInquiriesTab ctaInquiries={ctaInquiries} expandedId={expandedId} onToggleExpanded={toggleExpanded} onMarkRead={(id) => markAsRead("cta-inquiries", id)} onStatusChange={(id, status) => updateStatus(id, status, "cta-inquiries")} />
                   )}
-                  {activeTab === "subscribers" && <SubscribersTab subscribers={subscribers} />}
+                  {activeTab === "subscribers" && <SubscribersTab subscribers={subscribers} campaigns={newsletterCampaigns} />}
                   {activeTab === "blogs" && <BlogsTab blogs={blogs} onTogglePublish={togglePublish} onDelete={deleteBlog} />}
                   {activeTab === "comments" && (
                     <CommentsTab comments={comments} expandedId={expandedId} onToggleExpanded={toggleExpanded} onMarkRead={(id) => markAsRead("comments", id)} onDelete={deleteComment} />
@@ -279,7 +285,14 @@ const AdminDashboardPage = () => {
                     <ChatSessionsTab sessions={chatSessions} expandedId={expandedId} onToggleExpanded={toggleExpanded} onMarkRead={(id) => markAsRead("chat-sessions", id)} onStatusChange={updateChatSessionStatus} onDelete={deleteChatSession} />
                   )}
                   {activeTab === "newsletter" && (
-                    <NewsletterTab campaigns={newsletterCampaigns} subscribers={subscribers} onRefresh={refreshNewsletter} />
+                    <NewsletterTab
+                      campaigns={newsletterCampaigns}
+                      subscribers={subscribers}
+                      onRefresh={() => {
+                        refreshNewsletter();
+                        refreshNotifications();
+                      }}
+                    />
                   )}
                 </>
               )}

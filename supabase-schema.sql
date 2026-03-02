@@ -159,8 +159,29 @@ CREATE INDEX IF NOT EXISTS idx_campaigns_status ON newsletter_campaigns(status);
 CREATE INDEX IF NOT EXISTS idx_campaigns_scheduled ON newsletter_campaigns(status, scheduled_at);
 CREATE INDEX IF NOT EXISTS idx_campaigns_created ON newsletter_campaigns(created_at DESC);
 
+-- Admin notifications (newsletter sent, user unsubscribed, etc.)
+CREATE TABLE IF NOT EXISTS admin_notifications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    message TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    is_read BOOLEAN DEFAULT FALSE
+);
+CREATE INDEX IF NOT EXISTS idx_admin_notifications_unread ON admin_notifications(is_read, created_at DESC);
+
 -- ================================================
 -- Migration: Run these if tables already exist
 -- ================================================
 -- ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS unsubscribe_token TEXT UNIQUE DEFAULT gen_random_uuid();
 -- UPDATE subscribers SET unsubscribe_token = gen_random_uuid() WHERE unsubscribe_token IS NULL;
+
+-- Admin notifications (run if table doesn't exist):
+-- CREATE TABLE IF NOT EXISTS admin_notifications (
+--     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--     type TEXT NOT NULL,
+--     title TEXT NOT NULL,
+--     message TEXT,
+--     created_at TIMESTAMPTZ DEFAULT NOW(),
+--     is_read BOOLEAN DEFAULT FALSE
+-- );

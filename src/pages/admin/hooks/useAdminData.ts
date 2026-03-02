@@ -12,6 +12,15 @@ import type {
   NewsletterCampaign,
 } from "../types";
 
+export interface AdminNotification {
+  id: string;
+  type: string;
+  title: string;
+  message: string | null;
+  created_at: string;
+  is_read: boolean;
+}
+
 const ADMIN_LOGIN_PATH = "/pm-portal-x9k2";
 const SESSION_DURATION = 60 * 60 * 1000; // 1 hour
 const SESSION_CHECK_INTERVAL = 60 * 1000; // 1 minute
@@ -38,6 +47,7 @@ export function useAdminData() {
   const [ctaInquiries, setCtaInquiries] = useState<CtaInquiry[]>([]);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [newsletterCampaigns, setNewsletterCampaigns] = useState<NewsletterCampaign[]>([]);
+  const [adminNotifications, setAdminNotifications] = useState<AdminNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -133,6 +143,12 @@ export function useAdminData() {
           setters[key]?.(data);
         }
       });
+
+      const notifRes = await fetch("/api/admin/notifications", { headers: authHeaders() });
+      if (notifRes.ok) {
+        const notifs = await notifRes.json();
+        setAdminNotifications(notifs);
+      }
     } catch (err) {
       console.error("Fetch all error:", err);
     } finally {
@@ -278,9 +294,32 @@ export function useAdminData() {
     consultations.filter((c) => !c.is_read).length +
     comments.filter((c) => !c.is_read).length +
     ctaInquiries.filter((c) => !c.is_read).length +
-    chatSessions.filter((c) => !c.is_read).length;
+    chatSessions.filter((c) => !c.is_read).length +
+    adminNotifications.filter((n) => !n.is_read).length;
 
   const refreshNewsletter = () => fetchData("newsletter");
+
+  const refreshNotifications = async () => {
+    try {
+      const res = await fetch("/api/admin/notifications", { headers: authHeaders() });
+      if (res.ok) setAdminNotifications(await res.json());
+    } catch (err) {
+      console.error("Fetch notifications error:", err);
+    }
+  };
+
+  const dismissNotification = async (id: string) => {
+    try {
+      await fetch("/api/admin/notifications", {
+        method: "PUT",
+        headers: authHeaders(),
+        body: JSON.stringify({ id, is_read: true }),
+      });
+      setAdminNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));
+    } catch (err) {
+      console.error("Dismiss notification error:", err);
+    }
+  };
 
   return {
     activeTab,
@@ -314,5 +353,8 @@ export function useAdminData() {
     confirmDelete,
     cancelDelete,
     refreshNewsletter,
+    adminNotifications,
+    refreshNotifications,
+    dismissNotification,
   };
 }

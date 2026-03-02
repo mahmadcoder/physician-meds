@@ -1,5 +1,6 @@
-import { Menu, Bell } from "lucide-react";
+import { Menu, Bell, X, Send, Mail } from "lucide-react";
 import type { Tab, RecentItem, SearchResult } from "../types";
+import type { AdminNotification } from "../hooks/useAdminData";
 import GlobalSearch from "./GlobalSearch";
 
 function formatDate(dateStr: string) {
@@ -18,6 +19,8 @@ interface AdminTopBarProps {
   notifOpen: boolean;
   notifRef: React.RefObject<HTMLDivElement | null>;
   recentUnread: RecentItem[];
+  adminNotifications?: AdminNotification[];
+  onDismissNotification?: (id: string) => void;
   searchResults: SearchResult[];
   onToggleSidebar: () => void;
   onToggleNotif: () => void;
@@ -31,6 +34,8 @@ export default function AdminTopBar({
   notifOpen,
   notifRef,
   recentUnread,
+  adminNotifications = [],
+  onDismissNotification,
   searchResults,
   onToggleSidebar,
   onToggleNotif,
@@ -84,12 +89,52 @@ export default function AdminTopBar({
                   </span>
                 </div>
                 <div className="max-h-80 overflow-y-auto divide-y divide-gray-50">
-                  {recentUnread.length === 0 ? (
+                  {adminNotifications.length > 0 && (
+                    <>
+                      {adminNotifications.slice(0, 6).map((n) => (
+                        <div
+                          key={n.id}
+                          className="px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors group"
+                        >
+                          <div
+                            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                            style={{
+                              backgroundColor: n.type === "newsletter_sent" ? "#05966912" : "#d9770612",
+                            }}
+                          >
+                            {n.type === "newsletter_sent" ? (
+                              <Send className="w-4 h-4" style={{ color: "#059669" }} />
+                            ) : (
+                              <Mail className="w-4 h-4" style={{ color: "#d97706" }} />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-800 truncate">{n.title}</p>
+                            <p className="text-[11px] text-gray-400 truncate">{n.message}</p>
+                            <p className="text-[10px] text-gray-400 mt-0.5">{formatDate(n.created_at)}</p>
+                          </div>
+                          {onDismissNotification && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDismissNotification(n.id);
+                              }}
+                              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 shrink-0"
+                              title="Dismiss"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </>
+                  )}
+                  {recentUnread.length === 0 && adminNotifications.length === 0 ? (
                     <div className="px-4 py-8 text-center text-sm text-gray-400">
                       All caught up!
                     </div>
                   ) : (
-                    recentUnread.slice(0, 6).map((item, i) => {
+                    recentUnread.slice(0, 6 - adminNotifications.length).map((item, i) => {
                       const Icon = item.icon;
                       return (
                         <div

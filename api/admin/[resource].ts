@@ -137,6 +137,12 @@ async function sendCampaignEmails(campaignId: string) {
     console.error("Team notification failed:", e);
   }
 
+  await supabase.from("admin_notifications").insert({
+    type: "newsletter_sent",
+    title: "Newsletter sent",
+    message: `"${campaign.subject}" delivered to ${sentCount} subscribers.`,
+  });
+
   return { sentCount, failedCount, recipientCount: subscribers.length };
 }
 
@@ -546,6 +552,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           const { id } = req.body;
           if (!id) return res.status(400).json({ error: "Campaign ID is required." });
           const { error } = await supabase.from("newsletter_campaigns").delete().eq("id", id);
+          if (error) throw error;
+          return res.status(200).json({ success: true });
+        }
+        return res.status(405).json({ error: "Method not allowed" });
+      }
+
+      // ─── Admin notifications ─────────────────────────
+      case "notifications": {
+        if (req.method === "GET") {
+          const { data, error } = await supabase
+            .from("admin_notifications")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(50);
+          if (error) throw error;
+          return res.status(200).json(data || []);
+        }
+        if (req.method === "PUT") {
+          const { id, is_read } = req.body;
+          if (!id) return res.status(400).json({ error: "ID is required." });
+          const { error } = await supabase
+            .from("admin_notifications")
+            .update({ is_read: is_read !== undefined ? is_read : true })
+            .eq("id", id);
           if (error) throw error;
           return res.status(200).json({ success: true });
         }

@@ -68,6 +68,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         console.error("Unsubscribe notification emails failed:", emailError);
       }
 
+      await supabase.from("admin_notifications").insert({
+        type: "unsubscribed",
+        title: "User unsubscribed",
+        message: `${subscriber.email} unsubscribed from the newsletter.`,
+      });
+
       return res.status(200).json({ success: true, message: "Successfully unsubscribed.", email: subscriber.email });
     }
 

@@ -568,7 +568,7 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
                           <FileText className="w-4 h-4" />
                         </button>
                       )}
-                      {(c.status === "draft" || c.status === "failed") && (
+                      {(c.status === "draft" || c.status === "scheduled" || c.status === "failed") && (
                         <button
                           onClick={() => setDeleteTarget(c.id)}
                           className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"

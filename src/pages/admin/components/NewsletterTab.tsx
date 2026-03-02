@@ -68,17 +68,19 @@ function statusBadge(status: string) {
   );
 }
 
+const LOGO_URL = "https://www.physicianmeds.com/logo.png";
+
 // ─── Email Preview Component ─────────────────────────────
 function EmailPreview({ form }: { form: CampaignForm }) {
   const tpl = TEMPLATES.find((t) => t.id === form.template_id);
-  const badgeStyles: Record<string, { bg: string; color: string; label: string }> = {
-    "general-update": { bg: "#eff6ff", color: "#1e40af", label: "📬 Newsletter Update" },
-    "blog-highlight": { bg: "#f5f3ff", color: "#6d28d9", label: "📝 New on Our Blog" },
-    "service-spotlight": { bg: "#ecfdf5", color: "#065f46", label: "⭐ Service Spotlight" },
-    "industry-news": { bg: "#fffbeb", color: "#92400e", label: "📰 Industry Update" },
-    "special-announcement": { bg: "#fef2f2", color: "#991b1b", label: "📢 Important Update" },
+  const templateStyles: Record<string, { badge: string; badgeBg: string; badgeColor: string; accent: string; accentBg: string }> = {
+    "general-update": { badge: "📬 Newsletter Update", badgeBg: "#eff6ff", badgeColor: "#1e40af", accent: "#2563eb", accentBg: "#eff6ff" },
+    "blog-highlight": { badge: "📝 New on Our Blog", badgeBg: "#f5f3ff", badgeColor: "#6d28d9", accent: "#7c3aed", accentBg: "#f5f3ff" },
+    "service-spotlight": { badge: "⭐ Service Spotlight", badgeBg: "#ecfdf5", badgeColor: "#065f46", accent: "#059669", accentBg: "#ecfdf5" },
+    "industry-news": { badge: "📰 Industry Update", badgeBg: "#fffbeb", badgeColor: "#92400e", accent: "#d97706", accentBg: "#fffbeb" },
+    "special-announcement": { badge: "📢 Important Update", badgeBg: "#fef2f2", badgeColor: "#991b1b", accent: "#dc2626", accentBg: "#fef2f2" },
   };
-  const badge = badgeStyles[form.template_id] || badgeStyles["general-update"];
+  const style = templateStyles[form.template_id] || templateStyles["general-update"];
 
   if (!form.template_id) {
     return (
@@ -94,24 +96,49 @@ function EmailPreview({ form }: { form: CampaignForm }) {
   return (
     <div className="bg-[#f1f5f9] rounded-xl p-4 overflow-auto max-h-[600px] [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: "none" }}>
       <div className="max-w-[460px] mx-auto bg-white rounded-xl overflow-hidden shadow-sm" style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
-        {/* Header */}
+        {/* Header - Real logo like team emails */}
         <div className="text-center px-5 pt-6 pb-4 border-b border-gray-100">
-          <div className="w-10 h-10 bg-blue-600 rounded-lg mx-auto mb-2 flex items-center justify-center">
-            <span className="text-white text-sm font-bold">PM</span>
-          </div>
+          <a href="https://www.physicianmeds.com" className="block">
+            <img src={LOGO_URL} alt="PhysicianMeds" className="w-[52px] h-auto mx-auto mb-3" />
+          </a>
           <p className="text-base font-bold">
             <span className="text-gray-900">Physician</span>
             <span className="text-blue-600">Meds</span>
           </p>
           <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-0.5">Healthcare Revenue Management</p>
-          <div className="h-0.5 bg-blue-600 rounded mt-3" />
+          <div className="h-0.5 rounded mt-3" style={{ backgroundColor: style.accent }} />
         </div>
 
-        {/* Content */}
+        {/* Content - template-specific styling (matches backend templates) */}
         <div className="px-5 py-5">
-          <div className="inline-block rounded-lg px-3 py-1.5 text-xs font-bold mb-3" style={{ backgroundColor: badge.bg, color: badge.color }}>
-            {badge.label}
-          </div>
+          {form.template_id === "service-spotlight" && (
+            <div className="flex rounded-xl overflow-hidden mb-4 border border-[#d1fae5]" style={{ backgroundColor: style.accentBg }}>
+              <div className="w-12 flex items-center justify-center text-xl" style={{ backgroundColor: "#d1fae5" }}>⭐</div>
+              <div className="px-4 py-3">
+                <p className="text-sm font-bold" style={{ color: style.badgeColor }}>Service Spotlight</p>
+                <p className="text-xs text-gray-500">Featured medical billing insight</p>
+              </div>
+            </div>
+          )}
+          {form.template_id === "special-announcement" && (
+            <div className="rounded-lg py-3 px-4 mb-4" style={{ backgroundColor: style.accentBg, borderTop: `3px solid ${style.accent}` }}>
+              <span className="text-xs font-bold" style={{ color: style.badgeColor }}>📢 IMPORTANT ANNOUNCEMENT</span>
+            </div>
+          )}
+          {form.template_id === "industry-news" && (
+            <div className="rounded-lg px-3 py-2.5 mb-4" style={{ backgroundColor: style.accentBg, borderTop: `3px solid ${style.accent}` }}>
+              <span className="text-xs font-bold block" style={{ color: style.badgeColor }}>📰 INDUSTRY UPDATE</span>
+              <span className="text-[10px] text-gray-500">Regulatory & compliance news</span>
+            </div>
+          )}
+          {!["service-spotlight", "special-announcement", "industry-news"].includes(form.template_id) && (
+            <div
+              className="rounded-lg px-3 py-2 text-xs font-bold mb-4"
+              style={{ backgroundColor: style.badgeBg, color: style.badgeColor, borderLeft: form.template_id === "blog-highlight" ? `4px solid ${style.accent}` : undefined }}
+            >
+              {style.badge}
+            </div>
+          )}
 
           <h2 className="text-lg font-bold text-gray-900 leading-snug mb-3">
             {form.heading || "Your headline here..."}
@@ -122,10 +149,10 @@ function EmailPreview({ form }: { form: CampaignForm }) {
           </div>
 
           {form.cta_text && (
-            <div className="text-center mt-5">
+            <div className="text-center mt-6">
               <span
                 className="inline-block text-white text-sm font-semibold px-6 py-2.5 rounded-lg"
-                style={{ backgroundColor: tpl?.color || "#2563eb" }}
+                style={{ backgroundColor: style.accent }}
               >
                 {form.cta_text} →
               </span>
@@ -133,13 +160,15 @@ function EmailPreview({ form }: { form: CampaignForm }) {
           )}
         </div>
 
-        {/* Footer */}
+        {/* Footer - proper spacing */}
         <div className="bg-gray-50 px-5 py-4 text-center border-t border-gray-100">
           <p className="text-[11px] text-gray-500 font-semibold">PhysicianMeds</p>
           <p className="text-[10px] text-gray-400 mt-0.5">3044 Breckenridge Ln STE102-404, Louisville, KY 40220</p>
-          <div className="mt-2 pt-2 border-t border-gray-200">
-            <p className="text-[10px] text-gray-300">
-              <span className="underline">Unsubscribe</span> · <span className="underline">Privacy Policy</span>
+          <div className="mt-3 pt-3 border-t border-gray-200">
+            <p className="text-[10px] text-gray-400">
+              <span className="underline">Unsubscribe</span>
+              <span className="mx-2">·</span>
+              <span className="underline">Privacy Policy</span>
             </p>
           </div>
         </div>

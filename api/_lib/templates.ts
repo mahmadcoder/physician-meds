@@ -83,7 +83,7 @@ function subscriberFooterHtml(unsubscribeToken: string) {
           <p style="margin: 0; color: #94a3b8; font-size: 11px; line-height: 1.6;">
             You received this email because you subscribed to PhysicianMeds newsletter.<br/>
             <a href="${unsubscribeUrl}" style="color: #94a3b8; text-decoration: underline;">Unsubscribe</a>
-            &nbsp;&#8226;&nbsp;
+            &nbsp;&nbsp;&#8226;&nbsp;&nbsp;
             <a href="${siteUrl}/privacy-policy" style="color: #94a3b8; text-decoration: underline;">Privacy Policy</a>
           </p>
         </div>
@@ -657,6 +657,7 @@ export function unsubscribeTeamNotificationTemplate(email: string) {
 }
 
 // ─── Newsletter Campaign: email to subscribers ──────────────────
+// Each template has a distinct visual design (not just badge color)
 export function newsletterCampaignTemplate(data: {
   templateId: string;
   heading: string;
@@ -665,49 +666,126 @@ export function newsletterCampaignTemplate(data: {
   ctaUrl?: string | null;
   unsubscribeToken: string;
 }) {
-  const templateConfig: Record<string, { badge: string; badgeBg: string; badgeColor: string; accent: string }> = {
-    "general-update": { badge: "📬 Newsletter Update", badgeBg: "#eff6ff", badgeColor: "#1e40af", accent: brandBlue },
-    "blog-highlight": { badge: "📝 New on Our Blog", badgeBg: "#f5f3ff", badgeColor: "#6d28d9", accent: "#7c3aed" },
-    "service-spotlight": { badge: "⭐ Service Spotlight", badgeBg: "#ecfdf5", badgeColor: "#065f46", accent: "#059669" },
-    "industry-news": { badge: "📰 Industry Update", badgeBg: "#fffbeb", badgeColor: "#92400e", accent: "#d97706" },
-    "special-announcement": { badge: "📢 Important Update", badgeBg: "#fef2f2", badgeColor: "#991b1b", accent: "#dc2626" },
-  };
-
-  const cfg = templateConfig[data.templateId] || templateConfig["general-update"];
   const bodyHtml = data.body.replace(/\n/g, "<br/>");
 
-  const ctaBlock = data.ctaText && data.ctaUrl ? `
+  const ctaBlock = data.ctaText && data.ctaUrl ? (accent: string) => `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin-top: 28px;">
       <tr>
         <td align="center">
-          <a href="${data.ctaUrl}" style="display: inline-block; background-color: ${cfg.accent}; color: #ffffff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px;">
+          <a href="${data.ctaUrl}" style="display: inline-block; background-color: ${accent}; color: #ffffff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px;">
             ${data.ctaText} &rarr;
           </a>
         </td>
       </tr>
-    </table>` : "";
+    </table>` : () => "";
+
+  const templates: Record<string, () => string> = {
+    "general-update": () => {
+      const accent = brandBlue;
+      return `
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; border-left: 4px solid ${accent};">
+            <span style="font-size: 14px; font-weight: 700; color: #1e40af;">📬 Newsletter Update</span>
+          </div>
+          <h2 style="margin: 0 0 16px 0; font-size: 22px; color: #1e293b; font-weight: 700; line-height: 1.35;">${data.heading}</h2>
+          <div style="color: #475569; line-height: 1.8; font-size: 15px;">${bodyHtml}</div>
+          ${ctaBlock(accent)}
+        </td>
+      </tr>`;
+    },
+    "blog-highlight": () => {
+      const accent = "#7c3aed";
+      return `
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #faf5ff; border: 1px solid #e9d5ff; border-radius: 12px; margin-bottom: 24px;">
+            <tr>
+              <td style="padding: 14px 20px; border-left: 4px solid ${accent};">
+                <span style="font-size: 13px; font-weight: 700; color: #6d28d9; letter-spacing: 0.5px;">📝 NEW ON OUR BLOG</span>
+              </td>
+            </tr>
+          </table>
+          <h2 style="margin: 0 0 16px 0; font-size: 22px; color: #1e293b; font-weight: 700; line-height: 1.35;">${data.heading}</h2>
+          <div style="color: #475569; line-height: 1.8; font-size: 15px;">${bodyHtml}</div>
+          ${ctaBlock(accent)}
+        </td>
+      </tr>`;
+    },
+    "service-spotlight": () => {
+      const accent = "#059669";
+      return `
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ecfdf5; border-radius: 12px; overflow: hidden; margin-bottom: 24px; border: 1px solid #d1fae5;">
+            <tr>
+              <td width="56" valign="middle" style="padding: 16px; background-color: #d1fae5; text-align: center; font-size: 24px;">⭐</td>
+              <td style="padding: 16px 20px;">
+                <span style="font-size: 14px; font-weight: 700; color: #065f46;">Service Spotlight</span>
+                <p style="margin: 0; font-size: 12px; color: #047857;">Featured medical billing insight</p>
+              </td>
+            </tr>
+          </table>
+          <h2 style="margin: 0 0 16px 0; font-size: 22px; color: #1e293b; font-weight: 700; line-height: 1.35;">${data.heading}</h2>
+          <div style="color: #475569; line-height: 1.8; font-size: 15px;">${bodyHtml}</div>
+          ${ctaBlock(accent)}
+        </td>
+      </tr>`;
+    },
+    "industry-news": () => {
+      const accent = "#d97706";
+      return `
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 32px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #fffbeb; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; border-top: 3px solid ${accent};">
+            <tr>
+              <td>
+                <span style="font-size: 13px; font-weight: 700; color: #92400e;">📰 INDUSTRY UPDATE</span>
+                <p style="margin: 4px 0 0 0; font-size: 11px; color: #a16207;">Regulatory & compliance news</p>
+              </td>
+            </tr>
+          </table>
+          <h2 style="margin: 0 0 16px 0; font-size: 22px; color: #1e293b; font-weight: 700; line-height: 1.35;">${data.heading}</h2>
+          <div style="color: #475569; line-height: 1.8; font-size: 15px;">${bodyHtml}</div>
+          ${ctaBlock(accent)}
+        </td>
+      </tr>`;
+    },
+    "special-announcement": () => {
+      const accent = "#dc2626";
+      return `
+      <tr><td>${headerHtml()}</td></tr>
+      <tr>
+        <td style="padding: 0;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); padding: 20px 32px; border-bottom: 3px solid ${accent};">
+            <tr>
+              <td>
+                <span style="font-size: 14px; font-weight: 700; color: #991b1b;">📢 IMPORTANT ANNOUNCEMENT</span>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 32px;">
+          <h2 style="margin: 0 0 16px 0; font-size: 22px; color: #1e293b; font-weight: 700; line-height: 1.35;">${data.heading}</h2>
+          <div style="color: #475569; line-height: 1.8; font-size: 15px;">${bodyHtml}</div>
+          ${ctaBlock(accent)}
+        </td>
+      </tr>`;
+    },
+  };
+
+  const render = templates[data.templateId] || templates["general-update"];
 
   return `
   <div style="max-width: 600px; margin: 0 auto; ${brandStyles}">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
-      <tr><td>${headerHtml()}</td></tr>
-      <tr>
-        <td style="padding: 32px;">
-          <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
-            <tr>
-              <td style="background-color: ${cfg.badgeBg}; border-radius: 10px; padding: 10px 16px;">
-                <span style="font-size: 15px; font-weight: 700; color: ${cfg.badgeColor};">${cfg.badge}</span>
-              </td>
-            </tr>
-          </table>
-
-          <h2 style="margin: 20px 0 16px 0; font-size: 22px; color: #1e293b; font-weight: 700; line-height: 1.35;">${data.heading}</h2>
-
-          <div style="color: #475569; line-height: 1.8; font-size: 15px;">${bodyHtml}</div>
-
-          ${ctaBlock}
-        </td>
-      </tr>
+      ${render()}
       <tr><td>${subscriberFooterHtml(data.unsubscribeToken)}</td></tr>
     </table>
   </div>`;

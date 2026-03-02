@@ -664,22 +664,36 @@ export function newsletterCampaignTemplate(data: {
   body: string;
   ctaText?: string | null;
   ctaUrl?: string | null;
+  ctaButtons?: { text: string; url: string }[];
   unsubscribeToken: string;
 }) {
   const bodyHtml = /<[a-z][\s\S]*>/i.test(data.body)
     ? data.body
     : data.body.replace(/\n/g, "<br/>");
 
-  const ctaBlock = data.ctaText && data.ctaUrl ? (accent: string) => `
+  const buttons: { text: string; url: string }[] =
+    data.ctaButtons?.length
+      ? data.ctaButtons.filter((b) => b?.text?.trim() && b?.url?.trim())
+      : data.ctaText && data.ctaUrl
+        ? [{ text: data.ctaText, url: data.ctaUrl }]
+        : [];
+
+  const ctaBlock = (accent: string) =>
+    buttons.length === 0
+      ? ""
+      : `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin-top: 28px;">
       <tr>
-        <td align="center">
-          <a href="${data.ctaUrl}" style="display: inline-block; background-color: ${accent}; color: #ffffff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px;">
-            ${data.ctaText} &rarr;
-          </a>
+        <td align="center" style="padding: 8px 0;">
+          ${buttons
+            .map(
+              (b) =>
+                `<a href="${b.url}" style="display: inline-block; background-color: ${accent}; color: #ffffff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; margin: 4px 8px;">${b.text} &rarr;</a>`
+            )
+            .join("")}
         </td>
       </tr>
-    </table>` : () => "";
+    </table>`;
 
   const templates: Record<string, () => string> = {
     "general-update": () => {

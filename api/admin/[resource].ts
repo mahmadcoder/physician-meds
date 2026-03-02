@@ -14,6 +14,30 @@ function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+/** Rewrite img src from Supabase storage to our proxy so Gmail/Outlook load images from our domain */
+function rewriteNewsletterImageUrls(html: string, siteUrl: string): string {
+  const supabaseStorageRegex = /https:\/\/[a-z0-9]+\.supabase\.co\/storage\/v1\/object\/public\/[^"'\s]+/gi;
+  return html.replace(supabaseStorageRegex, (url) => {
+    return `${siteUrl}/api/image-proxy?url=${encodeURIComponent(url)}`;
+  });
+}
+
+function parseCtaButtons(ctaText: string | null, ctaUrl: string | null): { text: string; url: string }[] {
+  if (!ctaText?.trim()) return [];
+  try {
+    if (ctaText.trim().startsWith("[")) {
+      const arr = JSON.parse(ctaText) as { text?: string; url?: string }[];
+      return Array.isArray(arr)
+        ? arr.filter((b) => b?.text?.trim()).map((b) => ({ text: b.text || "", url: b.url || "" }))
+        : [];
+    }
+  } catch {
+    /* ignore */
+  }
+  if (ctaText?.trim() && ctaUrl?.trim()) return [{ text: ctaText.trim(), url: ctaUrl.trim() }];
+  return [];
+}
+
 async function sendCampaignEmails(campaignId: string) {
   const { data: campaign, error: campErr } = await supabase
     .from("newsletter_campaigns")
@@ -52,21 +76,27 @@ async function sendCampaignEmails(campaignId: string) {
 
   for (let i = 0; i < subscribers.length; i += BATCH_SIZE) {
     const batch = subscribers.slice(i, i + BATCH_SIZE);
+    const siteUrl = process.env.SITE_URL || "https://www.physicianmeds.com";
     const results = await Promise.allSettled(
-      batch.map((sub) =>
-        sendEmail({
+      batch.map((sub) => {
+        const unsubscribeUrl = `${siteUrl}/unsubscribe?token=${sub.unsubscribe_token}`;
+        return sendEmail({
           to: sub.email,
           subject: campaign.subject,
           html: newsletterCampaignTemplate({
             templateId: campaign.template_id,
             heading: campaign.heading,
-            body: campaign.body,
-            ctaText: campaign.cta_text,
-            ctaUrl: campaign.cta_url,
+            body: rewriteNewsletterImageUrls(campaign.body, siteUrl),
+            ctaButtons: parseCtaButtons(campaign.cta_text, campaign.cta_url),
             unsubscribeToken: sub.unsubscribe_token,
           }),
-        })
-      )
+          headers: {
+            "List-Unsubscribe": `<${unsubscribeUrl}>`,
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+            "Reply-To": process.env.EMAIL_USER || "info@physicianmeds.com",
+          },
+        });
+      })
     );
 
     results.forEach((r) => {
@@ -125,11 +155,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const resource = req.query.resource as string;
 
-  // ─── External cron: process scheduled newsletters (no auth, uses CRON_SECRET) ──
+  // ─── Process scheduled newsletters: cron (CRON_SECRET) or admin (Bearer token) ──
   if (resource === "newsletter" && req.method === "GET") {
     const processScheduled = req.query.process_scheduled === "1";
     const cronSecret = req.query.secret as string;
-    if (processScheduled && cronSecret === process.env.CRON_SECRET) {
+    const isCronAuth = processScheduled && cronSecret === process.env.CRON_SECRET;
+    const isAdminAuth = processScheduled && verifyToken(req);
+    if (isCronAuth || isAdminAuth) {
       try {
         const now = new Date().toISOString();
         const { data: campaigns, error: fetchErr } = await supabase
@@ -474,6 +506,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
           if (action === "send") {
             try {
+              const { subject, template_id, heading, body, cta_text, cta_url, recipient_type, recipient_ids } = updates;
+              const updateFields: Record<string, unknown> = { updated_at: new Date().toISOString() };
+              if (subject !== undefined) updateFields.subject = subject;
+              if (template_id !== undefined) updateFields.template_id = template_id;
+              if (heading !== undefined) updateFields.heading = heading;
+              if (body !== undefined) updateFields.body = body;
+              if (cta_text !== undefined) updateFields.cta_text = cta_text || null;
+              if (cta_url !== undefined) updateFields.cta_url = cta_url || null;
+              if (recipient_type !== undefined) updateFields.recipient_type = recipient_type;
+              if (recipient_ids !== undefined) updateFields.recipient_ids = recipient_ids;
+              if (Object.keys(updateFields).length > 1) {
+                await supabase.from("newsletter_campaigns").update(updateFields).eq("id", id);
+              }
               const result = await sendCampaignEmails(id);
               const { data: updated } = await supabase
                 .from("newsletter_campaigns")

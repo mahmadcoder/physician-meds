@@ -4,6 +4,8 @@ interface EmailOptions {
   to: string;
   subject: string;
   html: string;
+  /** Optional headers (e.g. List-Unsubscribe for newsletters) */
+  headers?: Record<string, string>;
 }
 
 function createTransporter() {
@@ -21,12 +23,13 @@ function createTransporter() {
   });
 }
 
-export async function sendEmail({ to, subject, html }: EmailOptions) {
+export async function sendEmail({ to, subject, html, headers }: EmailOptions) {
   const transporter = createTransporter();
   await transporter.sendMail({
     from: `"PhysicianMeds" <${process.env.EMAIL_USER}>`,
     to,
     subject,
     html,
+    headers: headers as Record<string, string | string[]>,
   });
 }

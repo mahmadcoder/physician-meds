@@ -2,10 +2,11 @@ import { useState, useMemo, useCallback } from "react";
 import {
   Plus, ArrowLeft, Send, Save, Eye, Trash2, MailCheck,
   CalendarClock, FileText, AlertCircle,
-  Loader2, Users, UserCheck, Search, ChevronDown,
+  Loader2, Users, UserCheck, Search, ChevronDown, PlusCircle, X,
 } from "lucide-react";
 import type { Subscriber, NewsletterCampaign } from "../types";
 import DOMPurify from "dompurify";
+import { toast } from "sonner";
 import EmptyState from "./EmptyState";
 import ConfirmModal from "./ConfirmModal";
 import NewsletterRichEditor from "./NewsletterRichEditor";
@@ -21,13 +22,17 @@ const TEMPLATES = [
 type View = "list" | "create" | "edit";
 type StatusFilter = "all" | "sent" | "scheduled" | "draft" | "failed";
 
+export interface CtaButton {
+  text: string;
+  url: string;
+}
+
 interface CampaignForm {
   template_id: string;
   subject: string;
   heading: string;
   body: string;
-  cta_text: string;
-  cta_url: string;
+  cta_buttons: CtaButton[];
   recipient_type: "all" | "selected";
   recipient_ids: string[];
   schedule: boolean;
@@ -39,13 +44,33 @@ const emptyForm: CampaignForm = {
   subject: "",
   heading: "",
   body: "",
-  cta_text: "",
-  cta_url: "",
+  cta_buttons: [{ text: "", url: "" }],
   recipient_type: "all",
   recipient_ids: [],
   schedule: false,
   scheduled_at: "",
 };
+
+function parseCtaButtons(cta_text: string | null, cta_url: string | null): CtaButton[] {
+  if (!cta_text?.trim()) return [];
+  try {
+    if (cta_text.trim().startsWith("[")) {
+      const arr = JSON.parse(cta_text) as { text?: string; url?: string }[];
+      return Array.isArray(arr) ? arr.filter((b) => b?.text?.trim()).map((b) => ({ text: b.text || "", url: b.url || "" })) : [];
+    }
+  } catch {
+    /* ignore */
+  }
+  if (cta_text?.trim() && cta_url?.trim()) return [{ text: cta_text.trim(), url: cta_url.trim() }];
+  return [];
+}
+
+function serializeCtaButtons(buttons: CtaButton[]): { cta_text: string; cta_url: string } {
+  const valid = buttons.filter((b) => b.text?.trim() && b.url?.trim());
+  if (valid.length === 0) return { cta_text: "", cta_url: "" };
+  if (valid.length === 1) return { cta_text: valid[0].text, cta_url: valid[0].url };
+  return { cta_text: JSON.stringify(valid), cta_url: "" };
+}
 
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString("en-US", {
@@ -154,14 +179,19 @@ function EmailPreview({ form }: { form: CampaignForm }) {
             }}
           />
 
-          {form.cta_text && (
-            <div className="text-center mt-6">
-              <span
-                className="inline-block text-white text-sm font-semibold px-6 py-2.5 rounded-lg"
-                style={{ backgroundColor: style.accent }}
-              >
-                {form.cta_text} →
-              </span>
+          {form.cta_buttons.filter((b) => b.text?.trim() && b.url?.trim()).length > 0 && (
+            <div className="text-center mt-6 flex flex-wrap justify-center gap-3">
+              {form.cta_buttons
+                .filter((b) => b.text?.trim() && b.url?.trim())
+                .map((b, i) => (
+                  <span
+                    key={i}
+                    className="inline-block text-white text-sm font-semibold px-6 py-2.5 rounded-lg"
+                    style={{ backgroundColor: style.accent }}
+                  >
+                    {b.text} →
+                  </span>
+                ))}
             </div>
           )}
         </div>
@@ -197,6 +227,7 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [sending, setSending] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [processingScheduled, setProcessingScheduled] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [subscriberSearch, setSubscriberSearch] = useState("");
@@ -256,6 +287,30 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
     onRefresh();
   };
 
+  const handleProcessScheduled = async () => {
+    setProcessingScheduled(true);
+    try {
+      const res = await fetch("/api/admin/newsletter?process_scheduled=1", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to process");
+      const processed = data.processed ?? 0;
+      onRefresh();
+      if (processed > 0) {
+        toast.success(`Newsletter sent successfully! ${processed} campaign(s) delivered to subscribers. Your team has been notified.`, {
+          duration: 6000,
+        });
+      } else {
+        toast.info("No overdue scheduled campaigns to send.");
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to process scheduled campaigns");
+    } finally {
+      setProcessingScheduled(false);
+    }
+  };
+
   const handleCreate = () => {
     setForm(emptyForm);
     setEditId(null);
@@ -263,13 +318,13 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
   };
 
   const handleEdit = (campaign: NewsletterCampaign) => {
+    const ctas = parseCtaButtons(campaign.cta_text, campaign.cta_url);
     setForm({
       template_id: campaign.template_id,
       subject: campaign.subject,
       heading: campaign.heading,
       body: campaign.body,
-      cta_text: campaign.cta_text || "",
-      cta_url: campaign.cta_url || "",
+      cta_buttons: ctas.length > 0 ? ctas : [{ text: "", url: "" }],
       recipient_type: campaign.recipient_type,
       recipient_ids: campaign.recipient_ids || [],
       schedule: !!campaign.scheduled_at,
@@ -279,10 +334,21 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
     setView("edit");
   };
 
+  const toApiPayload = (action: string) => {
+    const { cta_text, cta_url } = serializeCtaButtons(form.cta_buttons);
+    return {
+      ...form,
+      cta_text,
+      cta_url,
+      action,
+      cta_buttons: undefined,
+    } as Record<string, unknown>;
+  };
+
   const handleSaveDraft = async () => {
     setSaving(true);
     try {
-      const payload = { ...form, action: "draft" };
+      const payload = toApiPayload("draft");
       if (editId) {
         await fetch("/api/admin/newsletter", {
           method: "PUT",
@@ -297,8 +363,10 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
         });
       }
       resetAndGoToList();
+      toast.success("Draft saved.");
     } catch (e) {
       console.error("Save draft error:", e);
+      toast.error("Failed to save draft.");
     } finally {
       setSaving(false);
     }
@@ -308,22 +376,25 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
     if (!isFormValid) return;
     setSending(true);
     try {
+      const payload = toApiPayload("send");
       if (editId) {
         await fetch("/api/admin/newsletter", {
           method: "PUT",
           headers,
-          body: JSON.stringify({ id: editId, action: "send" }),
+          body: JSON.stringify({ id: editId, ...payload }),
         });
       } else {
         await fetch("/api/admin/newsletter", {
           method: "POST",
           headers,
-          body: JSON.stringify({ ...form, action: "send" }),
+          body: JSON.stringify(payload),
         });
       }
       resetAndGoToList();
+      toast.success("Newsletter sent successfully! Your team has been notified.");
     } catch (e) {
       console.error("Send error:", e);
+      toast.error("Failed to send newsletter.");
     } finally {
       setSending(false);
     }
@@ -334,7 +405,7 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
     setSending(true);
     try {
       const payload = {
-        ...form,
+        ...toApiPayload("schedule"),
         action: "schedule",
         scheduled_at: new Date(form.scheduled_at).toISOString(),
       };
@@ -352,8 +423,10 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
         });
       }
       resetAndGoToList();
+      toast.success("Newsletter scheduled! It will be sent automatically at the scheduled time.");
     } catch (e) {
       console.error("Schedule error:", e);
+      toast.error("Failed to schedule newsletter.");
     } finally {
       setSending(false);
     }
@@ -403,13 +476,30 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
               </div>
             ))}
           </div>
-          <button
-            onClick={handleCreate}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#2d62ff] text-white text-sm font-semibold rounded-xl hover:bg-[#2452d9] transition-colors shadow-sm shadow-blue-200"
-          >
-            <Plus className="w-4 h-4" />
-            New Campaign
-          </button>
+          <div className="flex items-center gap-2">
+            {stats.scheduled > 0 && (
+              <button
+                onClick={handleProcessScheduled}
+                disabled={processingScheduled}
+                className="flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white text-sm font-semibold rounded-xl hover:bg-amber-600 disabled:opacity-60 transition-colors"
+                title="Send any overdue scheduled campaigns now"
+              >
+                {processingScheduled ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
+                Process scheduled now
+              </button>
+            )}
+            <button
+              onClick={handleCreate}
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#2d62ff] text-white text-sm font-semibold rounded-xl hover:bg-[#2452d9] transition-colors shadow-sm shadow-blue-200"
+            >
+              <Plus className="w-4 h-4" />
+              New Campaign
+            </button>
+          </div>
         </div>
 
         {/* Filter tabs */}
@@ -599,26 +689,55 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">CTA Button Text <span className="text-gray-300">(optional)</span></label>
-                <input
-                  type="text"
-                  value={form.cta_text}
-                  onChange={(e) => updateForm({ cta_text: e.target.value })}
-                  placeholder="e.g., Read More"
-                  className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
-                />
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider">CTA Buttons <span className="text-gray-300">(optional)</span></label>
+                <button
+                  type="button"
+                  onClick={() => updateForm({ cta_buttons: [...form.cta_buttons, { text: "", url: "" }] })}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  Add button
+                </button>
               </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">CTA Link <span className="text-gray-300">(optional)</span></label>
-                <input
-                  type="url"
-                  value={form.cta_url}
-                  onChange={(e) => updateForm({ cta_url: e.target.value })}
-                  placeholder="https://www.physicianmeds.com/..."
-                  className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
-                />
+              <div className="space-y-3">
+                {form.cta_buttons.map((cta, i) => (
+                  <div key={i} className="flex gap-2 items-start">
+                    <input
+                      type="text"
+                      value={cta.text}
+                      onChange={(e) => {
+                        const next = [...form.cta_buttons];
+                        next[i] = { ...next[i], text: e.target.value };
+                        updateForm({ cta_buttons: next });
+                      }}
+                      placeholder="Button text (e.g., Read More)"
+                      className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
+                    />
+                    <input
+                      type="url"
+                      value={cta.url}
+                      onChange={(e) => {
+                        const next = [...form.cta_buttons];
+                        next[i] = { ...next[i], url: e.target.value };
+                        updateForm({ cta_buttons: next });
+                      }}
+                      placeholder="https://..."
+                      className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
+                    />
+                    {form.cta_buttons.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => updateForm({ cta_buttons: form.cta_buttons.filter((_, j) => j !== i) })}
+                        className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+                        title="Remove"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           </div>

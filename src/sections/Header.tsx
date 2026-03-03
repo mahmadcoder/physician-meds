@@ -6,6 +6,7 @@ import {
   MapPin,
   Clock,
   ArrowRight,
+  X,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -407,273 +408,284 @@ const Header = () => {
 
             {/* Mobile Menu Button */}
             <button
-              className={`lg:hidden p-2.5 rounded-xl transition-all duration-300 ${
-                isMobileMenuOpen
-                  ? "bg-brand-blue/10 text-brand-blue"
-                  : "text-gray-600 hover:text-brand-blue hover:bg-gray-100"
-              }`}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
+              className="lg:hidden flex items-center justify-center p-2.5 rounded-xl bg-brand-blue/10 text-brand-blue hover:bg-brand-blue/20 transition-all duration-300 active:scale-95"
+              onClick={() => setIsMobileMenuOpen(true)}
+              aria-label="Open menu"
             >
-              <div className="w-6 h-5 flex flex-col justify-between items-center">
-                <span
-                  className={`block h-[3px] rounded-full bg-current transition-all duration-300 ${
-                    isMobileMenuOpen ? "w-6 rotate-45 translate-y-[9px]" : "w-6"
-                  }`}
-                />
-                <span
-                  className={`block h-[3px] rounded-full bg-current transition-all duration-300 ${
-                    isMobileMenuOpen ? "w-0 opacity-0" : "w-5"
-                  }`}
-                />
-                <span
-                  className={`block h-[3px] rounded-full bg-current transition-all duration-300 ${
-                    isMobileMenuOpen
-                      ? "w-6 -rotate-45 -translate-y-[9px]"
-                      : "w-6"
-                  }`}
-                />
+              <div className="w-5 h-4 flex flex-col justify-between items-end">
+                <span className="block h-[2.5px] w-5 rounded-full bg-current" />
+                <span className="block h-[2.5px] w-3.5 rounded-full bg-current transition-all duration-300" />
+                <span className="block h-[2.5px] w-5 rounded-full bg-current" />
               </div>
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu Overlay */}
         <div
-          className={`lg:hidden bg-white shadow-lg transition-all duration-300 max-h-[calc(100vh-80px)] overflow-y-auto ${
-            isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible h-0"
+          className={`lg:hidden fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[100] transition-opacity duration-500 ${
+            isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
+          }`}
+          onClick={() => setIsMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+
+        {/* Mobile Menu Drawer */}
+        <div
+          className={`lg:hidden fixed top-0 right-0 bottom-0 w-[85vw] max-w-[400px] bg-white shadow-2xl z-[110] flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          <nav className="container-custom py-6 flex flex-col gap-2">
-            {navLinks.map((link) => (
-              <div key={link.name}>
-                {link.hasDropdown ? (
-                  <>
-                    <div
-                      className={`flex items-center justify-between text-base font-medium transition-colors py-2 cursor-pointer ${
-                        (link.dropdownType === "services" &&
-                          isOnServicesPage) ||
-                        (link.dropdownType === "company" && isOnCompanyPage) ||
-                        (link.dropdownType === "resources" && isOnResourcesPage)
-                          ? "text-brand-blue"
-                          : "text-gray-600 hover:text-brand-blue"
-                      }`}
-                    >
-                      <span
-                        onClick={() => {
-                          if (link.dropdownType === "services") {
-                            navigate("/services");
-                            setIsMobileMenuOpen(false);
-                            setIsServicesOpen(false);
-                            window.scrollTo(0, 0);
-                          } else if (link.dropdownType === "company") {
-                            setIsCompanyOpen(!isCompanyOpen);
-                            setIsServicesOpen(false);
-                            setIsResourcesOpen(false);
-                          } else if (link.dropdownType === "resources") {
-                            setIsResourcesOpen(!isResourcesOpen);
-                            setIsServicesOpen(false);
-                            setIsCompanyOpen(false);
-                          }
-                        }}
-                        className="flex-1"
-                      >
-                        {link.name}
-                      </span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (link.dropdownType === "services") {
-                            setIsServicesOpen(!isServicesOpen);
-                            setIsCompanyOpen(false);
-                            setIsResourcesOpen(false);
-                          } else if (link.dropdownType === "company") {
-                            setIsCompanyOpen(!isCompanyOpen);
-                            setIsServicesOpen(false);
-                            setIsResourcesOpen(false);
-                          } else if (link.dropdownType === "resources") {
-                            setIsResourcesOpen(!isResourcesOpen);
-                            setIsServicesOpen(false);
-                            setIsCompanyOpen(false);
-                          }
-                        }}
-                        className="p-1.5 -mr-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-                        aria-label={`Toggle ${link.name} submenu`}
-                      >
-                        <ChevronDown
-                          className={`w-4 h-4 transition-transform duration-300 ${
-                            (link.dropdownType === "services" &&
-                              isServicesOpen) ||
-                            (link.dropdownType === "company" && isCompanyOpen) ||
-                            (link.dropdownType === "resources" && isResourcesOpen)
-                              ? "rotate-180"
-                              : ""
-                          }`}
-                        />
-                      </button>
-                    </div>
+          {/* Drawer Header */}
+          <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+            <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2">
+              <img src="/logo.png" alt="PhysicianMeds" className="w-[38px] h-[38px] object-contain" />
+              <span className="font-display font-bold text-xl text-brand-dark tracking-tight">
+                Physician<span className="text-brand-blue">Meds</span>
+              </span>
+            </Link>
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-2.5 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 group shadow-sm"
+              aria-label="Close menu"
+            >
+              <X className="w-5 h-5 stroke-[2.5] group-hover:rotate-90 transition-transform duration-300" />
+            </button>
+          </div>
 
-                    {/* Mobile Company Dropdown */}
-                    {link.dropdownType === "company" && (
+          {/* Drawer Body - Navigation */}
+          <div className="flex-1 overflow-y-auto">
+            <nav className="p-6 flex flex-col gap-2">
+              {navLinks.map((link) => (
+                <div key={link.name}>
+                  {link.hasDropdown ? (
+                    <>
                       <div
-                        className={`overflow-hidden transition-all duration-300 ${
-                          isCompanyOpen
-                            ? "max-h-[300px] opacity-100"
-                            : "max-h-0 opacity-0"
+                        className={`flex items-center justify-between text-base font-medium transition-colors py-2 cursor-pointer ${
+                          (link.dropdownType === "services" &&
+                            isOnServicesPage) ||
+                          (link.dropdownType === "company" && isOnCompanyPage) ||
+                          (link.dropdownType === "resources" && isOnResourcesPage)
+                            ? "text-brand-blue"
+                            : "text-gray-600 hover:text-brand-blue"
                         }`}
                       >
-                        <div className="pl-4 py-2 space-y-1 border-l-2 border-brand-blue/20 ml-2">
-                          {companyLinks.map((companyLink) => (
-                            <Link
-                              key={companyLink.name}
-                              to={companyLink.href}
-                              onClick={() => {
-                                setIsMobileMenuOpen(false);
-                                setIsCompanyOpen(false);
-                                window.scrollTo(0, 0);
-                              }}
-                              className={`block py-2 text-sm transition-colors ${
-                                location.pathname === companyLink.href
-                                  ? "text-brand-blue font-medium"
-                                  : "text-gray-600 hover:text-brand-blue"
-                              }`}
-                            >
-                              {companyLink.name}
-                            </Link>
-                          ))}
-                        </div>
+                        <span
+                          onClick={() => {
+                            if (link.dropdownType === "services") {
+                              navigate("/services");
+                              setIsMobileMenuOpen(false);
+                              setIsServicesOpen(false);
+                              window.scrollTo(0, 0);
+                            } else if (link.dropdownType === "company") {
+                              setIsCompanyOpen(!isCompanyOpen);
+                              setIsServicesOpen(false);
+                              setIsResourcesOpen(false);
+                            } else if (link.dropdownType === "resources") {
+                              setIsResourcesOpen(!isResourcesOpen);
+                              setIsServicesOpen(false);
+                              setIsCompanyOpen(false);
+                            }
+                          }}
+                          className="flex-1"
+                        >
+                          {link.name}
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (link.dropdownType === "services") {
+                              setIsServicesOpen(!isServicesOpen);
+                              setIsCompanyOpen(false);
+                              setIsResourcesOpen(false);
+                            } else if (link.dropdownType === "company") {
+                              setIsCompanyOpen(!isCompanyOpen);
+                              setIsServicesOpen(false);
+                              setIsResourcesOpen(false);
+                            } else if (link.dropdownType === "resources") {
+                              setIsResourcesOpen(!isResourcesOpen);
+                              setIsServicesOpen(false);
+                              setIsCompanyOpen(false);
+                            }
+                          }}
+                          className="p-1.5 -mr-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                          aria-label={`Toggle ${link.name} submenu`}
+                        >
+                          <ChevronDown
+                            className={`w-4 h-4 transition-transform duration-300 ${
+                              (link.dropdownType === "services" &&
+                                isServicesOpen) ||
+                              (link.dropdownType === "company" && isCompanyOpen) ||
+                              (link.dropdownType === "resources" && isResourcesOpen)
+                                ? "rotate-180"
+                                : ""
+                            }`}
+                          />
+                        </button>
                       </div>
-                    )}
 
-                    {/* Mobile Services Dropdown */}
-                    {link.dropdownType === "services" && (
-                      <div
-                        className={`overflow-hidden transition-all duration-300 ${
-                          isServicesOpen
-                            ? "max-h-[350px] opacity-100"
-                            : "max-h-0 opacity-0"
-                        }`}
-                      >
-                        <div className="pl-4 py-2 space-y-1 border-l-2 border-brand-blue/20 ml-2 max-h-[320px] overflow-y-auto">
-                          {services.slice(0, 8).map((service) =>
-                            service.href.startsWith("/") ? (
+                      {/* Mobile Company Dropdown */}
+                      {link.dropdownType === "company" && (
+                        <div
+                          className={`overflow-hidden transition-all duration-300 ${
+                            isCompanyOpen
+                              ? "max-h-[300px] opacity-100"
+                              : "max-h-0 opacity-0"
+                          }`}
+                        >
+                          <div className="pl-4 py-2 space-y-1 border-l-2 border-brand-blue/20 ml-2">
+                            {companyLinks.map((companyLink) => (
                               <Link
-                                key={service.name}
-                                to={service.href}
+                                key={companyLink.name}
+                                to={companyLink.href}
                                 onClick={() => {
                                   setIsMobileMenuOpen(false);
-                                  setIsServicesOpen(false);
+                                  setIsCompanyOpen(false);
                                   window.scrollTo(0, 0);
                                 }}
                                 className={`block py-2 text-sm transition-colors ${
-                                  location.pathname === service.href
+                                  location.pathname === companyLink.href
                                     ? "text-brand-blue font-medium"
                                     : "text-gray-600 hover:text-brand-blue"
                                 }`}
                               >
-                                {service.name}
+                                {companyLink.name}
                               </Link>
-                            ) : (
-                              <a
-                                key={service.name}
-                                href={service.href}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  scrollToSection(service.href);
-                                }}
-                                className="block py-2 text-sm text-gray-600 hover:text-brand-blue transition-colors"
-                              >
-                                {service.name}
-                              </a>
-                            )
-                          )}
-                          {/* View All Services Link */}
-                          <Link
-                            to="/services"
-                            onClick={() => {
-                              setIsMobileMenuOpen(false);
-                              window.scrollTo(0, 0);
-                            }}
-                            className="flex items-center gap-1.5 py-3 mt-2 text-sm font-semibold text-brand-blue hover:text-brand-blue-dark transition-colors border-t border-gray-100 pt-3"
-                          >
-                            View All Services
-                            <ArrowRight className="w-4 h-4" />
-                          </Link>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {/* Mobile Resources Dropdown */}
-                    {link.dropdownType === "resources" && (
-                      <div
-                        className={`overflow-hidden transition-all duration-300 ${
-                          isResourcesOpen
-                            ? "max-h-[200px] opacity-100"
-                            : "max-h-0 opacity-0"
-                        }`}
-                      >
-                        <div className="pl-4 py-2 space-y-1 border-l-2 border-brand-blue/20 ml-2">
-                          {resourcesLinks.map((resLink) => (
+                      {/* Mobile Services Dropdown */}
+                      {link.dropdownType === "services" && (
+                        <div
+                          className={`overflow-hidden transition-all duration-300 ${
+                            isServicesOpen
+                              ? "max-h-[350px] opacity-100"
+                              : "max-h-0 opacity-0"
+                          }`}
+                        >
+                          <div className="pl-4 py-2 space-y-1 border-l-2 border-brand-blue/20 ml-2 max-h-[320px] overflow-y-auto">
+                            {services.slice(0, 8).map((service) =>
+                              service.href.startsWith("/") ? (
+                                <Link
+                                  key={service.name}
+                                  to={service.href}
+                                  onClick={() => {
+                                    setIsMobileMenuOpen(false);
+                                    setIsServicesOpen(false);
+                                    window.scrollTo(0, 0);
+                                  }}
+                                  className={`block py-2 text-sm transition-colors ${
+                                    location.pathname === service.href
+                                      ? "text-brand-blue font-medium"
+                                      : "text-gray-600 hover:text-brand-blue"
+                                  }`}
+                                >
+                                  {service.name}
+                                </Link>
+                              ) : (
+                                <a
+                                  key={service.name}
+                                  href={service.href}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    scrollToSection(service.href);
+                                  }}
+                                  className="block py-2 text-sm text-gray-600 hover:text-brand-blue transition-colors"
+                                >
+                                  {service.name}
+                                </a>
+                              )
+                            )}
+                            {/* View All Services Link */}
                             <Link
-                              key={resLink.name}
-                              to={resLink.href}
+                              to="/services"
                               onClick={() => {
                                 setIsMobileMenuOpen(false);
-                                setIsResourcesOpen(false);
                                 window.scrollTo(0, 0);
                               }}
-                              className={`block py-2 text-sm transition-colors ${
-                                location.pathname === resLink.href
-                                  ? "text-brand-blue font-medium"
-                                  : "text-gray-600 hover:text-brand-blue"
-                              }`}
+                              className="flex items-center gap-1.5 py-3 mt-2 text-sm font-semibold text-brand-blue hover:text-brand-blue-dark transition-colors border-t border-gray-100 pt-3"
                             >
-                              {resLink.name}
+                              View All Services
+                              <ArrowRight className="w-4 h-4" />
                             </Link>
-                          ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </>
-                ) : link.isPage ? (
-                  <Link
-                    to={link.href}
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      window.scrollTo(0, 0);
-                    }}
-                    className={`flex items-center justify-between text-base font-medium transition-colors py-2 ${
-                      location.pathname === link.href
-                        ? "text-brand-blue"
-                        : "text-gray-600 hover:text-brand-blue"
-                    }`}
-                  >
-                    {link.name}
-                  </Link>
-                ) : (
-                  <a
-                    href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToSection(link.href);
-                    }}
-                    className="flex items-center justify-between text-base font-medium transition-colors py-2 text-gray-600 hover:text-brand-blue"
-                  >
-                    {link.name}
-                  </a>
-                )}
-              </div>
-            ))}
-            <Link
-              to="/consult-now"
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                window.scrollTo(0, 0);
-              }}
-            >
-              <Button className="btn-primary w-full mt-4">Consult Now</Button>
-            </Link>
-          </nav>
+                      )}
+
+                      {/* Mobile Resources Dropdown */}
+                      {link.dropdownType === "resources" && (
+                        <div
+                          className={`overflow-hidden transition-all duration-300 ${
+                            isResourcesOpen
+                              ? "max-h-[200px] opacity-100"
+                              : "max-h-0 opacity-0"
+                          }`}
+                        >
+                          <div className="pl-4 py-2 space-y-1 border-l-2 border-brand-blue/20 ml-2">
+                            {resourcesLinks.map((resLink) => (
+                              <Link
+                                key={resLink.name}
+                                to={resLink.href}
+                                onClick={() => {
+                                  setIsMobileMenuOpen(false);
+                                  setIsResourcesOpen(false);
+                                  window.scrollTo(0, 0);
+                                }}
+                                className={`block py-2 text-sm transition-colors ${
+                                  location.pathname === resLink.href
+                                    ? "text-brand-blue font-medium"
+                                    : "text-gray-600 hover:text-brand-blue"
+                                }`}
+                              >
+                                {resLink.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : link.isPage ? (
+                    <Link
+                      to={link.href}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        window.scrollTo(0, 0);
+                      }}
+                      className={`flex items-center justify-between text-base font-medium transition-colors py-2 ${
+                        location.pathname === link.href
+                          ? "text-brand-blue"
+                          : "text-gray-600 hover:text-brand-blue"
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        scrollToSection(link.href);
+                      }}
+                      className="flex items-center justify-between text-base font-medium transition-colors py-2 text-gray-600 hover:text-brand-blue"
+                    >
+                      {link.name}
+                    </a>
+                  )}
+                </div>
+              ))}
+              <Link
+                to="/consult-now"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  window.scrollTo(0, 0);
+                }}
+              >
+                <Button className="btn-primary w-full mt-4">Consult Now</Button>
+              </Link>
+            </nav>
+          </div>
         </div>
       </div>
     </header>

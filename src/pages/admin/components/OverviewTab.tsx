@@ -140,7 +140,7 @@ export default function OverviewTab({
               <p className="text-xl sm:text-2xl font-bold text-gray-900 font-display">
                 {card.value}
               </p>
-              <p className="text-[11px] sm:text-xs text-gray-500 mt-1">
+              <p className="text-[11px] sm:text-xs text-gray-500 mt-1 truncate">
                 {card.label}
               </p>
               <div className="flex items-center gap-1 mt-2 sm:mt-3 text-[11px] sm:text-xs text-gray-400 group-hover:text-[#2d62ff] transition-colors">

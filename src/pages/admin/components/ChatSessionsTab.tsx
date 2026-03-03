@@ -103,21 +103,21 @@ function ChatTranscript({ sessionId, authHeaders }: { sessionId: string; authHea
               <Bot className="w-3.5 h-3.5 text-[#2d62ff]" />
             )}
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 overflow-hidden">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs font-bold text-gray-700">
                 {msg.role === "user" ? "Visitor" : "Bot"}
               </span>
               <span className="text-[10px] text-gray-400">{formatTime(msg.created_at)}</span>
             </div>
-            <div className="text-sm text-gray-700 leading-relaxed">
+            <div className="text-sm text-gray-700 leading-relaxed break-words overflow-hidden">
               <ReactMarkdown
                 components={{
                   p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
                   ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-2 space-y-1" {...props} />,
                   ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-2 space-y-1" {...props} />,
                   li: ({ node, ...props }) => <li className="" {...props} />,
-                  a: ({ node, ...props }) => <a className="text-[#2d62ff] underline hover:opacity-80 transition-opacity" target="_blank" rel="noopener noreferrer" {...props} />,
+                  a: ({ node, ...props }) => <a className="text-[#2d62ff] underline hover:opacity-80 transition-opacity break-all" target="_blank" rel="noopener noreferrer" {...props} />,
                   strong: ({ node, ...props }) => <strong className="font-semibold" {...props} />,
                 }}
               >

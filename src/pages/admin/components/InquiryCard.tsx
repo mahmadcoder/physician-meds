@@ -68,7 +68,7 @@ export default function InquiryCard({
 
   return (
     <div
-      className={`bg-white rounded-2xl border p-4 sm:p-6 transition-all hover:shadow-sm ${
+      className={`bg-white rounded-2xl border p-4 sm:p-6 transition-all hover:shadow-sm overflow-hidden ${
         !isRead ? `${unreadBorder} shadow-sm` : "border-gray-100"
       }`}
     >
@@ -115,7 +115,7 @@ export default function InquiryCard({
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
                     {field.label}
                   </p>
-                  <p className="text-sm font-semibold text-gray-800">
+                  <p className="text-sm font-semibold text-gray-800 truncate">
                     {field.value}
                   </p>
                 </div>

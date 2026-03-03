@@ -63,13 +63,13 @@ export default function CommentsTab({
                 <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center shrink-0">
                   <MessageCircle className="w-5 h-5 text-orange-600" />
                 </div>
-                <div>
-                  <h3 className="text-[15px] font-bold text-gray-900">
+                <div className="min-w-0">
+                  <h3 className="text-[15px] font-bold text-gray-900 truncate">
                     {comment.author_name}
                   </h3>
                   <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
-                    <Clock className="w-3 h-3" />{" "}
-                    {formatDate(comment.created_at)}
+                    <Clock className="w-3 h-3 shrink-0" />{" "}
+                    <span className="truncate">{formatDate(comment.created_at)}</span>
                   </p>
                 </div>
               </div>
@@ -94,13 +94,13 @@ export default function CommentsTab({
             </div>
 
             {/* Post slug */}
-            <div className="sm:pl-[52px] mb-3">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 border border-gray-100 rounded-lg">
-                <FileText className="w-3.5 h-3.5 text-gray-400" />
-                <span className="text-xs text-gray-500">on:</span>
+            <div className="sm:pl-[52px] mb-3 overflow-hidden">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 border border-gray-100 rounded-lg max-w-full">
+                <FileText className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                <span className="text-xs text-gray-500 shrink-0">on:</span>
                 <a
                   href={`/blogs/${comment.post_slug}`}
-                  className="text-xs font-semibold text-[#2d62ff] hover:underline"
+                  className="text-xs font-semibold text-[#2d62ff] hover:underline truncate"
                   target="_blank"
                   rel="noreferrer"
                 >

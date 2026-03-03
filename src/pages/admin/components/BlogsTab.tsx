@@ -56,18 +56,18 @@ export default function BlogsTab({
                     className={`w-4 h-4 ${post.is_published ? "text-green-600" : "text-gray-400"}`}
                   />
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 overflow-hidden">
                   <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                    <h3 className="text-sm font-bold text-gray-900 truncate">
+                    <h3 className="text-sm font-bold text-gray-900 truncate max-w-full">
                       {post.title}
                     </h3>
                     {post.featured && (
-                      <span className="px-2 py-0.5 bg-amber-50 text-amber-700 rounded text-[10px] font-bold">
+                      <span className="px-2 py-0.5 bg-amber-50 text-amber-700 rounded text-[10px] font-bold shrink-0">
                         Featured
                       </span>
                     )}
                     <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
                         post.is_published
                           ? "bg-green-50 text-green-700"
                           : "bg-gray-100 text-gray-500"
@@ -76,7 +76,7 @@ export default function BlogsTab({
                       {post.is_published ? "Published" : "Draft"}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 truncate">
                     {post.category}
                     <span className="text-gray-300 mx-1">&bull;</span>
                     {post.author_name}

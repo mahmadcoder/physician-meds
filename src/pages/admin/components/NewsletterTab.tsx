@@ -527,7 +527,7 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
             {filteredCampaigns.map((c) => {
               const tpl = TEMPLATES.find((t) => t.id === c.template_id);
               return (
-                <div key={c.id} className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 hover:border-gray-200 transition-colors">
+                <div key={c.id} className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 hover:border-gray-200 transition-colors overflow-hidden">
                   <div className="flex flex-col gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1.5">
@@ -538,8 +538,8 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
                           </span>
                         )}
                       </div>
-                      <h3 className="font-bold text-gray-900 truncate">{c.subject}</h3>
-                      <p className="text-sm text-gray-500 mt-0.5 truncate">{c.heading}</p>
+                      <h3 className="font-bold text-gray-900 truncate text-sm sm:text-base">{c.subject}</h3>
+                      <p className="text-xs sm:text-sm text-gray-500 mt-0.5 truncate">{c.heading}</p>
                     </div>
 
                     <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 text-xs text-gray-400">

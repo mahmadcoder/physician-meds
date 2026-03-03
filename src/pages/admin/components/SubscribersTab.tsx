@@ -110,7 +110,7 @@ function SubscriberRow({ subscriber, campaigns }: { subscriber: Subscriber; camp
         <div className="shrink-0 w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
           <Clock className="w-4 h-4 text-gray-400" />
         </div>
-        <span className="font-medium">{formatDate(subscriber.subscribed_at)}</span>
+        <span className="font-medium truncate">{formatDate(subscriber.subscribed_at)}</span>
       </div>
 
       {/* Emails sent column */}

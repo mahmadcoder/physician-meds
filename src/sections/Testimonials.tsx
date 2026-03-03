@@ -156,6 +156,7 @@ const Testimonials = () => {
                     src={currentTestimonial.image}
                     alt={currentTestimonial.name}
                     className="w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover shadow-lg transition-all duration-500"
+                    loading="lazy"
                   />
                   <div className="absolute -bottom-2 -right-2 bg-green-500 text-white rounded-full p-1.5">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

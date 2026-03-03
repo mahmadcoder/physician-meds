@@ -176,6 +176,8 @@ const Hero = () => {
                   src="/hero-image.jpg"
                   alt="Healthcare professionals"
                   className="w-full h-auto object-cover"
+                  fetchPriority="high"
+                  decoding="async"
                 />
                 {/* Overlay gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-blue/20 to-transparent" />

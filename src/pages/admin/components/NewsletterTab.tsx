@@ -463,15 +463,15 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
       <div className="space-y-5">
         {/* Stats + CTA */}
         <div className="flex flex-col gap-4">
-          <div className="flex flex-wrap gap-2 sm:gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
             {[
               { label: "Total", value: stats.total, color: "text-gray-900" },
               { label: "Sent", value: stats.sent, color: "text-green-600" },
               { label: "Scheduled", value: stats.scheduled, color: "text-amber-600" },
               { label: "Drafts", value: stats.draft, color: "text-gray-400" },
             ].map((s) => (
-              <div key={s.label} className="bg-white rounded-xl border border-gray-100 px-3 sm:px-4 py-2 sm:py-2.5 min-w-0 flex-1 sm:flex-initial sm:min-w-[90px]">
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">{s.label}</p>
+              <div key={s.label} className="bg-white rounded-xl border border-gray-100 px-3 sm:px-4 py-2 sm:py-2.5 overflow-hidden">
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold truncate">{s.label}</p>
                 <p className={`text-lg sm:text-xl font-bold ${s.color}`}>{s.value}</p>
               </div>
             ))}

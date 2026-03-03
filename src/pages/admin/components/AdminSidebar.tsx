@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { X, LogOut } from "lucide-react";
 import type { Tab, NavGroup } from "../types";
 
@@ -18,6 +19,17 @@ export default function AdminSidebar({
   onClose,
   onLogout,
 }: AdminSidebarProps) {
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [sidebarOpen]);
+
   return (
     <>
       {/* Mobile overlay */}

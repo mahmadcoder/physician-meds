@@ -47,12 +47,12 @@ export default function SubscribersTab({ subscribers, campaigns = [] }: Subscrib
   return (
     <div className="space-y-4">
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-full sm:w-fit overflow-x-auto">
         {(["all", "active", "inactive"] as SubFilter[]).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors capitalize ${
+            className={`px-3 py-1.5 sm:px-3.5 rounded-lg text-xs font-semibold transition-colors capitalize shrink-0 ${
               filter === f ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
             }`}
           >

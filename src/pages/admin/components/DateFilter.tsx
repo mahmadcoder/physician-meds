@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { DatePreset, DateRange } from "../types";
 import { presetToRange, formatRangeLabel } from "../utils/dateUtils";
 
@@ -27,6 +28,7 @@ export default function DateFilter({
   activePreset,
   onApply,
 }: DateFilterProps) {
+  const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
   const [draftPreset, setDraftPreset] = useState<DatePreset | null>(activePreset);
   const [draftFrom, setDraftFrom] = useState<Date | undefined>(activeRange.from);
@@ -129,7 +131,9 @@ export default function DateFilter({
 
       {/* Popover */}
       {open && (
-        <div className="absolute right-0 top-full mt-2 z-50 bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150">
+        <>
+          <div className="fixed inset-0 bg-black/20 z-40 sm:hidden" onClick={() => setOpen(false)} aria-hidden />
+          <div className="fixed left-3 right-3 top-[50%] -translate-y-1/2 sm:top-full sm:translate-y-0 sm:absolute sm:right-0 sm:left-auto sm:mt-2 max-h-[90vh] overflow-y-auto z-50 bg-white rounded-2xl border border-gray-200 shadow-2xl animate-in fade-in-0 zoom-in-95 duration-150 w-[calc(100vw-1.5rem)] sm:w-auto sm:min-w-[340px]">
           <div className="flex">
             {/* Presets sidebar */}
             <div className="w-40 border-r border-gray-100 py-1.5 hidden sm:block">
@@ -171,7 +175,7 @@ export default function DateFilter({
               <div className="p-3 sm:p-4">
                 <DayPicker
                   mode="range"
-                  numberOfMonths={2}
+                  numberOfMonths={isMobile ? 1 : 2}
                   month={calMonth}
                   onMonthChange={setCalMonth}
                   selected={selected}
@@ -222,12 +226,12 @@ export default function DateFilter({
 
               {/* Footer: date inputs + actions */}
               <div className="px-4 py-3 border-t border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 font-medium min-w-[120px] text-center">
+                <div className="flex items-center gap-2 text-sm min-w-0 flex-wrap sm:flex-nowrap">
+                  <div className="px-2 sm:px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 font-medium min-w-0 flex-1 sm:min-w-[100px] sm:flex-initial text-center text-xs sm:text-sm truncate">
                     {fmtInput(draftFrom) || "Start date"}
                   </div>
-                  <span className="text-gray-300">&ndash;</span>
-                  <div className="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 font-medium min-w-[120px] text-center">
+                  <span className="text-gray-300 shrink-0">&ndash;</span>
+                  <div className="px-2 sm:px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 font-medium min-w-0 flex-1 sm:min-w-[100px] sm:flex-initial text-center text-xs sm:text-sm truncate">
                     {fmtInput(draftTo || draftFrom) || "End date"}
                   </div>
                 </div>
@@ -250,6 +254,7 @@ export default function DateFilter({
             </div>
           </div>
         </div>
+        </>
       )}
     </div>
   );

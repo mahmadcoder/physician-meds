@@ -80,9 +80,9 @@ export default function GlobalSearch({ results, onSelect }: GlobalSearchProps) {
       {/* Trigger button */}
       <button
         onClick={handleOpen}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-400 text-sm transition-colors"
+        className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-400 text-sm transition-colors shrink-0"
       >
-        <Search className="w-4 h-4" />
+        <Search className="w-4 h-4 shrink-0" />
         <span className="hidden md:inline">Search...</span>
         <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-bold text-gray-400 bg-white border border-gray-200 rounded">
           Ctrl K

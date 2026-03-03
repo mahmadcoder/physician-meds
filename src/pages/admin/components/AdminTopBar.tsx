@@ -44,20 +44,20 @@ export default function AdminTopBar({
 }: AdminTopBarProps) {
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
-      <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between gap-2 px-3 sm:px-6 lg:px-8 h-14 sm:h-16 min-w-0">
+        <div className="flex items-center gap-2 min-w-0 flex-1 sm:flex-initial">
           <button
             onClick={onToggleSidebar}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors shrink-0"
           >
             <Menu className="w-5 h-5 text-gray-600" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900 font-display">
+          <h1 className="text-base sm:text-lg font-bold text-gray-900 font-display truncate">
             {title}
           </h1>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           {/* Global search */}
           <GlobalSearch
             results={searchResults}
@@ -79,7 +79,7 @@ export default function AdminTopBar({
             </button>
 
             {notifOpen && (
-              <div className="absolute right-0 top-12 w-80 bg-white rounded-2xl border border-gray-200 shadow-xl z-50 overflow-hidden">
+              <div className="fixed left-3 right-3 sm:left-auto sm:right-0 sm:absolute top-14 sm:top-12 w-[calc(100vw-1.5rem)] sm:w-80 max-w-80 bg-white rounded-2xl border border-gray-200 shadow-xl z-50 overflow-hidden">
                 <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
                   <h4 className="text-sm font-bold text-gray-900">
                     Notifications
@@ -180,9 +180,9 @@ export default function AdminTopBar({
           </div>
 
           {/* Admin badge */}
-          <div className="flex items-center gap-2.5 pl-3 border-l border-gray-200">
-            <div className="w-8 h-8 rounded-lg bg-[#2d62ff] flex items-center justify-center">
-              <span className="text-white font-bold text-xs">PM</span>
+          <div className="flex items-center gap-2 sm:gap-2.5 pl-2 sm:pl-3 border-l border-gray-200">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#2d62ff] flex items-center justify-center shrink-0">
+              <span className="text-white font-bold text-[10px] sm:text-xs">PM</span>
             </div>
             <span className="hidden sm:block text-sm font-semibold text-gray-700">
               Admin

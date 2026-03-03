@@ -176,6 +176,15 @@
   }
 }
 
+/* Hide chat widget when mobile menu is open */
+body.mobile-menu-open .fixed.bottom-6.right-6,
+body.mobile-menu-open .fixed.bottom-6.right-4,
+body.mobile-menu-open .fixed.bottom-24 {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.2s ease;
+}
+
 /* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
   *,

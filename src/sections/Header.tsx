@@ -117,6 +117,21 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Lock body scroll & hide chat widget when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+      document.body.classList.add("mobile-menu-open");
+    } else {
+      document.body.style.overflow = "";
+      document.body.classList.remove("mobile-menu-open");
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.body.classList.remove("mobile-menu-open");
+    };
+  }, [isMobileMenuOpen]);
+
   const scrollToSection = (href: string) => {
     setIsMobileMenuOpen(false);
     setIsServicesOpen(false);
@@ -153,7 +168,8 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50">
+    <>
+      <header className="fixed top-0 left-0 right-0 z-50">
       {/* Top Bar */}
       <TopBar isScrolled={isScrolled} isLoaded={isLoaded} />
 
@@ -420,38 +436,40 @@ const Header = () => {
             </button>
           </div>
         </div>
+      </div>
+      </header>
 
-        {/* Mobile Menu Overlay */}
-        <div
-          className={`lg:hidden fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[100] transition-opacity duration-500 ${
-            isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
-          }`}
-          onClick={() => setIsMobileMenuOpen(false)}
-          aria-hidden="true"
-        />
+      {/* Mobile Menu Overlay */}
+      <div
+        className={`lg:hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[100] transition-all duration-400 ease-out ${
+          isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+        }`}
+        onClick={() => setIsMobileMenuOpen(false)}
+        aria-hidden="true"
+      />
 
-        {/* Mobile Menu Drawer */}
-        <div
-          className={`lg:hidden fixed top-0 right-0 bottom-0 w-[85vw] max-w-[400px] bg-white shadow-2xl z-[110] flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          {/* Drawer Header */}
-          <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-            <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2">
-              <img src="/logo.png" alt="PhysicianMeds" className="w-[38px] h-[38px] object-contain" />
-              <span className="font-display font-bold text-xl text-brand-dark tracking-tight">
-                Physician<span className="text-brand-blue">Meds</span>
-              </span>
-            </Link>
-            <button
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2.5 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 group shadow-sm"
-              aria-label="Close menu"
-            >
-              <X className="w-5 h-5 stroke-[2.5] group-hover:rotate-90 transition-transform duration-300" />
-            </button>
-          </div>
+      {/* Mobile Menu Drawer */}
+      <div
+        className={`lg:hidden fixed top-0 right-0 bottom-0 h-[100dvh] w-[85vw] max-w-[400px] bg-white shadow-2xl z-[110] flex flex-col transition-transform duration-400 ${
+          isMobileMenuOpen ? "translate-x-0 ease-[cubic-bezier(0.32,0.72,0,1)]" : "translate-x-full ease-[cubic-bezier(0.52,0.16,0.24,1)]"
+        }`}
+      >
+        {/* Drawer Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 gap-4">
+          <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 min-w-0">
+            <img src="/logo.png" alt="PhysicianMeds" className="w-[38px] h-[38px] object-contain flex-shrink-0" />
+            <span className="font-display font-bold text-xl text-brand-dark tracking-tight">
+              Physician<span className="text-brand-blue">Meds</span>
+            </span>
+          </Link>
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="p-2.5 rounded-full bg-brand-blue/10 text-brand-blue hover:bg-brand-blue hover:text-white transition-all duration-300 group flex-shrink-0"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5 stroke-[2.5] group-hover:rotate-90 transition-transform duration-300" />
+          </button>
+        </div>
 
           {/* Drawer Body - Navigation */}
           <div className="flex-1 overflow-y-auto">
@@ -682,14 +700,14 @@ const Header = () => {
                   window.scrollTo(0, 0);
                 }}
               >
-                <Button className="btn-primary w-full mt-4">Consult Now</Button>
-              </Link>
-            </nav>
-          </div>
+              <Button className="btn-primary w-full mt-4">Consult Now</Button>
+            </Link>
+          </nav>
         </div>
       </div>
-    </header>
+    </>
   );
 };
 
 export default Header;
+

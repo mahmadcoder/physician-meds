@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import gsap from "gsap";
 import {
   Phone,
   ChevronDown,
@@ -77,13 +78,18 @@ const TopBar = ({
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isCompanyOpen, setIsCompanyOpen] = useState(false);
   const [isResourcesOpen, setIsResourcesOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // GSAP refs for mobile menu
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const navItemsRef = useRef<HTMLDivElement>(null);
+  const isAnimatingRef = useRef(false);
 
   // Check if on home page
   const isOnHomePage = location.pathname === "/";
@@ -117,26 +123,87 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Lock body scroll & hide chat widget when mobile menu is open
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-      document.body.classList.add("mobile-menu-open");
-    } else {
-      document.body.style.overflow = "";
-      document.body.classList.remove("mobile-menu-open");
+  // GSAP open menu animation
+  const openMenu = useCallback(() => {
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
+    document.body.style.overflow = "hidden";
+    document.body.classList.add("mobile-menu-open");
+
+    const tl = gsap.timeline({
+      onComplete: () => { isAnimatingRef.current = false; },
+    });
+
+    // Overlay fade in
+    tl.to(overlayRef.current, {
+      opacity: 1,
+      visibility: "visible",
+      duration: 0.4,
+      ease: "power2.out",
+    }, 0);
+
+    // Drawer slide in from right
+    tl.fromTo(drawerRef.current,
+      { x: "100%" },
+      { x: "0%", duration: 0.55, ease: "power3.out" },
+      0.05
+    );
+
+    // Stagger nav items
+    const navItems = navItemsRef.current?.children;
+    if (navItems && navItems.length > 0) {
+      tl.fromTo(navItems,
+        { x: 40, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.4, ease: "power2.out", stagger: 0.06 },
+        0.2
+      );
     }
+  }, []);
+
+  // GSAP close menu animation
+  const closeMenu = useCallback(() => {
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        setIsServicesOpen(false);
+        setIsCompanyOpen(false);
+        setIsResourcesOpen(false);
+        document.body.style.overflow = "";
+        document.body.classList.remove("mobile-menu-open");
+        isAnimatingRef.current = false;
+      },
+    });
+
+    // Drawer slide out
+    tl.to(drawerRef.current, {
+      x: "100%",
+      duration: 0.35,
+      ease: "power2.in",
+    }, 0);
+
+    // Overlay fade out
+    tl.to(overlayRef.current, {
+      opacity: 0,
+      duration: 0.3,
+      ease: "power2.inOut",
+      onComplete: () => {
+        gsap.set(overlayRef.current, { visibility: "hidden" });
+      },
+    }, 0.1);
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
       document.body.style.overflow = "";
       document.body.classList.remove("mobile-menu-open");
     };
-  }, [isMobileMenuOpen]);
+  }, []);
 
   const scrollToSection = (href: string) => {
-    setIsMobileMenuOpen(false);
-    setIsServicesOpen(false);
-    setIsCompanyOpen(false);
-    setIsResourcesOpen(false);
+    closeMenu();
 
     // If not on home page, navigate to home first then scroll
     if (!isOnHomePage) {
@@ -425,7 +492,7 @@ const Header = () => {
             {/* Mobile Menu Button */}
             <button
               className="lg:hidden flex items-center justify-center p-2.5 rounded-xl bg-brand-blue/10 text-brand-blue hover:bg-brand-blue/20 transition-all duration-300 active:scale-95"
-              onClick={() => setIsMobileMenuOpen(true)}
+              onClick={openMenu}
               aria-label="Open menu"
             >
               <div className="w-5 h-4 flex flex-col justify-between items-end">
@@ -441,29 +508,28 @@ const Header = () => {
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`lg:hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[100] transition-all duration-400 ease-out ${
-          isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
-        }`}
-        onClick={() => setIsMobileMenuOpen(false)}
+        ref={overlayRef}
+        className="lg:hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[100] invisible opacity-0"
+        onClick={closeMenu}
         aria-hidden="true"
       />
 
       {/* Mobile Menu Drawer */}
       <div
-        className={`lg:hidden fixed top-0 right-0 bottom-0 h-[100dvh] w-[85vw] max-w-[400px] bg-white shadow-2xl z-[110] flex flex-col transition-transform duration-400 ${
-          isMobileMenuOpen ? "translate-x-0 ease-[cubic-bezier(0.32,0.72,0,1)]" : "translate-x-full ease-[cubic-bezier(0.52,0.16,0.24,1)]"
-        }`}
+        ref={drawerRef}
+        className="lg:hidden fixed top-0 right-0 bottom-0 h-[100dvh] w-[85vw] max-w-[400px] bg-white shadow-2xl z-[110] flex flex-col translate-x-full"
+        style={{ willChange: "transform" }}
       >
         {/* Drawer Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 gap-4">
-          <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 min-w-0">
+          <Link to="/" onClick={closeMenu} className="flex items-center gap-2 min-w-0">
             <img src="/logo.png" alt="PhysicianMeds" className="w-[38px] h-[38px] object-contain flex-shrink-0" />
             <span className="font-display font-bold text-xl text-brand-dark tracking-tight">
               Physician<span className="text-brand-blue">Meds</span>
             </span>
           </Link>
           <button
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={closeMenu}
             className="p-2.5 rounded-full bg-brand-blue/10 text-brand-blue hover:bg-brand-blue hover:text-white transition-all duration-300 group flex-shrink-0"
             aria-label="Close menu"
           >
@@ -473,7 +539,7 @@ const Header = () => {
 
           {/* Drawer Body - Navigation */}
           <div className="flex-1 overflow-y-auto">
-            <nav className="p-6 flex flex-col gap-2">
+            <nav ref={navItemsRef} className="p-6 flex flex-col gap-2">
               {navLinks.map((link) => (
                 <div key={link.name}>
                   {link.hasDropdown ? (
@@ -492,8 +558,7 @@ const Header = () => {
                           onClick={() => {
                             if (link.dropdownType === "services") {
                               navigate("/services");
-                              setIsMobileMenuOpen(false);
-                              setIsServicesOpen(false);
+                              closeMenu();
                               window.scrollTo(0, 0);
                             } else if (link.dropdownType === "company") {
                               setIsCompanyOpen(!isCompanyOpen);
@@ -557,8 +622,7 @@ const Header = () => {
                                 key={companyLink.name}
                                 to={companyLink.href}
                                 onClick={() => {
-                                  setIsMobileMenuOpen(false);
-                                  setIsCompanyOpen(false);
+                                  closeMenu();
                                   window.scrollTo(0, 0);
                                 }}
                                 className={`block py-2 text-sm transition-colors ${
@@ -590,8 +654,7 @@ const Header = () => {
                                   key={service.name}
                                   to={service.href}
                                   onClick={() => {
-                                    setIsMobileMenuOpen(false);
-                                    setIsServicesOpen(false);
+                                    closeMenu();
                                     window.scrollTo(0, 0);
                                   }}
                                   className={`block py-2 text-sm transition-colors ${
@@ -620,7 +683,7 @@ const Header = () => {
                             <Link
                               to="/services"
                               onClick={() => {
-                                setIsMobileMenuOpen(false);
+                                closeMenu();
                                 window.scrollTo(0, 0);
                               }}
                               className="flex items-center gap-1.5 py-3 mt-2 text-sm font-semibold text-brand-blue hover:text-brand-blue-dark transition-colors border-t border-gray-100 pt-3"
@@ -647,8 +710,7 @@ const Header = () => {
                                 key={resLink.name}
                                 to={resLink.href}
                                 onClick={() => {
-                                  setIsMobileMenuOpen(false);
-                                  setIsResourcesOpen(false);
+                                  closeMenu();
                                   window.scrollTo(0, 0);
                                 }}
                                 className={`block py-2 text-sm transition-colors ${
@@ -668,7 +730,7 @@ const Header = () => {
                     <Link
                       to={link.href}
                       onClick={() => {
-                        setIsMobileMenuOpen(false);
+                        closeMenu();
                         window.scrollTo(0, 0);
                       }}
                       className={`flex items-center justify-between text-base font-medium transition-colors py-2 ${
@@ -696,7 +758,7 @@ const Header = () => {
               <Link
                 to="/consult-now"
                 onClick={() => {
-                  setIsMobileMenuOpen(false);
+                  closeMenu();
                   window.scrollTo(0, 0);
                 }}
               >

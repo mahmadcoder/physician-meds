@@ -450,21 +450,6 @@ const Header = () => {
                 {link.hasDropdown ? (
                   <>
                     <div
-                      onClick={() => {
-                        if (link.dropdownType === "services") {
-                          setIsServicesOpen(!isServicesOpen);
-                          setIsCompanyOpen(false);
-                          setIsResourcesOpen(false);
-                        } else if (link.dropdownType === "company") {
-                          setIsCompanyOpen(!isCompanyOpen);
-                          setIsServicesOpen(false);
-                          setIsResourcesOpen(false);
-                        } else if (link.dropdownType === "resources") {
-                          setIsResourcesOpen(!isResourcesOpen);
-                          setIsServicesOpen(false);
-                          setIsCompanyOpen(false);
-                        }
-                      }}
                       className={`flex items-center justify-between text-base font-medium transition-colors py-2 cursor-pointer ${
                         (link.dropdownType === "services" &&
                           isOnServicesPage) ||
@@ -474,17 +459,58 @@ const Header = () => {
                           : "text-gray-600 hover:text-brand-blue"
                       }`}
                     >
-                      <span>{link.name}</span>
-                      <ChevronDown
-                        className={`w-4 h-4 transition-transform duration-300 ${
-                          (link.dropdownType === "services" &&
-                            isServicesOpen) ||
-                          (link.dropdownType === "company" && isCompanyOpen) ||
-                          (link.dropdownType === "resources" && isResourcesOpen)
-                            ? "rotate-180"
-                            : ""
-                        }`}
-                      />
+                      <span
+                        onClick={() => {
+                          if (link.dropdownType === "services") {
+                            navigate("/services");
+                            setIsMobileMenuOpen(false);
+                            setIsServicesOpen(false);
+                            window.scrollTo(0, 0);
+                          } else if (link.dropdownType === "company") {
+                            setIsCompanyOpen(!isCompanyOpen);
+                            setIsServicesOpen(false);
+                            setIsResourcesOpen(false);
+                          } else if (link.dropdownType === "resources") {
+                            setIsResourcesOpen(!isResourcesOpen);
+                            setIsServicesOpen(false);
+                            setIsCompanyOpen(false);
+                          }
+                        }}
+                        className="flex-1"
+                      >
+                        {link.name}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (link.dropdownType === "services") {
+                            setIsServicesOpen(!isServicesOpen);
+                            setIsCompanyOpen(false);
+                            setIsResourcesOpen(false);
+                          } else if (link.dropdownType === "company") {
+                            setIsCompanyOpen(!isCompanyOpen);
+                            setIsServicesOpen(false);
+                            setIsResourcesOpen(false);
+                          } else if (link.dropdownType === "resources") {
+                            setIsResourcesOpen(!isResourcesOpen);
+                            setIsServicesOpen(false);
+                            setIsCompanyOpen(false);
+                          }
+                        }}
+                        className="p-1.5 -mr-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                        aria-label={`Toggle ${link.name} submenu`}
+                      >
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform duration-300 ${
+                            (link.dropdownType === "services" &&
+                              isServicesOpen) ||
+                            (link.dropdownType === "company" && isCompanyOpen) ||
+                            (link.dropdownType === "resources" && isResourcesOpen)
+                              ? "rotate-180"
+                              : ""
+                          }`}
+                        />
+                      </button>
                     </div>
 
                     {/* Mobile Company Dropdown */}

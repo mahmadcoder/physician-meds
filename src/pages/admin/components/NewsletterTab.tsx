@@ -120,8 +120,8 @@ function EmailPreview({ form }: { form: CampaignForm }) {
   }
 
   return (
-    <div className="bg-[#f1f5f9] rounded-xl p-4 overflow-auto max-h-[600px] [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: "none" }}>
-      <div className="max-w-[460px] mx-auto bg-white rounded-xl overflow-hidden shadow-sm" style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
+    <div className="bg-[#f1f5f9] rounded-xl p-3 sm:p-4 overflow-auto max-h-[500px] sm:max-h-[600px] [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: "none" }}>
+      <div className="max-w-[460px] w-full mx-auto bg-white rounded-xl overflow-hidden shadow-sm" style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
         {/* Header - Real logo like team emails */}
         <div className="text-center px-5 pt-6 pb-4 border-b border-gray-100">
           <a href="https://www.physicianmeds.com" className="block">
@@ -462,53 +462,53 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
     return (
       <div className="space-y-5">
         {/* Stats + CTA */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             {[
               { label: "Total", value: stats.total, color: "text-gray-900" },
               { label: "Sent", value: stats.sent, color: "text-green-600" },
               { label: "Scheduled", value: stats.scheduled, color: "text-amber-600" },
               { label: "Drafts", value: stats.draft, color: "text-gray-400" },
             ].map((s) => (
-              <div key={s.label} className="bg-white rounded-xl border border-gray-100 px-4 py-2.5 min-w-[100px]">
+              <div key={s.label} className="bg-white rounded-xl border border-gray-100 px-3 sm:px-4 py-2 sm:py-2.5 min-w-0 flex-1 sm:flex-initial sm:min-w-[90px]">
                 <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">{s.label}</p>
-                <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
+                <p className={`text-lg sm:text-xl font-bold ${s.color}`}>{s.value}</p>
               </div>
             ))}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 sm:flex-wrap">
             {stats.scheduled > 0 && (
               <button
                 onClick={handleProcessScheduled}
                 disabled={processingScheduled}
-                className="flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white text-sm font-semibold rounded-xl hover:bg-amber-600 disabled:opacity-60 transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-500 text-white text-sm font-semibold rounded-xl hover:bg-amber-600 disabled:opacity-60 transition-colors shrink-0"
                 title="Send any overdue scheduled campaigns now"
               >
                 {processingScheduled ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
                 ) : (
-                  <Send className="w-4 h-4" />
+                  <Send className="w-4 h-4 shrink-0" />
                 )}
-                Process scheduled now
+                <span className="truncate">Process scheduled now</span>
               </button>
             )}
             <button
               onClick={handleCreate}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#2d62ff] text-white text-sm font-semibold rounded-xl hover:bg-[#2452d9] transition-colors shadow-sm shadow-blue-200"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#2d62ff] text-white text-sm font-semibold rounded-xl hover:bg-[#2452d9] transition-colors shadow-sm shadow-blue-200 shrink-0"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 shrink-0" />
               New Campaign
             </button>
           </div>
         </div>
 
         {/* Filter tabs */}
-        <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+        <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-full sm:w-fit overflow-x-auto">
           {(["all", "sent", "scheduled", "draft", "failed"] as StatusFilter[]).map((f) => (
             <button
               key={f}
               onClick={() => setStatusFilter(f)}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors capitalize ${
+              className={`px-3 py-1.5 sm:px-3.5 rounded-lg text-xs font-semibold transition-colors capitalize shrink-0 ${
                 statusFilter === f
                   ? "bg-white text-gray-900 shadow-sm"
                   : "text-gray-500 hover:text-gray-700"
@@ -527,8 +527,8 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
             {filteredCampaigns.map((c) => {
               const tpl = TEMPLATES.find((t) => t.id === c.template_id);
               return (
-                <div key={c.id} className="bg-white rounded-2xl border border-gray-100 p-5 hover:border-gray-200 transition-colors">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div key={c.id} className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 hover:border-gray-200 transition-colors">
+                  <div className="flex flex-col gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1.5">
                         {statusBadge(c.status)}
@@ -542,7 +542,7 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
                       <p className="text-sm text-gray-500 mt-0.5 truncate">{c.heading}</p>
                     </div>
 
-                    <div className="flex items-center gap-4 text-xs text-gray-400 shrink-0">
+                    <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 text-xs text-gray-400">
                       {c.status === "sent" && (
                         <span className="flex items-center gap-1">
                           <MailCheck className="w-3.5 h-3.5" />
@@ -555,10 +555,8 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
                           {formatDate(c.scheduled_at)}
                         </span>
                       )}
-                      <span>{formatDate(c.created_at)}</span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
+                      <span className="shrink-0">{formatDate(c.created_at)}</span>
+                      <div className="flex items-center gap-1.5 shrink-0">
                       {(c.status === "draft" || c.status === "scheduled") && (
                         <button
                           onClick={() => handleEdit(c)}
@@ -577,6 +575,7 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
                           <Trash2 className="w-4 h-4" />
                         </button>
                       )}
+                      </div>
                     </div>
                   </div>
 
@@ -608,32 +607,32 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <button
           onClick={resetAndGoToList}
-          className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+          className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors shrink-0"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 shrink-0" />
           Back to campaigns
         </button>
         <button
           onClick={() => setShowPreview(!showPreview)}
-          className={`flex items-center gap-2 px-3.5 py-2 text-sm font-medium rounded-xl border transition-colors sm:hidden ${
+          className={`flex items-center justify-center gap-2 px-3.5 py-2 text-sm font-medium rounded-xl border transition-colors sm:hidden ${
             showPreview ? "bg-blue-50 text-blue-600 border-blue-200" : "bg-white text-gray-600 border-gray-200"
           }`}
         >
-          <Eye className="w-4 h-4" />
+          <Eye className="w-4 h-4 shrink-0" />
           {showPreview ? "Edit" : "Preview"}
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-5">
         {/* Form (left side) */}
         <div className={`lg:col-span-3 space-y-5 ${showPreview ? "hidden sm:block" : ""}`}>
           {/* Template picker */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5">
+          <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5">
             <h3 className="font-bold text-gray-900 mb-3">Choose Template</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-2.5">
               {TEMPLATES.map((t) => (
                 <button
                   key={t.id}
@@ -655,7 +654,7 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
           </div>
 
           {/* Content */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
+          <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 space-y-4">
             <h3 className="font-bold text-gray-900">Email Content</h3>
 
             <div>
@@ -690,20 +689,20 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider">CTA Buttons <span className="text-gray-300">(optional)</span></label>
                 <button
                   type="button"
                   onClick={() => updateForm({ cta_buttons: [...form.cta_buttons, { text: "", url: "" }] })}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700"
+                  className="flex items-center justify-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 shrink-0 w-full sm:w-fit px-3 py-2 sm:py-1 border border-blue-200 sm:border-transparent rounded-lg sm:rounded hover:bg-blue-50 sm:hover:bg-transparent transition-colors"
                 >
-                  <PlusCircle className="w-4 h-4" />
+                  <PlusCircle className="w-4 h-4 shrink-0" />
                   Add button
                 </button>
               </div>
               <div className="space-y-3">
                 {form.cta_buttons.map((cta, i) => (
-                  <div key={i} className="flex gap-2 items-start">
+                  <div key={i} className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-start">
                     <input
                       type="text"
                       value={cta.text}
@@ -713,7 +712,7 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
                         updateForm({ cta_buttons: next });
                       }}
                       placeholder="Button text (e.g., Read More)"
-                      className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
+                      className="flex-1 min-w-0 px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
                     />
                     <input
                       type="url"
@@ -724,13 +723,13 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
                         updateForm({ cta_buttons: next });
                       }}
                       placeholder="https://..."
-                      className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
+                      className="flex-1 min-w-0 px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
                     />
                     {form.cta_buttons.length > 1 && (
                       <button
                         type="button"
                         onClick={() => updateForm({ cta_buttons: form.cta_buttons.filter((_, j) => j !== i) })}
-                        className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+                        className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors shrink-0 self-center sm:self-auto"
                         title="Remove"
                       >
                         <X className="w-4 h-4" />
@@ -743,51 +742,53 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
           </div>
 
           {/* Recipients */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
+          <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 space-y-4">
             <h3 className="font-bold text-gray-900">Recipients</h3>
 
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <button
                 onClick={() => updateForm({ recipient_type: "all", recipient_ids: [] })}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${
+                className={`flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${
                   form.recipient_type === "all"
                     ? "border-blue-400 bg-blue-50 text-blue-700"
                     : "border-gray-100 text-gray-600 hover:border-gray-200"
                 }`}
               >
-                <Users className="w-4 h-4" />
-                All Subscribers ({activeSubscribers.length})
+                <Users className="w-4 h-4 shrink-0" />
+                <span className="truncate">All Subscribers ({activeSubscribers.length})</span>
               </button>
               <button
                 onClick={() => {
                   updateForm({ recipient_type: "selected" });
                   setShowRecipientList(true);
                 }}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${
+                className={`flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${
                   form.recipient_type === "selected"
                     ? "border-blue-400 bg-blue-50 text-blue-700"
                     : "border-gray-100 text-gray-600 hover:border-gray-200"
                 }`}
               >
-                <UserCheck className="w-4 h-4" />
+                <UserCheck className="w-4 h-4 shrink-0" />
                 Select Specific
               </button>
             </div>
 
             {form.recipient_type === "selected" && (
               <div className="border border-gray-100 rounded-xl overflow-hidden">
-                <div className="p-3 border-b border-gray-100 flex items-center gap-2">
-                  <Search className="w-4 h-4 text-gray-300" />
-                  <input
-                    type="text"
-                    value={subscriberSearch}
-                    onChange={(e) => setSubscriberSearch(e.target.value)}
-                    placeholder="Search subscribers..."
-                    className="flex-1 text-sm outline-none"
-                  />
+                <div className="p-3 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <Search className="w-4 h-4 text-gray-300 shrink-0" />
+                    <input
+                      type="text"
+                      value={subscriberSearch}
+                      onChange={(e) => setSubscriberSearch(e.target.value)}
+                      placeholder="Search subscribers..."
+                      className="flex-1 min-w-0 text-sm outline-none"
+                    />
+                  </div>
                   <button
                     onClick={selectAllRecipients}
-                    className="text-[11px] font-bold text-blue-600 hover:underline"
+                    className="text-[11px] font-bold text-blue-600 hover:underline shrink-0 text-left sm:text-right"
                   >
                     {form.recipient_ids.length === activeSubscribers.length ? "Deselect All" : "Select All"}
                   </button>
@@ -827,30 +828,30 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
           </div>
 
           {/* Schedule */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
+          <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 space-y-4">
             <h3 className="font-bold text-gray-900">Delivery</h3>
 
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <button
                 onClick={() => updateForm({ schedule: false, scheduled_at: "" })}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${
+                className={`flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${
                   !form.schedule
                     ? "border-blue-400 bg-blue-50 text-blue-700"
                     : "border-gray-100 text-gray-600 hover:border-gray-200"
                 }`}
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-4 h-4 shrink-0" />
                 Send Now
               </button>
               <button
                 onClick={() => updateForm({ schedule: true })}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${
+                className={`flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${
                   form.schedule
                     ? "border-blue-400 bg-blue-50 text-blue-700"
                     : "border-gray-100 text-gray-600 hover:border-gray-200"
                 }`}
               >
-                <CalendarClock className="w-4 h-4" />
+                <CalendarClock className="w-4 h-4 shrink-0" />
                 Schedule
               </button>
             </div>
@@ -870,13 +871,13 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
           </div>
 
           {/* Actions */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-3">
             <button
               onClick={handleSaveDraft}
               disabled={saving || !form.template_id}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 disabled:opacity-40 transition-colors"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 disabled:opacity-40 transition-colors"
             >
-              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              {saving ? <Loader2 className="w-4 h-4 animate-spin shrink-0" /> : <Save className="w-4 h-4 shrink-0" />}
               Save Draft
             </button>
 
@@ -884,18 +885,18 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
               <button
                 onClick={handleSchedule}
                 disabled={sending || !isFormValid || !form.scheduled_at}
-                className="flex items-center gap-2 px-5 py-2.5 bg-amber-500 text-white text-sm font-semibold rounded-xl hover:bg-amber-600 disabled:opacity-40 transition-colors shadow-sm shadow-amber-200"
+                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-500 text-white text-sm font-semibold rounded-xl hover:bg-amber-600 disabled:opacity-40 transition-colors shadow-sm shadow-amber-200"
               >
-                {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CalendarClock className="w-4 h-4" />}
+                {sending ? <Loader2 className="w-4 h-4 animate-spin shrink-0" /> : <CalendarClock className="w-4 h-4 shrink-0" />}
                 Schedule Campaign
               </button>
             ) : (
               <button
                 onClick={handleSend}
                 disabled={sending || !isFormValid}
-                className="flex items-center gap-2 px-5 py-2.5 bg-[#2d62ff] text-white text-sm font-semibold rounded-xl hover:bg-[#2452d9] disabled:opacity-40 transition-colors shadow-sm shadow-blue-200"
+                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#2d62ff] text-white text-sm font-semibold rounded-xl hover:bg-[#2452d9] disabled:opacity-40 transition-colors shadow-sm shadow-blue-200"
               >
-                {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                {sending ? <Loader2 className="w-4 h-4 animate-spin shrink-0" /> : <Send className="w-4 h-4 shrink-0" />}
                 Send Now
               </button>
             )}
@@ -920,7 +921,7 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
         {/* Preview (right side) */}
         <div className={`lg:col-span-2 ${showPreview ? "" : "hidden sm:block"}`}>
           <div className="sticky top-4">
-            <div className="bg-white rounded-2xl border border-gray-100 p-4">
+            <div className="bg-white rounded-2xl border border-gray-100 p-3 sm:p-4">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-bold text-gray-900 text-sm">Email Preview</h3>
                 {form.subject && (

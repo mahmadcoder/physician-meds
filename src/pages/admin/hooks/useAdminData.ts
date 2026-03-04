@@ -323,6 +323,7 @@ export function useAdminData() {
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
     localStorage.removeItem("admin_login_time");
+    toast.success("Logged out successfully");
     navigate(ADMIN_LOGIN_PATH);
   };
 

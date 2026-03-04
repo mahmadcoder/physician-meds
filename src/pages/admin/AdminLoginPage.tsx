@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import LoadingIndicator from "./components/LoadingIndicator";
+import { toast } from "sonner";
 
 const AdminLoginPage = () => {
   usePageTitle("Admin Login");
@@ -55,9 +56,12 @@ const AdminLoginPage = () => {
 
       localStorage.setItem("admin_token", data.token);
       localStorage.setItem("admin_login_time", Date.now().toString());
+      toast.success("Successfully logged in");
       navigate("/pm-portal-x9k2/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed.");
+      const errorMessage = err instanceof Error ? err.message : "Login failed.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

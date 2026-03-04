@@ -14,6 +14,7 @@ import {
   ListOrdered,
   Smile,
   Palette,
+  Highlighter,
 } from "lucide-react";
 import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
 import {
@@ -159,6 +160,17 @@ export default function RichTextBlock({
         </ToolbarBtn>
 
         <div className="w-px h-5 bg-gray-200 mx-0.5" />
+
+        <ToolbarBtn
+          onClick={() => {
+            editor.chain().focus().toggleBold().run();
+            editor.chain().focus().setColor("#2d62ff").run();
+          }}
+          active={editor.isActive("bold") && editor.isActive("textStyle", { color: "#2d62ff" })}
+          title="Highlight"
+        >
+          <Highlighter className="w-3.5 h-3.5" />
+        </ToolbarBtn>
 
         <Popover open={colorOpen} onOpenChange={setColorOpen}>
           <PopoverTrigger asChild>

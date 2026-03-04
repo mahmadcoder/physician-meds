@@ -17,6 +17,7 @@ import {
   ImagePlus,
   Smile,
   Palette,
+  Highlighter,
 } from "lucide-react";
 import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
 import {
@@ -212,6 +213,17 @@ export default function NewsletterRichEditor({
         </ToolbarButton>
 
         <div className="w-px h-6 bg-gray-200 mx-1" />
+
+        <ToolbarButton
+          onClick={() => {
+            editor.chain().focus().toggleBold().run();
+            editor.chain().focus().setColor("#2d62ff").run();
+          }}
+          active={editor.isActive("bold") && editor.isActive("textStyle", { color: "#2d62ff" })}
+          title="Highlight"
+        >
+          <Highlighter className="w-4 h-4" />
+        </ToolbarButton>
 
         <Popover open={colorOpen} onOpenChange={setColorOpen}>
           <PopoverTrigger asChild>

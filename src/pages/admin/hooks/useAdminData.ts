@@ -38,7 +38,15 @@ const API_ENDPOINTS: Record<Exclude<Tab, "overview">, string> = {
 
 export function useAdminData() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const [activeTab, setActiveTabState] = useState<Tab>(() => {
+    const saved = sessionStorage.getItem("admin_active_tab");
+    return (saved as Tab) || "overview";
+  });
+
+  const setActiveTab = useCallback((tab: Tab) => {
+    setActiveTabState(tab);
+    sessionStorage.setItem("admin_active_tab", tab);
+  }, []);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);

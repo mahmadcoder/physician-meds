@@ -54,14 +54,14 @@ export default function EditorTopBar({
             {showPreview ? "Hide Preview" : "Preview"}
           </button>
 
-          <label className="hidden sm:flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
             <input
               type="checkbox"
               checked={isPublished}
               onChange={(e) => onTogglePublish(e.target.checked)}
               className="rounded border-gray-300 text-brand-blue focus:ring-brand-blue/20"
             />
-            Published
+            <span className="hidden sm:inline">Published</span>
           </label>
 
           <Button

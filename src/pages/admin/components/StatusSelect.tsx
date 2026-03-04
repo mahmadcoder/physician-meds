@@ -49,7 +49,7 @@ export default function StatusSelect({ value, onChange }: StatusSelectProps) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1.5 w-44 bg-white rounded-xl border border-gray-200 shadow-xl z-[999] overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150">
+        <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-1.5 w-44 bg-white rounded-xl border border-gray-200 shadow-xl z-[999] overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150">
           <div className="py-1">
             {STATUS_OPTIONS.map((option) => (
               <button

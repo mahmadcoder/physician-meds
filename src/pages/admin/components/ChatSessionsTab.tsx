@@ -71,8 +71,9 @@ function ChatTranscript({ sessionId, authHeaders }: { sessionId: string; authHea
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <div className="w-5 h-5 border-2 border-[#2d62ff]/20 border-t-[#2d62ff] rounded-full animate-spin" />
+      <div className="flex flex-col items-center justify-center py-8 gap-3">
+        <div className="w-8 h-8 border-3 border-[#2d62ff]/20 border-t-[#2d62ff] rounded-full animate-spin" />
+        <p className="text-sm text-gray-400">Loading...</p>
       </div>
     );
   }

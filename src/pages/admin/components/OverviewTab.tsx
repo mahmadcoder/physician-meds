@@ -173,8 +173,9 @@ export default function OverviewTab({
             <span className="text-xs text-gray-400">Latest submissions</span>
           </div>
           {loading ? (
-            <div className="flex items-center justify-center py-16">
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
               <div className="w-8 h-8 border-3 border-[#2d62ff]/20 border-t-[#2d62ff] rounded-full animate-spin" />
+              <p className="text-sm text-gray-400">Loading...</p>
             </div>
           ) : recentItems.length === 0 ? (
             <div className="text-center py-16 text-gray-400">

@@ -152,14 +152,28 @@ function renderHighlighted(text: string) {
   });
 }
 
+/** Detect if content is HTML (from TipTap) vs plain/markdown text */
+function isHtml(text: string): boolean {
+  return /<[a-z][\s\S]*>/i.test(text);
+}
+
+/** Render content — HTML via dangerouslySetInnerHTML, plain text via renderHighlighted */
+function ContentRenderer({ text, className }: { text: string; className?: string }) {
+  if (isHtml(text)) {
+    return <div className={className} dangerouslySetInnerHTML={{ __html: text }} />;
+  }
+  return <p className={className}>{renderHighlighted(text)}</p>;
+}
+
 function PreviewBlock({ block }: { block: ContentBlock }) {
   switch (block.type) {
     case "paragraph":
       if (!block.content) return null;
       return (
-        <p className="text-gray-700 leading-[1.85] text-[14px] mb-4">
-          {renderHighlighted(block.content)}
-        </p>
+        <ContentRenderer
+          text={block.content}
+          className="text-gray-700 leading-[1.85] text-[14px] mb-4"
+        />
       );
 
     case "heading": {
@@ -201,9 +215,10 @@ function PreviewBlock({ block }: { block: ContentBlock }) {
       return (
         <blockquote className="relative my-6 bg-white rounded-xl p-5 border border-brand-blue/10 shadow-md shadow-brand-blue/5">
           <Quote className="w-7 h-7 text-brand-blue/15 mb-2" />
-          <p className="text-gray-800 leading-relaxed text-[14px] font-medium italic">
-            {renderHighlighted(block.content)}
-          </p>
+          <ContentRenderer
+            text={block.content}
+            className="text-gray-800 leading-relaxed text-[14px] font-medium italic"
+          />
           <div className="mt-3 w-10 h-1 bg-gradient-to-r from-brand-blue to-brand-accent rounded-full" />
         </blockquote>
       );
@@ -262,9 +277,10 @@ function PreviewBlock({ block }: { block: ContentBlock }) {
             </span>
           </div>
           <div className="px-4 py-3">
-            <p className={`${v.text} text-xs leading-relaxed`}>
-              {renderHighlighted(block.content)}
-            </p>
+            <ContentRenderer
+              text={block.content}
+              className={`${v.text} text-xs leading-relaxed`}
+            />
           </div>
         </div>
       );

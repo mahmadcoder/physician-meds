@@ -39,9 +39,9 @@ export default function StatusSelect({ value, onChange }: StatusSelectProps) {
           e.stopPropagation();
           setOpen(!open);
         }}
-        className="inline-flex items-center gap-2 pl-3 pr-2.5 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-sm font-semibold text-gray-700 transition-all cursor-pointer shadow-sm"
+        className="inline-flex items-center gap-2 pl-3 pr-2.5 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-sm font-semibold text-gray-700 transition-all cursor-pointer shadow-sm whitespace-nowrap"
       >
-        <span className={`w-2 h-2 rounded-full ${current.dot}`} />
+        <span className={`w-2 h-2 rounded-full shrink-0 ${current.dot}`} />
         <span>{current.label}</span>
         <ChevronDown
           className={`w-3.5 h-3.5 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
@@ -49,7 +49,7 @@ export default function StatusSelect({ value, onChange }: StatusSelectProps) {
       </button>
 
       {open && (
-        <div className="absolute left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 top-full mt-1.5 w-44 bg-white rounded-xl border border-gray-200 shadow-lg z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150">
+        <div className="absolute right-0 top-full mt-1.5 w-44 bg-white rounded-xl border border-gray-200 shadow-xl z-[999] overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150">
           <div className="py-1">
             {STATUS_OPTIONS.map((option) => (
               <button
@@ -59,13 +59,13 @@ export default function StatusSelect({ value, onChange }: StatusSelectProps) {
                   onChange(option.value);
                   setOpen(false);
                 }}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium transition-colors ${
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors ${
                   value === option.value
                     ? "bg-gray-50 text-gray-900"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 }`}
               >
-                <span className={`w-2 h-2 rounded-full ${option.dot}`} />
+                <span className={`w-2 h-2 rounded-full shrink-0 ${option.dot}`} />
                 <span className="flex-1 text-left">{option.label}</span>
                 {value === option.value && (
                   <Check className="w-3.5 h-3.5 text-[#2d62ff]" />

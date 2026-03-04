@@ -9,7 +9,6 @@ import {
   Trash2,
   Mail,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import type { Comment } from "../types";
 import CopyButton from "./CopyButton";
 import EmptyState from "./EmptyState";
@@ -75,14 +74,13 @@ export default function CommentsTab({
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 {!comment.is_read && (
-                  <Button
-                    size="sm"
-                    variant="outline"
+                  <button
+                    type="button"
                     onClick={() => onMarkRead(comment.id)}
-                    className="text-xs border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg"
+                    className="inline-flex items-center gap-1.5 px-3 h-8 rounded-lg border border-gray-200 bg-white text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-colors whitespace-nowrap"
                   >
-                    <CheckCircle className="w-3.5 h-3.5 mr-1" /> Mark Read
-                  </Button>
+                    <CheckCircle className="w-3.5 h-3.5" /> Mark Read
+                  </button>
                 )}
                 <button
                   onClick={() => onDelete(comment.id)}

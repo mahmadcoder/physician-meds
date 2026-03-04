@@ -6,7 +6,6 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import CopyButton from "./CopyButton";
 import StatusSelect from "./StatusSelect";
 
@@ -68,7 +67,7 @@ export default function InquiryCard({
 
   return (
     <div
-      className={`bg-white rounded-2xl border p-4 sm:p-6 transition-all hover:shadow-sm overflow-hidden ${
+      className={`bg-white rounded-2xl border p-4 sm:p-6 transition-all hover:shadow-sm ${
         !isRead ? `${unreadBorder} shadow-sm` : "border-gray-100"
       }`}
     >
@@ -93,14 +92,13 @@ export default function InquiryCard({
             <StatusSelect value={status} onChange={onStatusChange} />
           )}
           {!isRead && (
-            <Button
-              size="sm"
-              variant="outline"
+            <button
+              type="button"
               onClick={onMarkRead}
-              className="text-xs border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg"
+              className="inline-flex items-center gap-1.5 px-3 h-8 rounded-lg border border-gray-200 bg-white text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-colors whitespace-nowrap"
             >
-              <CheckCircle className="w-3.5 h-3.5 mr-1" /> Mark Read
-            </Button>
+              <CheckCircle className="w-3.5 h-3.5" /> Mark Read
+            </button>
           )}
         </div>
       </div>

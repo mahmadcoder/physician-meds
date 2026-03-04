@@ -11,6 +11,7 @@ import type {
   ChatSession,
   NewsletterCampaign,
 } from "../types";
+import { toast } from "sonner";
 
 export interface AdminNotification {
   id: string;
@@ -193,14 +194,18 @@ export function useAdminData() {
     id: string
   ) => {
     try {
-      await fetch(`/api/admin/${table}`, {
+      const res = await fetch(`/api/admin/${table}`, {
         method: "PUT",
         headers: authHeaders(),
         body: JSON.stringify({ id, is_read: true }),
       });
+      if (!res.ok) throw new Error("Failed to mark as read");
+      
       fetchData(table as Tab);
+      toast.success("Marked as read");
     } catch (err) {
       console.error("Mark as read error:", err);
+      toast.error("Failed to mark as read");
     }
   };
 
@@ -210,14 +215,18 @@ export function useAdminData() {
     table: "consultations" | "cta-inquiries"
   ) => {
     try {
-      await fetch(`/api/admin/${table}`, {
+      const res = await fetch(`/api/admin/${table}`, {
         method: "PUT",
         headers: authHeaders(),
         body: JSON.stringify({ id, status }),
       });
+      if (!res.ok) throw new Error("Failed to update status");
+      
       fetchData(table);
+      toast.success("Status updated successfully");
     } catch (err) {
       console.error("Status update error:", err);
+      toast.error("Failed to update status");
     }
   };
 
@@ -243,13 +252,28 @@ export function useAdminData() {
       comment: "comments",
       "chat-session": "chat-sessions",
     };
-    await fetch(endpoints[type], {
-      method: "DELETE",
-      headers: authHeaders(),
-      body: JSON.stringify({ id }),
-    });
-    setPendingDelete(null);
-    fetchData(tabs[type]);
+    
+    try {
+      const res = await fetch(endpoints[type], {
+        method: "DELETE",
+        headers: authHeaders(),
+        body: JSON.stringify({ id }),
+      });
+      if (!res.ok) throw new Error("Failed to delete item");
+      
+      setPendingDelete(null);
+      fetchData(tabs[type]);
+      
+      const labels: Record<string, string> = {
+        blog: "Blog post deleted",
+        comment: "Comment deleted",
+        "chat-session": "Chat session deleted",
+      };
+      toast.success(labels[type]);
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete item");
+    }
   };
 
   const cancelDelete = () => setPendingDelete(null);
@@ -259,12 +283,20 @@ export function useAdminData() {
   const deleteChatSession = (id: string) => requestDelete("chat-session", id);
 
   const togglePublish = async (id: string, currentState: boolean) => {
-    await fetch("/api/admin/blogs", {
-      method: "PUT",
-      headers: authHeaders(),
-      body: JSON.stringify({ id, is_published: !currentState }),
-    });
-    fetchData("blogs");
+    try {
+      const res = await fetch("/api/admin/blogs", {
+        method: "PUT",
+        headers: authHeaders(),
+        body: JSON.stringify({ id, is_published: !currentState }),
+      });
+      if (!res.ok) throw new Error("Failed to update publish status");
+      
+      fetchData("blogs");
+      toast.success(currentState ? "Blog post reverted to draft" : "Blog post published");
+    } catch (err) {
+      console.error("Toggle publish error:", err);
+      toast.error("Failed to update publish status");
+    }
   };
 
   const updateChatSessionStatus = async (id: string, status: string) => {
@@ -277,13 +309,14 @@ export function useAdminData() {
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         console.error("Status update failed:", res.status, err);
-        alert(`Status update failed: ${err.error || res.statusText}`);
+        toast.error(`Status update failed: ${err.error || res.statusText}`);
         return;
       }
       fetchData("chat-sessions");
+      toast.success("Chat session status updated");
     } catch (err) {
       console.error("Status update error:", err);
-      alert("Failed to update status. Check console for details.");
+      toast.error("Failed to update status. Check console for details.");
     }
   };
 
@@ -318,11 +351,13 @@ export function useAdminData() {
 
   const dismissNotification = async (id: string) => {
     try {
-      await fetch("/api/admin/notifications", {
+      const res = await fetch("/api/admin/notifications", {
         method: "PUT",
         headers: authHeaders(),
         body: JSON.stringify({ id, is_read: true }),
       });
+      if (!res.ok) throw new Error("Failed to dismiss notification");
+      
       setAdminNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));
     } catch (err) {
       console.error("Dismiss notification error:", err);

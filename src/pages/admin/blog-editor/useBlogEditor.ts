@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { ContentBlock, BlogPostDraft } from "./types";
 import { EMPTY_POST } from "./types";
+import { toast } from "sonner";
 
 export function useBlogEditor() {
   const { id } = useParams();
@@ -133,9 +134,13 @@ export function useBlogEditor() {
         const data = await res.json();
         throw new Error(data.error);
       }
+      
+      toast.success(isEditing ? "Blog post updated successfully" : "Blog post created successfully");
       navigate("/pm-portal-x9k2/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save.");
+      const errorMessage = err instanceof Error ? err.message : "Failed to save.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setSaving(false);
     }

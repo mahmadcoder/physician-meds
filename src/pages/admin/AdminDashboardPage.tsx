@@ -36,6 +36,7 @@ import CommentsTab from "./components/CommentsTab";
 import ChatSessionsTab from "./components/ChatSessionsTab";
 import NewsletterTab from "./components/NewsletterTab";
 import ConfirmModal from "./components/ConfirmModal";
+import LoadingIndicator from "./components/LoadingIndicator";
 
 const AdminDashboardPage = () => {
   usePageTitle("Admin Dashboard");
@@ -191,6 +192,20 @@ const AdminDashboardPage = () => {
     "chat-sessions": `${chatSessions.length} total \u2022 ${chatSessions.filter((c) => !c.is_read).length} unread`,
   };
 
+  const getLoadingLabel = (tab: Tab) => {
+    switch (tab) {
+      case "contacts": return "Loading Contacts";
+      case "consultations": return "Loading Consultations";
+      case "cta-inquiries": return "Loading Inquiries";
+      case "subscribers": return "Loading Subscribers";
+      case "blogs": return "Loading Blogs";
+      case "comments": return "Loading Comments";
+      case "chat-sessions": return "Loading Sessions";
+      case "newsletter": return "Loading Newsletter";
+      default: return "Loading Dashboard";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f5f6fa] flex">
       <AdminSidebar
@@ -261,10 +276,7 @@ const AdminDashboardPage = () => {
               )}
 
               {loading ? (
-                <div className="flex flex-col items-center justify-center py-20 gap-3">
-                  <div className="w-8 h-8 border-3 border-[#2d62ff]/20 border-t-[#2d62ff] rounded-full animate-spin" />
-                  <p className="text-sm text-gray-400">Loading...</p>
-                </div>
+                <LoadingIndicator label={getLoadingLabel(activeTab)} />
               ) : (
                 <>
                   {activeTab === "contacts" && (

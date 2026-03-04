@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import LoadingIndicator from "./components/LoadingIndicator";
 
 const AdminLoginPage = () => {
   usePageTitle("Admin Login");
@@ -87,48 +88,49 @@ const AdminLoginPage = () => {
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter admin password"
-                  className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl focus:border-brand-blue focus:ring-brand-blue/20 transition-all"
-                  required
-                  autoFocus
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((p) => !p)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                  tabIndex={-1}
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-4.5 h-4.5" />
-                  ) : (
-                    <Eye className="w-4.5 h-4.5" />
-                  )}
-                </button>
+          {isLoading ? (
+            <LoadingIndicator label="Signing in" className="py-12" />
+          ) : (
+            <form onSubmit={handleLogin} className="space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter admin password"
+                    className="w-full px-4 py-3 pr-11 border border-gray-200 rounded-xl focus:border-brand-blue focus:ring-brand-blue/20 transition-all"
+                    required
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((p) => !p)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4.5 h-4.5" />
+                    ) : (
+                      <Eye className="w-4.5 h-4.5" />
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full btn-primary py-3 text-base group disabled:opacity-60"
-            >
-              {isLoading ? "Signing in..." : "Sign In"}
-              {!isLoading && (
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full btn-primary py-3 text-base group disabled:opacity-60"
+              >
+                Sign In
                 <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              )}
-            </Button>
-          </form>
+              </Button>
+            </form>
+          )}
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@ import {
 import CopyButton from "./CopyButton";
 import StatusSelect from "./StatusSelect";
 import EmptyState from "./EmptyState";
+import LoadingIndicator from "./LoadingIndicator";
 import type { ChatSession, ChatMessage } from "../types";
 
 interface ChatSessionsTabProps {
@@ -70,12 +71,7 @@ function ChatTranscript({ sessionId, authHeaders }: { sessionId: string; authHea
   useEffect(() => { fetchMessages(); }, [fetchMessages]);
 
   if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-8 gap-3">
-        <div className="w-8 h-8 border-3 border-[#2d62ff]/20 border-t-[#2d62ff] rounded-full animate-spin" />
-        <p className="text-sm text-gray-400">Loading...</p>
-      </div>
-    );
+    return <LoadingIndicator label="Loading messages" className="py-8" />;
   }
 
   if (messages.length === 0) {

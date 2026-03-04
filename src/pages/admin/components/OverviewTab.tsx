@@ -14,6 +14,7 @@ import type {
 import DateFilter from "./DateFilter";
 import { isInRange } from "../utils/dateUtils";
 import AnalyticsChart from "./AnalyticsChart";
+import LoadingIndicator from "./LoadingIndicator";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", {
@@ -173,10 +174,7 @@ export default function OverviewTab({
             <span className="text-xs text-gray-400">Latest submissions</span>
           </div>
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-16 gap-3">
-              <div className="w-8 h-8 border-3 border-[#2d62ff]/20 border-t-[#2d62ff] rounded-full animate-spin" />
-              <p className="text-sm text-gray-400">Loading...</p>
-            </div>
+            <LoadingIndicator label="Loading Activity" className="py-16" />
           ) : recentItems.length === 0 ? (
             <div className="text-center py-16 text-gray-400">
               <Clock className="w-10 h-10 mx-auto mb-3 opacity-30" />

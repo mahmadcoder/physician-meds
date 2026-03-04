@@ -6,6 +6,7 @@ import EditorTopBar from "./blog-editor/EditorTopBar";
 import PostDetailsForm from "./blog-editor/PostDetailsForm";
 import ContentBlockEditor from "./blog-editor/ContentBlockEditor";
 import ArticlePreview from "./blog-editor/ArticlePreview";
+import ConfirmModal from "./components/ConfirmModal";
 
 const AdminBlogEditorPage = () => {
   const {
@@ -24,10 +25,20 @@ const AdminBlogEditorPage = () => {
     moveBlock,
     handleSave,
     navigate,
+    isDirty,
   } = useBlogEditor();
 
   usePageTitle(isEditing ? "Edit Blog Post" : "New Blog Post");
   const [showPreview, setShowPreview] = useState(true);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+
+  const handleBack = () => {
+    if (isDirty) {
+      setShowDiscardConfirm(true);
+    } else {
+      navigate("/pm-portal-x9k2/dashboard");
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col bg-[#f5f6fa]">
@@ -36,7 +47,7 @@ const AdminBlogEditorPage = () => {
         isPublished={post.is_published}
         saving={saving}
         showPreview={showPreview}
-        onBack={() => navigate("/pm-portal-x9k2/dashboard")}
+        onBack={handleBack}
         onTogglePublish={(val) => updateField("is_published", val)}
         onTogglePreview={() => setShowPreview((p) => !p)}
         onSave={handleSave}
@@ -93,6 +104,18 @@ const AdminBlogEditorPage = () => {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        open={showDiscardConfirm}
+        title="Unsaved Changes"
+        message="You have unsaved changes. Are you sure you want to leave? Your changes will be lost."
+        confirmLabel="Discard"
+        onConfirm={() => {
+          setShowDiscardConfirm(false);
+          navigate("/pm-portal-x9k2/dashboard");
+        }}
+        onCancel={() => setShowDiscardConfirm(false)}
+      />
     </div>
   );
 };

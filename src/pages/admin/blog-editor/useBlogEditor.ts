@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { ContentBlock, BlogPostDraft } from "./types";
 import { EMPTY_POST } from "./types";
@@ -13,6 +13,10 @@ export function useBlogEditor() {
   const [error, setError] = useState("");
   const [tagsInput, setTagsInput] = useState("");
   const [expandedBlock, setExpandedBlock] = useState<number | null>(null);
+
+  // Dirty state tracking
+  const initialSnapshot = useRef<string>("");
+  const isDirty = JSON.stringify({ ...post, tags: tagsInput }) !== initialSnapshot.current;
 
   const token = localStorage.getItem("admin_token");
 
@@ -30,10 +34,14 @@ export function useBlogEditor() {
           const found = posts.find((p: { id: string }) => p.id === id);
           if (found) {
             setPost(found);
-            setTagsInput((found.tags || []).join(", "));
+            const tags = (found.tags || []).join(", ");
+            setTagsInput(tags);
+            initialSnapshot.current = JSON.stringify({ ...found, tags });
           }
         })
         .catch(console.error);
+    } else {
+      initialSnapshot.current = JSON.stringify({ ...EMPTY_POST, tags: "" });
     }
   }, [id, token, navigate, isEditing]);
 
@@ -133,6 +141,17 @@ export function useBlogEditor() {
     }
   }, [post, tagsInput, isEditing, token, navigate]);
 
+  // Warn on browser refresh/close if dirty
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
+
   return {
     post,
     isEditing,
@@ -149,5 +168,6 @@ export function useBlogEditor() {
     moveBlock,
     handleSave,
     navigate,
+    isDirty,
   };
 }

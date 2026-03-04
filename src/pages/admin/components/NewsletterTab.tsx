@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import {
   Plus, ArrowLeft, Send, Save, Eye, Trash2, MailCheck,
   CalendarClock, FileText, AlertCircle,
@@ -232,6 +232,10 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [subscriberSearch, setSubscriberSearch] = useState("");
   const [showRecipientList, setShowRecipientList] = useState(false);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+
+  // Dirty state tracking
+  const initialFormRef = useRef<string>("");
 
   const token = localStorage.getItem("admin_token");
   const headers = useMemo(() => ({
@@ -315,6 +319,7 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
     setForm(emptyForm);
     setEditId(null);
     setView("create");
+    initialFormRef.current = JSON.stringify(emptyForm);
   };
 
   const handleEdit = (campaign: NewsletterCampaign) => {
@@ -332,6 +337,18 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
     });
     setEditId(campaign.id);
     setView("edit");
+    // Snapshot the loaded form for dirty checking
+    initialFormRef.current = JSON.stringify({
+      template_id: campaign.template_id,
+      subject: campaign.subject,
+      heading: campaign.heading,
+      body: campaign.body,
+      cta_buttons: ctas.length > 0 ? ctas : [{ text: "", url: "" }],
+      recipient_type: campaign.recipient_type,
+      recipient_ids: campaign.recipient_ids || [],
+      schedule: !!campaign.scheduled_at,
+      scheduled_at: campaign.scheduled_at ? new Date(campaign.scheduled_at).toISOString().slice(0, 16) : "",
+    });
   };
 
   const toApiPayload = (action: string) => {
@@ -609,7 +626,14 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <button
-          onClick={resetAndGoToList}
+          onClick={() => {
+            const isFormDirty = JSON.stringify(form) !== initialFormRef.current;
+            if (isFormDirty) {
+              setShowDiscardConfirm(true);
+            } else {
+              resetAndGoToList();
+            }
+          }}
           className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors shrink-0"
         >
           <ArrowLeft className="w-4 h-4 shrink-0" />
@@ -935,6 +959,18 @@ export default function NewsletterTab({ campaigns, subscribers, onRefresh }: New
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        open={showDiscardConfirm}
+        title="Unsaved Changes"
+        message="You have unsaved changes to this campaign. Are you sure you want to go back? Your changes will be lost."
+        confirmLabel="Discard"
+        onConfirm={() => {
+          setShowDiscardConfirm(false);
+          resetAndGoToList();
+        }}
+        onCancel={() => setShowDiscardConfirm(false)}
+      />
     </div>
   );
 }

@@ -95,14 +95,15 @@ const Header = () => {
   const isOnHomePage = location.pathname === "/";
   // Check if on services page or any service sub-page
   const isOnServicesPage = location.pathname === "/services" || location.pathname.startsWith("/services/");
-  // Check if on company pages
   const isOnCompanyPage = [
     "/about-us",
-    "/consult-now",
     "/contact-us",
     "/privacy-policy",
     "/terms-conditions",
   ].includes(location.pathname);
+  
+  // Check if on consult now page
+  const isConsultNowPage = location.pathname === "/consult-now";
   // Check if on resources pages
   const isOnResourcesPage = ["/blogs", "/testimonials"].includes(
     location.pathname
@@ -480,10 +481,13 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* CTA Button */}
             <div className="hidden lg:flex items-center">
               <Link to="/consult-now" onClick={() => window.scrollTo(0, 0)}>
-                <Button className="btn-primary text-[15px] px-6 py-2.5">
+                <Button 
+                  className={`text-[15px] px-6 py-2.5 transition-all duration-300 rounded-xl bg-transparent border-2 border-[#1a4fd9] text-[#1a4fd9] hover:bg-[#1a4fd9] hover:text-white shadow-none ${
+                    isConsultNowPage ? "bg-[#1a4fd9] text-white" : ""
+                  }`}
+                >
                   Consult Now
                 </Button>
               </Link>
@@ -762,7 +766,13 @@ const Header = () => {
                   window.scrollTo(0, 0);
                 }}
               >
-              <Button className="btn-primary w-full mt-4">Consult Now</Button>
+              <Button 
+                className={`w-full mt-4 transition-all duration-300 rounded-xl bg-transparent border-2 border-[#1a4fd9] text-[#1a4fd9] hover:bg-[#1a4fd9] hover:text-white shadow-none ${
+                  isConsultNowPage ? "bg-[#1a4fd9] text-white" : ""
+                }`}
+              >
+                Consult Now
+              </Button>
             </Link>
           </nav>
         </div>

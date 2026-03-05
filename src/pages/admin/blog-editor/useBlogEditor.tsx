@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { ContentBlock, BlogPostDraft } from "./types";
 import { EMPTY_POST } from "./types";
 import { toast } from "sonner";
+import { Save } from "lucide-react";
 
 export function useBlogEditor() {
   const { id } = useParams();
@@ -135,7 +136,17 @@ export function useBlogEditor() {
         throw new Error(data.error);
       }
       
-      toast.success(isEditing ? "Blog post updated successfully" : "Blog post created successfully");
+      toast.success(
+        isEditing ? "Blog post updated successfully" : "Blog post created successfully",
+        {
+          icon: <Save className="w-5 h-5 text-purple-500" />,
+          style: {
+            background: "#faf5ff",
+            border: "1px solid #e9d5ff",
+            color: "#6b21a8",
+          },
+        }
+      );
       navigate("/pm-portal-x9k2/dashboard");
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to save.";

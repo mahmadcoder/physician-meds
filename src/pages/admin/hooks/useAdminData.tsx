@@ -12,6 +12,14 @@ import type {
   NewsletterCampaign,
 } from "../types";
 import { toast } from "sonner";
+import { 
+  CheckCircle2, 
+  Trash2, 
+  RefreshCcw, 
+  Globe, 
+  EyeOff, 
+  LogOut 
+} from "lucide-react";
 
 export interface AdminNotification {
   id: string;
@@ -202,7 +210,14 @@ export function useAdminData() {
       if (!res.ok) throw new Error("Failed to mark as read");
       
       fetchData(table as Tab);
-      toast.success("Marked as read");
+      toast.success("Marked as read", {
+        icon: <CheckCircle2 className="w-5 h-5 text-emerald-500" />,
+        style: {
+          background: "#ecfdf5",
+          border: "1px solid #a7f3d0",
+          color: "#065f46",
+        },
+      });
     } catch (err) {
       console.error("Mark as read error:", err);
       toast.error("Failed to mark as read");
@@ -223,7 +238,14 @@ export function useAdminData() {
       if (!res.ok) throw new Error("Failed to update status");
       
       fetchData(table);
-      toast.success("Status updated successfully");
+      toast.success("Status updated successfully", {
+        icon: <RefreshCcw className="w-5 h-5 text-blue-500" />,
+        style: {
+          background: "#eff6ff",
+          border: "1px solid #bfdbfe",
+          color: "#1e3a8a",
+        },
+      });
     } catch (err) {
       console.error("Status update error:", err);
       toast.error("Failed to update status");
@@ -269,7 +291,14 @@ export function useAdminData() {
         comment: "Comment deleted",
         "chat-session": "Chat session deleted",
       };
-      toast.success(labels[type]);
+      toast.success(labels[type], {
+        icon: <Trash2 className="w-5 h-5 text-red-500" />,
+        style: {
+          background: "#fef2f2",
+          border: "1px solid #fecaca",
+          color: "#991b1b",
+        },
+      });
     } catch (err) {
       console.error("Delete error:", err);
       toast.error("Failed to delete item");
@@ -292,7 +321,21 @@ export function useAdminData() {
       if (!res.ok) throw new Error("Failed to update publish status");
       
       fetchData("blogs");
-      toast.success(currentState ? "Blog post reverted to draft" : "Blog post published");
+      toast.success(
+        currentState ? "Blog post reverted to draft" : "Blog post published",
+        {
+          icon: currentState ? (
+            <EyeOff className="w-5 h-5 text-amber-500" />
+          ) : (
+            <Globe className="w-5 h-5 text-emerald-500" />
+          ),
+          style: {
+            background: currentState ? "#fffbeb" : "#ecfdf5",
+            border: currentState ? "1px solid #fde68a" : "1px solid #a7f3d0",
+            color: currentState ? "#92400e" : "#065f46",
+          },
+        }
+      );
     } catch (err) {
       console.error("Toggle publish error:", err);
       toast.error("Failed to update publish status");
@@ -313,7 +356,14 @@ export function useAdminData() {
         return;
       }
       fetchData("chat-sessions");
-      toast.success("Chat session status updated");
+      toast.success("Chat session status updated", {
+        icon: <RefreshCcw className="w-5 h-5 text-blue-500" />,
+        style: {
+          background: "#eff6ff",
+          border: "1px solid #bfdbfe",
+          color: "#1e3a8a",
+        },
+      });
     } catch (err) {
       console.error("Status update error:", err);
       toast.error("Failed to update status. Check console for details.");
@@ -323,7 +373,14 @@ export function useAdminData() {
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
     localStorage.removeItem("admin_login_time");
-    toast.success("Logged out successfully");
+    toast.success("Logged out successfully", {
+      icon: <LogOut className="w-5 h-5 text-gray-500" />,
+      style: {
+        background: "#f9fafb",
+        border: "1px solid #e5e7eb",
+        color: "#374151",
+      },
+    });
     navigate(ADMIN_LOGIN_PATH);
   };
 

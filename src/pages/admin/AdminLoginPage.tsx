@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import LoadingIndicator from "./components/LoadingIndicator";
 import { toast } from "sonner";
+import { Unlock } from "lucide-react";
 
 const AdminLoginPage = () => {
   usePageTitle("Admin Login");
@@ -56,7 +57,14 @@ const AdminLoginPage = () => {
 
       localStorage.setItem("admin_token", data.token);
       localStorage.setItem("admin_login_time", Date.now().toString());
-      toast.success("Successfully logged in");
+      toast.success("Successfully logged in", {
+        icon: <Unlock className="w-5 h-5 text-emerald-500" />,
+        style: {
+          background: "#ecfdf5",
+          border: "1px solid #a7f3d0",
+          color: "#065f46",
+        },
+      });
       navigate("/pm-portal-x9k2/dashboard");
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Login failed.";

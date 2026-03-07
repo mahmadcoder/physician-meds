@@ -47,6 +47,7 @@ import UnsubscribePage from "./pages/UnsubscribePage";
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminBlogEditorPage from "./pages/admin/AdminBlogEditorPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -124,6 +125,7 @@ function AppContent() {
             <Route path="/pm-portal-x9k2/dashboard" element={<AdminDashboardPage />} />
             <Route path="/pm-portal-x9k2/blog/new" element={<AdminBlogEditorPage />} />
             <Route path="/pm-portal-x9k2/blog/edit/:id" element={<AdminBlogEditorPage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
         {!isAdmin && <Footer />}

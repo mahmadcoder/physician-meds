@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import usePageTitle from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import {
@@ -13,6 +13,7 @@ import ServiceTestimonials from "@/components/ServiceTestimonials";
 import ServiceFAQ from "@/components/ServiceFAQ";
 import ServiceBottomCTA from "@/components/ServiceBottomCTA";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   digitalMarketingHero,
@@ -33,10 +34,8 @@ gsap.registerPlugin(ScrollTrigger);
 const DigitalMarketingPage = () => {
   usePageTitle("Digital Marketing");
   const pageRef = useRef<HTMLDivElement>(null);
-  const ctxRef = useRef<gsap.Context | null>(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
+  useGSAP(() => {
       // Hero timeline
       const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
       heroTl
@@ -131,44 +130,7 @@ const DigitalMarketingPage = () => {
         y: 0, opacity: 1, duration: 1.2, ease: "power3.out",
         scrollTrigger: { trigger: ".service-bottom-cta", start: "top 75%" },
       });
-    }, pageRef);
-
-    ctxRef.current = ctx;
-
-    const t1 = setTimeout(() => ScrollTrigger.refresh(true), 100);
-    const t2 = setTimeout(() => ScrollTrigger.refresh(true), 500);
-
-    const safetyTimer = setTimeout(() => {
-      if (!pageRef.current) return;
-      pageRef.current.querySelectorAll<HTMLElement>('[style*="opacity"]').forEach((el) => {
-        if (getComputedStyle(el).opacity === "0") {
-          el.style.opacity = "1";
-          el.style.transform = "none";
-        }
-      });
-    }, 2500);
-
-    const handlePageShow = (e: PageTransitionEvent) => {
-      if (e.persisted) {
-        ctxRef.current?.revert();
-        ScrollTrigger.getAll().forEach((st) => st.kill());
-        ScrollTrigger.refresh(true);
-        pageRef.current?.querySelectorAll<HTMLElement>('[style*="opacity"]').forEach((el) => {
-          el.style.opacity = "1";
-          el.style.transform = "none";
-        });
-      }
-    };
-    window.addEventListener("pageshow", handlePageShow);
-
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(safetyTimer);
-      window.removeEventListener("pageshow", handlePageShow);
-      ctxRef.current?.revert();
-    };
-  }, []);
+    }, { scope: pageRef });
 
   return (
     <div ref={pageRef} className="min-h-screen bg-white">

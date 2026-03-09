@@ -106,7 +106,7 @@ const Newsletter = () => {
           <div 
             className="absolute inset-0"
             style={{
-              backgroundImage: "url('/news-letter.svg')",
+              backgroundImage: "url('/news-letter.png')",
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",

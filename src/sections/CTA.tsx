@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight, Phone, Mail, CheckCircle, Clock, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -44,8 +45,7 @@ const CTA = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
+  useGSAP(() => {
       // Section background reveal
       gsap.fromTo(
         '.cta-section-bg',
@@ -150,10 +150,7 @@ const CTA = () => {
           },
         }
       );
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+    }, { scope: sectionRef });
 
   const API_BASE = import.meta.env.PROD ? '' : '';
 
